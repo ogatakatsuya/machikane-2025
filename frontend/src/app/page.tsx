@@ -1,5 +1,7 @@
 import QuizIndex from "@/components/QuizIndex";
 
-export default function HomePage() {
+const HomePage = () => {
   return <QuizIndex />;
-}
+};
+
+export default HomePage;

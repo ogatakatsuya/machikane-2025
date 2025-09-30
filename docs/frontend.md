@@ -58,6 +58,7 @@ frontend/
 
 import { useState } from "react";
 import Link from "next/link";
+import ComponentName from "@/components/ComponentName"; // ✅ import alias使用
 
 // 型定義
 interface ComponentProps {
@@ -65,7 +66,7 @@ interface ComponentProps {
   title: string;
 }
 
-// メインコンポーネント
+// ✅ アロー関数を使用（function宣言は禁止）
 const ComponentName = ({ id, title }: ComponentProps) => {
   // ロジック
   
@@ -77,6 +78,46 @@ const ComponentName = ({ id, title }: ComponentProps) => {
 };
 
 export default ComponentName;
+```
+
+#### 関数定義規約
+- **必須**: アロー関数を使用
+- **禁止**: `function`キーワードによる関数宣言
+
+```typescript
+// ✅ 推奨: アロー関数
+const ComponentName = (props: Props) => {
+  return <div>...</div>;
+};
+
+const handleClick = (event: MouseEvent) => {
+  // 処理
+};
+
+// ❌ 禁止: function宣言
+function ComponentName(props: Props) {
+  return <div>...</div>;
+}
+
+export default function ComponentName(props: Props) {
+  return <div>...</div>;
+}
+```
+
+#### Import Alias規約
+- **必須**: `@/`エイリアスを使用してルート相対パスで参照
+- **禁止**: 相対パス（`../`, `./`）の多用
+
+```typescript
+// ✅ 推奨: Import Alias使用
+import ComponentName from "@/components/ComponentName";
+import { useCustomHook } from "@/hooks/useCustomHook";
+import { API_ENDPOINTS } from "@/lib/constants";
+import HomePage from "@/features/HomePage";
+
+// ❌ 非推奨: 相対パスの多用
+import ComponentName from "../../../components/ComponentName";
+import { useCustomHook } from "../../hooks/useCustomHook";
 ```
 
 #### Server Component vs Client Component

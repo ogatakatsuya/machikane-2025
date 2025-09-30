@@ -77,6 +77,25 @@ go test ./...
 go fmt ./...
 ```
 
+## Docker
+
+### Build Image
+
+```bash
+cd backend
+docker build -t machikane-backend .
+```
+
+### Run Container
+
+```bash
+docker run -p 8080:8080 machikane-backend
+```
+
+### Using Docker Compose
+
+See [Docker documentation](./docker.md) for full setup with all services.
+
 ## CI/CD
 
 Automated build and test with GitHub Actions

@@ -1,12 +1,16 @@
 name: Biome
 
 on:
-  push: 
+  push:
     branches:
       - main
+    paths:
+      - 'frontend/**'
   pull_request:
     branches:
       - main
+    paths:
+      - 'frontend/**'
 
 jobs:
   quality:

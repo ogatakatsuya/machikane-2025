@@ -1,13 +1,26 @@
 package main
 
 import (
+	"backend/controller"
 	"backend/db"
+	"backend/usecase"
 	"log"
 	"net/http"
 
+	dbGenerated "backend/db/generated"
+
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
+}
 
 func main() {
 	// Database connection
@@ -25,12 +38,21 @@ func main() {
 	// Echo instance
 	e := echo.New()
 
+	// Validator
+	e.Validator = &CustomValidator{validator: validator.New()}
+
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	// Initialize dependencies
+	queries := dbGenerated.New(database)
+	groupUseCase := usecase.NewGroupUseCase(queries)
+	groupController := controller.NewGroupController(groupUseCase)
+
 	// Routes
 	e.GET("/", hello)
+	e.POST("/groups", groupController.CreateGroup)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))

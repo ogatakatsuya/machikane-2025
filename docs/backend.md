@@ -16,8 +16,16 @@ Go language and Echo framework based backend API server
 backend/
 ├── cmd/
 │   └── main.go          # Entry point
-├── go.mod               # Go modules definition
-└── go.sum               # Dependencies checksum
+├── controller/          # HTTP handlers and interfaces
+├── usecase/            # Business logic and interfaces
+├── dto/                # Data Transfer Objects
+├── db/
+│   ├── generated/      # sqlc generated code
+│   ├── migrations/     # Database migrations
+│   ├── queries/        # SQL queries for sqlc
+│   └── schema/         # Database schema files
+├── go.mod              # Go modules definition
+└── go.sum              # Dependencies checksum
 ```
 
 ## Setup
@@ -58,6 +66,33 @@ Hello World endpoint
 Hello, World!
 ```
 
+### POST /groups
+
+Create a new group
+
+**Request Body**
+```json
+{
+  "name": "string (required)",
+  "group_size": "number (required, minimum: 1)"
+}
+```
+
+**Response (201 Created)**
+```json
+{
+  "id": "uuid",
+  "name": "string",
+  "group_size": "number",
+  "created_at": "ISO 8601 timestamp",
+  "updated_at": "ISO 8601 timestamp"
+}
+```
+
+**Error Responses**
+- `400 Bad Request`: Invalid request body or validation failed
+- `500 Internal Server Error`: Failed to create group
+
 ## Middleware
 
 - **Logger**: Request logging
@@ -95,6 +130,79 @@ docker run -p 8080:8080 machikane-backend
 ### Using Docker Compose
 
 See [Docker documentation](./docker.md) for full setup with all services.
+
+## Architecture & Coding Standards
+
+### Clean Architecture
+
+This project follows Clean Architecture principles with dependency injection:
+
+1. **Controller Layer** (`controller/`)
+   - HTTP request handling
+   - Request/Response validation
+   - Depends on UseCase interfaces
+
+2. **UseCase Layer** (`usecase/`)
+   - Business logic implementation
+   - Depends on database interfaces
+   - Independent of HTTP concerns
+
+3. **DTO Layer** (`dto/`)
+   - Data Transfer Objects
+   - Request/Response structures
+   - Validation tags
+
+### Coding Conventions
+
+#### Interface Design
+- Always define interfaces before implementations
+- Use dependency injection pattern
+- Controllers depend on UseCase interfaces
+- UseCases depend on Repository interfaces
+
+#### Naming Conventions
+- **Files**: snake_case (e.g., `group_controller.go`)
+- **Interfaces**: PascalCase with descriptive names (e.g., `GroupController`, `GroupUseCase`)
+- **DTOs**: PascalCase ending with `Dto` (e.g., `CreateGroupDto`)
+- **Functions**: camelCase, exported functions start with capital letter
+
+#### Error Handling
+- Always include specific error messages with context
+- Use `fmt.Errorf` for error wrapping
+- Return detailed error messages in API responses for debugging
+
+#### Database
+- Use UUID v7 for all primary keys (time-sortable)
+- Use sqlc for type-safe database operations
+- All database operations should be in the UseCase layer
+
+#### Validation
+- Use struct tags for request validation (`validate:"required"`)
+- Validate all incoming requests in controllers
+- Return detailed validation error messages
+
+#### Example Implementation Pattern
+```go
+// 1. Define DTO
+type CreateEntityDto struct {
+    Name string `json:"name" validate:"required"`
+}
+
+// 2. Define interface
+type EntityUseCase interface {
+    CreateEntity(ctx context.Context, dto CreateEntityDto) (*EntityResponseDto, error)
+}
+
+// 3. Implement usecase
+type entityUseCase struct {
+    queries *db.Queries
+}
+
+// 4. Implement controller
+type entityController struct {
+    entityUseCase EntityUseCase
+}
+```
 
 ## CI/CD
 

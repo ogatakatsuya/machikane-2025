@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -35,8 +36,10 @@ func Connect() (*sql.DB, error) {
 	}
 
 	// Set connection pool settings
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(5)
+	db.SetMaxOpenConns(75)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(30 * time.Minute)
+	db.SetConnMaxIdleTime(10 * time.Minute)
 
 	return db, nil
 }

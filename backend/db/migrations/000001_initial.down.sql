@@ -1,0 +1,3 @@
+DROP INDEX IF EXISTS idx_results_group_id;
+DROP TABLE IF EXISTS results;
+DROP TABLE IF EXISTS groups;

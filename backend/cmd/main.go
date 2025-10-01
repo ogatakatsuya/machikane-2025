@@ -1,6 +1,8 @@
 package main
 
 import (
+	"backend/db"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -8,6 +10,18 @@ import (
 )
 
 func main() {
+	// Database connection
+	database, err := db.Connect()
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+	defer database.Close()
+
+	// Run migrations
+	if err := db.Migrate(database); err != nil {
+		log.Fatal("Failed to run migrations:", err)
+	}
+
 	// Echo instance
 	e := echo.New()
 

@@ -10,47 +10,47 @@ const RegisterForm = ({ quiz_set_id }: RegisterFormProps) => {
   const { register, onSubmit, errors } = useRegisterForm(quiz_set_id);
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col space-y-4 p-4">
-      <div className="flex flex-col">
-        <label htmlFor="name" className="mb-1 font-medium">
-          チーム名
+    <form onSubmit={onSubmit} className="flex flex-col p-3">
+      <div>
+        <label className="flex flex-col items-center justify-middle">
+          <p className="text-2xl">チーム名 :</p>
+          <input
+            id="name"
+            {...register("name")}
+            className={`w-full border px-1 py-1 focus:outline-none focus:ring-2 focus:ring-black ${
+              errors.name ? "border-red-500" : "border-gray-500"
+            }`}
+          />
         </label>
-        <input
-          id="name"
-          {...register("name")}
-          className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.name ? "border-red-500" : "border-gray-300"
-          }`}
-        />
         {errors.name && (
-          <span className="text-red-500 text-sm mt-1">
+          <p className="text-red-500 text-sm text-end mt-1 mb-3">
             {errors.name.message}
-          </span>
+          </p>
         )}
       </div>
 
-      <div className="flex flex-col">
-        <label htmlFor="memberNum" className="mb-1 font-medium">
-          チームのメンバー数
+      <div>
+        <label className="flex flex-col items-center justify-middle">
+          <p className="text-2xl">メンバー数 :</p>
+          <input
+            id="memberNum"
+            type="number"
+            {...register("memberNum", { valueAsNumber: true })}
+            className={`w-full border px-1 py-1 focus:outline-none focus:ring-2 focus:ring-black ${
+              errors.memberNum ? "border-red-500" : "border-gray-500"
+            }`}
+          />
         </label>
-        <input
-          id="memberNum"
-          type="number"
-          {...register("memberNum", { valueAsNumber: true })}
-          className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.memberNum ? "border-red-500" : "border-gray-300"
-          }`}
-        />
         {errors.memberNum && (
-          <span className="text-red-500 text-sm mt-1">
+          <p className="text-red-500 text-sm text-end mt-1 mb-3">
             {errors.memberNum.message}
-          </span>
+          </p>
         )}
       </div>
 
       <button
         type="submit"
-        className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors self-start"
+        className="py-px px-5 mt-6 text-2xl mx-auto bg-gray-200 hover:bg-gray-300 border"
       >
         登録
       </button>

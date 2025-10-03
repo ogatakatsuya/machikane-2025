@@ -1,3 +1,5 @@
+import Image from "next/image";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 import RegisterForm from "@/components/RegisterForm";
 
 interface RegisterProps {
@@ -6,39 +8,60 @@ interface RegisterProps {
 
 const Register = ({ quiz_set_id }: RegisterProps) => {
   return (
-    <div className="w-full min-h-screen">
-      <div className="flex flex-col">
-        <div className="bg-blue-100 text-left h-10 flex items-center justify-start text-xl">
-          <p className="text-blue-800 pl-4 font-medium">ニックネーム登録</p>
+    <div className="w-full min-h-screen flex justify-center">
+      <div className="max-w-96 flex flex-col">
+        <h2 className="text-center text-xl my-3">i.maker 謎解き支援システム</h2>
+        <div className="flex justify-end">
+          {/* TODO: imakerのアイコンロゴに変更 */}
+          <Image
+            src="/nazotoki_icon.png"
+            alt="謎解きアイコン"
+            width={64}
+            height={64}
+            className="object-contain"
+            priority
+          />
+        </div>
+        <div className="bg-blue-100 text-left flex items-center justify-start text-2xl">
+          <p className="text-blue-900 my-px pl-3 font-medium">チーム名登録</p>
         </div>
 
-        <div className="flex flex-col items-center space-y-6 p-6">
+        <div className="space-y-6 p-6">
           <RegisterForm quiz_set_id={quiz_set_id} />
 
-          <p className="text-sm text-center underline">
-            登録にお困りの場合は
-            <br />
-            TAに相談の上
-            <br />
-            自分で頑張ってください
+          <p className="text-blue-700 hover:text-blue-800 underline">
+            ポータルサイト
           </p>
 
-          <p className="text-sm text-center">
-            ＜お知らせ＞
-            <br />
+          <div className="">
+            <p>
+              <span>登録にお困りの場合は</span>
+              <span className="text-blue-700 hover:text-blue-800 underline">
+                TAに相談
+              </span>
+              <span>の上、</span>
+            </p>
+            <p className="text-red-500 hover:text-red-600 underline">
+              自分で頑張ってください
+            </p>
+          </div>
+
+          <div>
+            <p className="font-bold">＜お知らせ＞</p>
             大学のポータルサイトCLEとは異なります。
             <br />
             謎解きの解答のみがこのサイトで可能です。
-          </p>
+          </div>
 
-          <p className="text-sm text-center">
-            The website differs from the university portal, CLE.
-            <br />
-            It is exclusively for submitting answers
-            <br />
-            to the puzzle challenges.
+          <p>
+            The website differs from the university portal, CLE. It is
+            exclusively for submitting answers to the puzzle challenges.
           </p>
         </div>
+        <footer className="flex items-center justify-center text-xs gap-1 text-gray-600">
+          <IoIosInformationCircleOutline />
+          2025 produced by i.maker
+        </footer>
       </div>
     </div>
   );

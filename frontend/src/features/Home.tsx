@@ -39,13 +39,13 @@ const Home = ({ quiz_set_id }: HomeProps) => {
         </button>
 
         <Link href="#" className="text-blue-600 hover:text-blue-800 underline">
-          プライバシーポリシー/Privacy Policy
+          プライバシーポリシー / Privacy Policy
         </Link>
 
-        <p className="flex items-center gap-1 text-gray-600">
+        <footer className="flex items-center gap-1 text-gray-600">
           <IoIosInformationCircleOutline />
-          2024 produced by i.maker
-        </p>
+          2025 produced by i.maker
+        </footer>
       </div>
     </div>
   );

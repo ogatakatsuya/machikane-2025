@@ -6,11 +6,7 @@ import SearchIcon from "/public/search.svg";
 import ShareIcon from "/public/share.svg";
 import UserIcon from "/public/user.svg";
 
-interface ResultProps {
-  quiz_set_id: string;
-}
-
-const Result = ({ quiz_set_id }: ResultProps) => {
+const Result = () => {
   return (
     <div className="bg-[#eeeecc] w-full min-h-screen">
       <div>

@@ -12,7 +12,7 @@ const RegisterForm = ({ quiz_set_id }: RegisterFormProps) => {
   return (
     <form onSubmit={onSubmit} className="flex flex-col p-3">
       <div>
-        <label className="flex flex-col items-center justify-middle">
+        <label className="flex flex-col items-center justify-center">
           <p className="text-2xl">チーム名 :</p>
           <input
             id="name"
@@ -30,7 +30,7 @@ const RegisterForm = ({ quiz_set_id }: RegisterFormProps) => {
       </div>
 
       <div>
-        <label className="flex flex-col items-center justify-middle">
+        <label className="flex flex-col items-center justify-center">
           <p className="text-2xl">メンバー数 :</p>
           <input
             id="memberNum"

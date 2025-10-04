@@ -17,7 +17,7 @@ const RegisterForm = ({ quiz_set_id }: RegisterFormProps) => {
           <input
             id="name"
             {...register("name")}
-            className={`w-full border px-1 py-1 focus:outline-none focus:ring-2 focus:ring-black ${
+            className={`w-full border rounded-xs px-1 py-1 focus:outline-none focus:ring-2 focus:ring-black ${
               errors.name ? "border-red-500" : "border-gray-500"
             }`}
           />
@@ -36,7 +36,7 @@ const RegisterForm = ({ quiz_set_id }: RegisterFormProps) => {
             id="memberNum"
             type="number"
             {...register("memberNum", { valueAsNumber: true })}
-            className={`w-full border px-1 py-1 focus:outline-none focus:ring-2 focus:ring-black ${
+            className={`w-full border rounded-xs px-1 py-1 focus:outline-none focus:ring-2 focus:ring-black ${
               errors.memberNum ? "border-red-500" : "border-gray-500"
             }`}
           />

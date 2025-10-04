@@ -71,7 +71,12 @@ const Quiz = ({ quiz_set_id }: QuizProps) => {
             <h2 className="text-lg">重要なお知らせ</h2>
             <div className="border border-gray-300 p-4 pl-8 my-2">
               <ol className="list-disc pr-1 space-y-2">
-                <li>重要なお知らせはここに表示されます。</li>
+                <li>
+                  <p className="text-sm">
+                    {/* TODO: 重要なお知らせを取得orハードコーディング */}
+                    重要なお知らせはここに表示されます。
+                  </p>
+                </li>
               </ol>
             </div>
           </div>

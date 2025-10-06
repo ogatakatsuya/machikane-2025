@@ -18,7 +18,7 @@ export const registerFormSchema = z.object({
 
 export type RegisterFormSchemaType = z.infer<typeof registerFormSchema>;
 
-export const useRegisterForm = (quiz_set_id: string) => {
+export const useRegisterForm = () => {
   const router = useRouter();
   const {
     register,
@@ -49,7 +49,7 @@ export const useRegisterForm = (quiz_set_id: string) => {
     // Mock submission for now
     console.log("Registering:", data);
     sessionStorage.setItem("groupId", "mock-group-id");
-    router.push(`/quiz/${quiz_set_id}`);
+    router.push(`/quiz`);
   };
 
   return {

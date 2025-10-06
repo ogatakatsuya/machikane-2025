@@ -5,48 +5,48 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 
-interface HomeProps {
-  quiz_set_id: string;
-}
-
-const Home = ({ quiz_set_id }: HomeProps) => {
+const Home = () => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/register/${quiz_set_id}`);
+    router.push(`/register`);
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4">
-      <div className="flex flex-col items-center justify-center min-h-screen space-y-6 p-10">
-        <div className="w-full max-w-md">
-          <Image
-            src="/nazotoki_icon.png"
-            alt="謎解きアイコン"
-            width={512}
-            height={512}
-            className="w-full h-auto object-contain"
-            priority
-          />
-        </div>
+    <div className="bg-[#272727] min-h-screen pt-8 p-10 flex flex-col items-center gap-8">
+      <Image
+        src="/nazotoki_icon.png"
+        alt="謎解きアイコン"
+        width={160}
+        height={160}
+        className="object-contain"
+        priority
+      />
 
+      <div className="px-4 w-full flex flex-col items-center gap-5">
         <button
           type="button"
           onClick={handleClick}
-          className="py-3 px-6 rounded-md bg-blue-800 text-white hover:bg-blue-900 transition-colors"
+          className="w-full max-w-72 p-2 text-sm bg-[#2d287f] text-[#F8F8F8] hover:bg-[#fdd000] hover:text-[#333] active:bg-[#fdd000] active:text-[#333] transition-colors border border-white rounded-xs hover:cursor-pointer"
         >
-          ニックネーム登録
+          チーム名登録
         </button>
-
-        <Link href="#" className="text-blue-600 hover:text-blue-800 underline">
-          プライバシーポリシー/Privacy Policy
-        </Link>
-
-        <p className="flex items-center gap-1 text-gray-600">
-          <IoIosInformationCircleOutline />
-          2024 produced by i.maker
-        </p>
+        {/* TODO: CLEに合わせてボタン追加．不要であれば削除 */}
+        <button
+          type="button"
+          className="w-full max-w-72 p-2 text-sm bg-[#808080] text-[#F8F8F8] hover:bg-white hover:text-[#333] active:bg-white active:text-[#333] transition-colors border border-white rounded-xs hover:cursor-pointer"
+        >
+          何かのボタン
+        </button>
       </div>
+      <Link href="#" className="text-white text-xs">
+        プライバシーポリシー / Privacy Policy
+      </Link>
+
+      <footer className="flex items-center gap-1 text-[#969696] text-xs mt-12">
+        <IoIosInformationCircleOutline />
+        2025 produced by i.maker
+      </footer>
     </div>
   );
 };

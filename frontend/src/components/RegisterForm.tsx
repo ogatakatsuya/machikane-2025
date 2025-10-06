@@ -2,12 +2,8 @@
 
 import { useRegisterForm } from "@/hooks/useRegisterForm";
 
-interface RegisterFormProps {
-  quiz_set_id: string;
-}
-
-const RegisterForm = ({ quiz_set_id }: RegisterFormProps) => {
-  const { register, onSubmit, errors } = useRegisterForm(quiz_set_id);
+const RegisterForm = () => {
+  const { register, onSubmit, errors } = useRegisterForm();
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col p-4 pt-8">

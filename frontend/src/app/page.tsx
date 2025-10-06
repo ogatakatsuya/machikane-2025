@@ -1,7 +1,7 @@
-import QuizIndex from "@/components/QuizIndex";
+import Home from "@/features/Home";
 
 const HomePage = () => {
-  return <QuizIndex />;
+  return <Home />;
 };
 
 export default HomePage;

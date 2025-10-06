@@ -5,15 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 
-interface HomeProps {
-  quiz_set_id: string;
-}
-
-const Home = ({ quiz_set_id }: HomeProps) => {
+const Home = () => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/register/${quiz_set_id}`);
+    router.push(`/register`);
   };
 
   return (

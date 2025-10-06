@@ -4,11 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import HamburgerIcon from "/public/hamburger.svg";
 
-interface QuizProps {
-  quiz_set_id: string;
-}
-
-const Quiz = ({ quiz_set_id }: QuizProps) => {
+const Quiz = () => {
   const router = useRouter();
 
   const warningList = [
@@ -86,7 +82,7 @@ const Quiz = ({ quiz_set_id }: QuizProps) => {
           <button
             type="button"
             onClick={() => {
-              router.push(`/question/${quiz_set_id}`);
+              router.push(`/question`);
             }}
             className="text-xl font-bold text-white bg-blue-800 py-3 px-6 rounded-md hover:bg-blue-900 transition-colors hover:cursor-pointer"
           >

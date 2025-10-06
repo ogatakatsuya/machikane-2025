@@ -2,11 +2,7 @@ import Image from "next/image";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import RegisterForm from "@/components/RegisterForm";
 
-interface RegisterProps {
-  quiz_set_id: string;
-}
-
-const Register = ({ quiz_set_id }: RegisterProps) => {
+const Register = () => {
   return (
     <div className="w-full min-h-screen px-6 flex justify-center">
       <div className="max-w-96 flex flex-col">
@@ -27,7 +23,7 @@ const Register = ({ quiz_set_id }: RegisterProps) => {
         </div>
 
         <div className="space-y-6">
-          <RegisterForm quiz_set_id={quiz_set_id} />
+          <RegisterForm />
 
           <p className="text-blue-700 hover:text-blue-800 underline">
             ポータルサイト

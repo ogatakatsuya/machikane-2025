@@ -3,7 +3,7 @@
 import { useRegisterForm } from "@/hooks/useRegisterForm";
 
 const RegisterForm = () => {
-  const { register, onSubmit, errors } = useRegisterForm();
+  const { register, onSubmit, errors, isLoading, apiError } = useRegisterForm();
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col p-4 pt-8">
@@ -44,11 +44,22 @@ const RegisterForm = () => {
         )}
       </div>
 
+      {apiError && (
+        <div className="text-red-500 text-sm text-center mt-4 p-3 bg-red-50 rounded border border-red-200">
+          {apiError}
+        </div>
+      )}
+
       <button
         type="submit"
-        className="py-px px-5 mt-7 rounded-sm text-2xl mx-auto bg-gray-200 hover:bg-gray-300 border"
+        disabled={isLoading}
+        className={`py-px px-5 mt-7 rounded-sm text-2xl mx-auto border ${
+          isLoading
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-gray-200 hover:bg-gray-300"
+        }`}
       >
-        登録
+        {isLoading ? "登録中..." : "登録"}
       </button>
     </form>
   );

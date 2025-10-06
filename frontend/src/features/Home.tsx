@@ -17,7 +17,7 @@ const Home = ({ quiz_set_id }: HomeProps) => {
   };
 
   return (
-    <div className="bg-[#272727] min-h-screen p-10 flex flex-col items-center gap-8">
+    <div className="bg-[#272727] min-h-screen pt-8 p-10 flex flex-col items-center gap-8">
       <Image
         src="/nazotoki_icon.png"
         alt="謎解きアイコン"
@@ -31,14 +31,14 @@ const Home = ({ quiz_set_id }: HomeProps) => {
         <button
           type="button"
           onClick={handleClick}
-          className="w-full max-w-72 p-2 text-sm bg-[#2d287f] text-[#F8F8F8] hover:bg-[#fdd000] hover:text-[#333] transition-colors border border-white rounded-xs"
+          className="w-full max-w-72 p-2 text-sm bg-[#2d287f] text-[#F8F8F8] hover:bg-[#fdd000] hover:text-[#333] active:bg-[#fdd000] active:text-[#333] transition-colors border border-white rounded-xs hover:cursor-pointer"
         >
           チーム名登録
         </button>
         {/* TODO: CLEに合わせてボタン追加．不要であれば削除 */}
         <button
           type="button"
-          className="w-full max-w-72 p-2 text-sm bg-[#808080] text-[#F8F8F8] hover:bg-white hover:text-[#333] transition-colors border border-white rounded-xs"
+          className="w-full max-w-72 p-2 text-sm bg-[#808080] text-[#F8F8F8] hover:bg-white hover:text-[#333] active:bg-white active:text-[#333] transition-colors border border-white rounded-xs hover:cursor-pointer"
         >
           何かのボタン
         </button>

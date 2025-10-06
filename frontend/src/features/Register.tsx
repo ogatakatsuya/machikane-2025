@@ -8,16 +8,16 @@ interface RegisterProps {
 
 const Register = ({ quiz_set_id }: RegisterProps) => {
   return (
-    <div className="w-full min-h-screen flex justify-center">
+    <div className="w-full min-h-screen px-6 flex justify-center">
       <div className="max-w-96 flex flex-col">
-        <h2 className="text-center text-xl my-3">i.maker 謎解き支援システム</h2>
+        <h2 className="text-center text-xl my-4">i.maker 謎解き支援システム</h2>
         <div className="flex justify-end">
           {/* TODO: imakerのアイコンロゴに変更 */}
           <Image
             src="/nazotoki_icon.png"
             alt="謎解きアイコン"
-            width={64}
-            height={64}
+            width={39}
+            height={39}
             className="object-contain"
             priority
           />
@@ -26,7 +26,7 @@ const Register = ({ quiz_set_id }: RegisterProps) => {
           <p className="text-blue-900 my-px pl-3 font-medium">チーム名登録</p>
         </div>
 
-        <div className="space-y-6 p-6">
+        <div className="space-y-6">
           <RegisterForm quiz_set_id={quiz_set_id} />
 
           <p className="text-blue-700 hover:text-blue-800 underline">
@@ -46,17 +46,18 @@ const Register = ({ quiz_set_id }: RegisterProps) => {
             </p>
           </div>
 
-          <div>
+          <div className="mb-10">
             <p className="font-bold">＜お知らせ＞</p>
-            大学のポータルサイトCLEとは異なります。
-            <br />
-            謎解きの解答のみがこのサイトで可能です。
+            <p className="mb-4">
+              大学のポータルサイトCLEとは異なります。
+              <br />
+              謎解きの解答のみがこのサイトで可能です。
+            </p>
+            <p>
+              The website differs from the university portal, CLE. It is
+              exclusively for submitting answers to the puzzle challenges.
+            </p>
           </div>
-
-          <p>
-            The website differs from the university portal, CLE. It is
-            exclusively for submitting answers to the puzzle challenges.
-          </p>
         </div>
         <footer className="flex items-center justify-center text-xs gap-1 text-gray-600">
           <IoIosInformationCircleOutline />

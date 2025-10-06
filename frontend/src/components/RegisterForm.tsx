@@ -10,14 +10,14 @@ const RegisterForm = ({ quiz_set_id }: RegisterFormProps) => {
   const { register, onSubmit, errors } = useRegisterForm(quiz_set_id);
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col p-3">
+    <form onSubmit={onSubmit} className="flex flex-col p-4 pt-8">
       <div>
         <label className="flex flex-col items-center justify-center">
-          <p className="text-2xl">チーム名 :</p>
+          <p className="text-2xl mt-1">チーム名 :</p>
           <input
             id="name"
             {...register("name")}
-            className={`w-full border rounded-xs px-1 py-1 focus:outline-none focus:ring-2 focus:ring-black ${
+            className={`w-full border rounded-sm px-1 py-1 focus:outline-none focus:ring-2 focus:ring-black ${
               errors.name ? "border-red-500" : "border-gray-500"
             }`}
           />
@@ -31,12 +31,12 @@ const RegisterForm = ({ quiz_set_id }: RegisterFormProps) => {
 
       <div>
         <label className="flex flex-col items-center justify-center">
-          <p className="text-2xl">メンバー数 :</p>
+          <p className="text-2xl mt-1">メンバー数 :</p>
           <input
             id="memberNum"
             type="number"
             {...register("memberNum", { valueAsNumber: true })}
-            className={`w-full border rounded-xs px-1 py-1 focus:outline-none focus:ring-2 focus:ring-black ${
+            className={`w-full border rounded-sm px-1 py-1 focus:outline-none focus:ring-2 focus:ring-black ${
               errors.memberNum ? "border-red-500" : "border-gray-500"
             }`}
           />
@@ -50,7 +50,7 @@ const RegisterForm = ({ quiz_set_id }: RegisterFormProps) => {
 
       <button
         type="submit"
-        className="py-px px-5 mt-6 text-2xl mx-auto bg-gray-200 hover:bg-gray-300 border"
+        className="py-px px-5 mt-7 rounded-sm text-2xl mx-auto bg-gray-200 hover:bg-gray-300 border"
       >
         登録
       </button>

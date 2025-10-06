@@ -1,7 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { ApiError, createGroup } from "@/lib/api";
+import type { CreateGroupRequest } from "@/lib/types";
 
 const RANGE = { min: 1, max: 3 } as const;
 
@@ -20,6 +23,9 @@ export type RegisterFormSchemaType = z.infer<typeof registerFormSchema>;
 
 export const useRegisterForm = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -29,32 +35,39 @@ export const useRegisterForm = () => {
   });
 
   const onSubmit = async (data: RegisterFormSchemaType) => {
-    // TODO: Replace with actual API call
-    // const request: CreateGroupRequest = {
-    //   name: data.name,
-    //   member_num: data.memberNum,
-    // };
-    // const response = await registerGroupWithSubId({
-    //   body: request,
-    //   path: { quiz_set_sub_id: quiz_set_id },
-    // });
-    // if (response.status === 400) {
-    //   alert(response.error?.detail);
-    // }
-    // if (response.data?.id) {
-    //   sessionStorage.setItem("groupId", String(response.data.id));
-    //   router.push(`/quiz/${quiz_set_id}`);
-    // }
+    setIsLoading(true);
+    setApiError(null);
 
-    // Mock submission for now
-    console.log("Registering:", data);
-    sessionStorage.setItem("groupId", "mock-group-id");
-    router.push(`/quiz`);
+    try {
+      const request: CreateGroupRequest = {
+        name: data.name,
+        group_size: data.memberNum,
+      };
+
+      const response = await createGroup(request);
+
+      if (response.id) {
+        sessionStorage.setItem("groupId", response.id);
+        router.push("/quiz");
+      }
+    } catch (error) {
+      console.error("Failed to create group:", error);
+
+      if (error instanceof ApiError) {
+        setApiError(error.errorDetail || error.message);
+      } else {
+        setApiError("グループの登録に失敗しました。もう一度お試しください。");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
     register,
     onSubmit: handleSubmit(onSubmit),
     errors,
+    isLoading,
+    apiError,
   };
 };

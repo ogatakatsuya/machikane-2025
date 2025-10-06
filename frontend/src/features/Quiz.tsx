@@ -28,12 +28,12 @@ const Quiz = () => {
           <p className="font-bold">謎解き概論I</p>
         </div>
 
-        <div className="flex justify-center items-center py-6 mb-6 mt-10 bg-gradient-to-b from-[#2c2880] via-[#2c2880] via-70% to-black">
+        <div className="flex justify-center items-center py-7 mb-6 mt-10 bg-gradient-to-b from-[#2c2880] via-[#2c2880] via-70% to-black">
           <Image
             src="/nazotoki_icon.png"
             alt="謎解きアイコン"
-            width={120}
-            height={120}
+            width={100}
+            height={100}
             className="object-contain"
             priority
           />

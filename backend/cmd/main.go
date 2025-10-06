@@ -47,7 +47,7 @@ func main() {
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{
 			"https://*.d3kkplual8s15w.amplifyapp.com",
-			"https://*.i-maker.com",
+			"https://*.i-maker.org",
 			"http://localhost:3000",
 		},
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.PATCH, echo.OPTIONS},

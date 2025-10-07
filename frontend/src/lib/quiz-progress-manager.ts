@@ -59,7 +59,7 @@ export class QuizProgressManager {
 
       const serialized: SerializedQuizContext = JSON.parse(stored);
 
-      // デシリアライズしてコンテキストを復元
+      // デシリアライゼーションしてコンテキストを復元
       return {
         groupId: serialized.groupId,
         startedAt: new Date(serialized.startedAt),

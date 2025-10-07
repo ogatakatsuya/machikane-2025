@@ -19,13 +19,7 @@ export interface QuizData<TDate = string> {
   startedAt: TDate;
   lastUpdatedAt: TDate;
   totalQuestions: number;
-  questionStates: Array<{
-    id: number;
-    status: QuestionStatus;
-    answer?: string;
-    answeredAt?: TDate;
-    attempts: number;
-  }>;
+  questionStates: Array<QuestionState<TDate>>;
 }
 
 // 実行時用の型エイリアス（Dateオブジェクト使用）

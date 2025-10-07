@@ -82,7 +82,7 @@ export const useQuizProgress = (
 
   // 問題状態の更新（解答時に保存）
   const updateQuestionStatus = useCallback(
-    async (questionId: number, status: QuestionStatus, answer: string) => {
+    (questionId: number, status: QuestionStatus, answer: string) => {
       if (!managerRef.current) {
         console.error("Quiz progress manager not initialized");
         alert("進捗の更新に失敗しました。（初期化されていません）");

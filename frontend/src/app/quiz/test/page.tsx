@@ -27,7 +27,7 @@ const QuizTestPage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const router = useRouter();
 
-  // セッションストレージからgroupIdを取得してから初期化
+  // ローカルストレージからgroupIdを取得してから初期化
   useEffect(() => {
     const initializeQuiz = async () => {
       try {

@@ -47,7 +47,7 @@ export const useRegisterForm = () => {
       const response = await createGroup(request);
 
       if (response.id) {
-        sessionStorage.setItem("groupId", response.id);
+        localStorage.setItem("groupId", response.id);
         router.push("/quiz");
       }
     } catch (error) {

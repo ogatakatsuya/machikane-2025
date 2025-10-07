@@ -22,6 +22,7 @@ export class QuizProgressManager {
     } else {
       this.context = this.createNewContext(groupId, totalQuestions);
     }
+    this.saveToStorage();
   }
 
   /**

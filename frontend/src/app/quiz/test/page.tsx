@@ -33,7 +33,7 @@ const QuizTestPage = () => {
       try {
         setIsInitializing(true);
 
-        const storedGroupId = sessionStorage.getItem("groupId");
+        const storedGroupId = localStorage.getItem("groupId");
         if (storedGroupId) {
           setGroupId(storedGroupId);
         } else {
@@ -279,9 +279,9 @@ const QuizTestPage = () => {
           </h3>
           <ol className="list-decimal list-inside space-y-2 text-yellow-700">
             <li>
-              グループ登録（/register）でグループIDをセッションストレージに保存
+              グループ登録（/register）でグループIDをローカルストレージに保存
             </li>
-            <li>いくつか問題に回答してください（時間制限: 30分）</li>
+            <li>いくつか問題に回答してください（時間制限: 10分）</li>
             <li>
               ページをリロード（F5）またはブラウザを閉じて再度開いてください
             </li>
@@ -291,22 +291,6 @@ const QuizTestPage = () => {
           </ol>
 
           <div className="mt-4 space-y-3">
-            <div className="p-3 bg-blue-50 rounded border border-blue-200">
-              <p className="text-blue-800 font-medium">
-                💡 ストレージの使い分け
-              </p>
-              <ul className="text-blue-700 text-sm mt-2 space-y-1">
-                <li>
-                  <strong>SessionStorage:</strong>{" "}
-                  groupId（ブラウザセッション間で保持）
-                </li>
-                <li>
-                  <strong>LocalStorage:</strong>{" "}
-                  クイズ進捗（永続的に保存、手動削除まで残る）
-                </li>
-              </ul>
-            </div>
-
             <div className="p-3 bg-orange-50 rounded border border-orange-200">
               <p className="text-orange-800 font-medium">⏰ 時間管理機能</p>
               <ul className="text-orange-700 text-sm mt-2 space-y-1">

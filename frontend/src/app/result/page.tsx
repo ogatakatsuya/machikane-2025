@@ -1,6 +1,6 @@
 import Result from "@/features/Result";
 
-const ResultPage = async () => {
+const ResultPage = () => {
   return <Result />;
 };
 

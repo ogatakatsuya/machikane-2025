@@ -29,7 +29,7 @@ const QuizTestPage = () => {
 
   // ローカルストレージからgroupIdを取得してから初期化
   useEffect(() => {
-    const initializeQuiz = async () => {
+    const initializeQuiz = () => {
       try {
         setIsInitializing(true);
 
@@ -121,7 +121,7 @@ const QuizTestPage = () => {
   };
 
   // 結果送信のテスト
-  const handleSubmitResults = async () => {
+  const handleSubmitResults = () => {
     try {
       submitQuizResults(generateSubmissionData());
       // TODO: 実際はAPIの結果を確認して成功/失敗を判定

@@ -22,7 +22,7 @@ interface UseQuizProgressReturn {
     answer: string,
   ) => void;
   getQuestionState: (questionId: number) => QuestionState | undefined;
-  saveProgress: () => Promise<void>;
+  saveProgress: () => void;
   clearProgress: () => void;
   generateSubmissionData: () => SerializedQuizContext;
 
@@ -50,7 +50,7 @@ export const useQuizProgress = (
       return;
     }
 
-    const initializeManager = async () => {
+    const initializeManager = () => {
       setIsLoading(true);
 
       try {
@@ -114,7 +114,7 @@ export const useQuizProgress = (
   );
 
   // 手動保存
-  const saveProgress = useCallback(async (): Promise<void> => {
+  const saveProgress = useCallback((): void => {
     if (!managerRef.current) {
       alert("進捗の保存に失敗しました。（初期化されていません）");
       throw new Error("Quiz progress manager not initialized");

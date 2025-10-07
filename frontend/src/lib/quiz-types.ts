@@ -11,7 +11,6 @@ export interface QuestionState<TDate = Date> {
   status: QuestionStatus;
   answer?: string;
   answeredAt?: TDate;
-  attempts: number;
 }
 
 export interface QuizData<TDate = string> {

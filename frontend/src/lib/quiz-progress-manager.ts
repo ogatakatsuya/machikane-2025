@@ -40,7 +40,6 @@ export class QuizProgressManager {
       questionStates: Array.from({ length: totalQuestions }, (_, i) => ({
         id: i + 1,
         status: QuestionStatus.UNANSWERED,
-        attempts: 0,
       })),
     };
   }
@@ -104,7 +103,6 @@ export class QuizProgressManager {
       status,
       answer,
       answeredAt: new Date(),
-      attempts: currentState.attempts + 1,
     };
     this.context.lastUpdatedAt = new Date();
   }
@@ -169,7 +167,6 @@ export class QuizProgressManager {
           status: state.status,
           answer: state.answer,
           answeredAt: state.answeredAt?.toISOString(),
-          attempts: state.attempts,
         })),
     };
   }

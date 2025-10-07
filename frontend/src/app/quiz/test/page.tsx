@@ -124,6 +124,8 @@ const QuizTestPage = () => {
   const handleSubmitResults = () => {
     try {
       submitQuizResults(generateSubmissionData());
+      localStorage.removeItem("groupId");
+      localStorage.removeItem(`quiz_progress_${groupId}`);
       // TODO: 実際はAPIの結果を確認して成功/失敗を判定
       alert("結果が送信されました！（コンソールを確認してください）");
     } catch (error) {
@@ -255,7 +257,6 @@ const QuizTestPage = () => {
               id: question.id,
               status: QuestionStatus.UNANSWERED,
               answer: undefined,
-              attempts: 0,
             };
 
             return (

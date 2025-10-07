@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "./constants";
+import type { SerializedQuizContext } from "./quiz-types";
 import type {
   ApiErrorResponse,
   CreateGroupRequest,
@@ -56,4 +57,10 @@ export const createGroup = async (
     method: "POST",
     body: JSON.stringify(data),
   });
+};
+
+// Quiz Results API
+// TODO: 実際のAPI仕様に合わせて実装を更新する
+export const submitQuizResults = (data: SerializedQuizContext): void => {
+  console.log("Submission data:", data);
 };

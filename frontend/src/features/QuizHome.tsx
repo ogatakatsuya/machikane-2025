@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import HamburgerIcon from "/public/hamburger.svg";
 
-const Quiz = () => {
+const QuizHome = () => {
   const router = useRouter();
 
   const warningList = [
@@ -82,7 +82,7 @@ const Quiz = () => {
           <button
             type="button"
             onClick={() => {
-              router.push(`/question`);
+              router.push(`/quiz`);
             }}
             className="text-xl font-bold text-white bg-blue-800 py-3 px-6 rounded-md hover:bg-blue-900 transition-colors hover:cursor-pointer"
           >
@@ -97,4 +97,4 @@ const Quiz = () => {
   );
 };
 
-export default Quiz;
+export default QuizHome;

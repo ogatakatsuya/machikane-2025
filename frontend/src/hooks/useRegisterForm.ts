@@ -48,7 +48,7 @@ export const useRegisterForm = () => {
 
       if (response.id) {
         localStorage.setItem("groupId", response.id);
-        router.push("/quiz");
+        router.push("/home");
       }
     } catch (error) {
       console.error("Failed to create group:", error);

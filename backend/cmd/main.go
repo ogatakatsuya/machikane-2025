@@ -58,10 +58,13 @@ func main() {
 	queries := dbGenerated.New(database)
 	groupUseCase := usecase.NewGroupUseCase(queries)
 	groupController := controller.NewGroupController(groupUseCase)
+	resultUseCase := usecase.NewResultUseCase(queries)
+	resultController := controller.NewResultController(resultUseCase)
 
 	// Routes
 	e.GET("/", hello)
 	e.POST("/groups", groupController.CreateGroup)
+	e.POST("/results/:group_id", resultController.CreateResult)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))

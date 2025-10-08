@@ -140,6 +140,19 @@ const QuizTestPage = () => {
   }
 
   return (
+    <div className="w-full min-h-screen">
+      <div className="flex flex-col mb-12">
+        <div className="bg-[#2c2880] h-10 flex items-center justify-center fixed top-0 left-0 right-0 text-white">
+          <div className="bg-[#2c2880] h-10 flex items-center justify-center fixed top-0 left-0 right-0 text-white">
+            <p className="font-bold">謎解き試験</p>
+          </div>
+        </div>
+        <div className="p-4"></div>
+      </div>
+    </div>
+  );
+
+  return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* ヘッダー */}

@@ -5,21 +5,8 @@ import { useEffect, useState } from "react";
 import QuestionComponent from "@/components/QuestionComponent";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
 import { submitQuizResults } from "@/lib/api";
+import { QUIZ_TIME_LIMIT, SAMPLE_QUESTIONS } from "@/lib/constants";
 import { QuestionStatus } from "@/lib/quiz-types";
-
-// サンプル問題データ
-const SAMPLE_QUESTIONS = [
-  { id: 1, text: "1 + 1 = ?", answer: ["2", "田"] },
-  {
-    id: 2,
-    text: "日本の首都は?",
-    answer: ["東京", "とうきょう", "Tokyo", "トウキョウ"],
-  },
-  { id: 3, text: "TypeScript の T は何の略?", answer: ["Type"] },
-];
-
-// クイズの制限時間（秒）
-const QUIZ_TIME_LIMIT = 10 * 60;
 
 const QuizTestPage = () => {
   const [groupId, setGroupId] = useState<string | null>(null);

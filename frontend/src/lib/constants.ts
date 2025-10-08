@@ -8,6 +8,31 @@ export type FeedBackEntry = {
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
+// App Constants
+export const RANGE = { min: 1, max: 3 } as const;
+
+// Sample Questions and Time Limits
+export const SAMPLE_QUESTIONS = [
+  { id: 1, text: "1 + 1 = ?", answer: ["2", "田"] },
+  {
+    id: 2,
+    text: "日本の首都は?",
+    answer: ["東京", "とうきょう", "Tokyo", "トウキョウ"],
+  },
+  { id: 3, text: "TypeScript の T は何の略?", answer: ["Type"] },
+];
+export const QUIZ_TIME_LIMIT = 10 * 60;
+
+export const WARNING_LIST = [
+  "テストは静かな場所で受けてください。",
+  "他の人の答案を見ないでください。",
+  "時間を守り、途中退出はできません。",
+  "試験用紙は丁寧に扱ってください。",
+  "不明な点があれば、試験監督に質問してください。",
+];
+
+export const IMPORTANT_NOTICE = ["重要なお知らせはここに表示されます。"];
+
 export const TimeToDisplayHint: number[] = [180, 120, 270];
 export const TimePerQuizSet: number = 600;
 export const FeedBack: { [key: string]: FeedBackEntry } = {

@@ -19,11 +19,13 @@ WHERE g.id = $1
 ORDER BY r.created_at DESC;
 
 -- name: GetResultRank :one
-SELECT 
-    COUNT(*) + 1 as rank
-FROM results r
-WHERE r.score > $1 
-   OR (r.score = $1 AND r.created_at < $2);
+SELECT rank FROM (
+    SELECT 
+        id,
+        ROW_NUMBER() OVER (ORDER BY score DESC, created_at ASC) as rank
+    FROM results
+) ranked_results
+WHERE id = $1;
 
 -- name: GetTopResults :many
 SELECT 

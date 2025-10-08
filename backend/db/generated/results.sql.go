@@ -114,21 +114,18 @@ func (q *Queries) GetGroupWithResults(ctx context.Context, id uuid.UUID) ([]GetG
 }
 
 const getResultRank = `-- name: GetResultRank :one
-SELECT 
-    COUNT(*) + 1 as rank
-FROM results r
-WHERE r.score > $1 
-   OR (r.score = $1 AND r.created_at < $2)
+SELECT rank FROM (
+    SELECT 
+        id,
+        ROW_NUMBER() OVER (ORDER BY score DESC, created_at ASC) as rank
+    FROM results
+) ranked_results
+WHERE id = $1
 `
 
-type GetResultRankParams struct {
-	Score     int32        `json:"score"`
-	CreatedAt sql.NullTime `json:"created_at"`
-}
-
-func (q *Queries) GetResultRank(ctx context.Context, arg GetResultRankParams) (int32, error) {
-	row := q.db.QueryRowContext(ctx, getResultRank, arg.Score, arg.CreatedAt)
-	var rank int32
+func (q *Queries) GetResultRank(ctx context.Context, id uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getResultRank, id)
+	var rank int64
 	err := row.Scan(&rank)
 	return rank, err
 }

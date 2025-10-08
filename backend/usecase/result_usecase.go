@@ -51,15 +51,9 @@ func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req
 
 	// Get the rank of the newly created result
 	var rank int64 = 1
-	if result.CreatedAt.Valid {
-		rankParams := db.GetResultRankParams{
-			Score:     result.Score,
-			CreatedAt: result.CreatedAt,
-		}
-		rankResult, err := u.queries.GetResultRank(ctx, rankParams)
-		if err == nil {
-			rank = int64(rankResult)
-		}
+	rankResult, err := u.queries.GetResultRank(ctx, result.ID)
+	if err == nil {
+		rank = rankResult
 	}
 
 	// Get top 5 results

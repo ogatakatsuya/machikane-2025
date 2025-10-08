@@ -23,4 +23,5 @@ type Result struct {
 	GroupID   uuid.UUID    `json:"group_id"`
 	Score     int32        `json:"score"`
 	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
 }

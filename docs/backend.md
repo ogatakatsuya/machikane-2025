@@ -17,8 +17,18 @@ backend/
 ├── cmd/
 │   └── main.go          # Entry point
 ├── controller/          # HTTP handlers and interfaces
+│   ├── group_controller.go
+│   ├── group_interface.go
+│   ├── result_controller.go
+│   └── result_interface.go
 ├── usecase/            # Business logic and interfaces
+│   ├── group_usecase.go
+│   ├── group_interface.go
+│   ├── result_usecase.go
+│   └── result_interface.go
 ├── dto/                # Data Transfer Objects
+│   ├── group_dto.go
+│   └── result_dto.go
 ├── db/
 │   ├── generated/      # sqlc generated code
 │   ├── migrations/     # Database migrations
@@ -92,6 +102,46 @@ Create a new group
 **Error Responses**
 - `400 Bad Request`: Invalid request body or validation failed
 - `500 Internal Server Error`: Failed to create group
+
+### POST /results/{group_id}
+
+Save quiz result for a specific group. Returns the result with its ranking position and top 5 rankings.
+
+**Path Parameters**
+- `group_id`: UUID of the group
+
+**Request Body**
+```json
+{
+  "score": "number (required, minimum: 0)"
+}
+```
+
+**Response (201 Created)**
+```json
+{
+  "id": "uuid",
+  "group_id": "uuid",
+  "score": "number",
+  "rank": "number",
+  "created_at": "ISO 8601 timestamp",
+  "updated_at": "ISO 8601 timestamp",
+  "top_five": [
+    {
+      "id": "uuid",
+      "group_id": "uuid",
+      "group_name": "string",
+      "score": "number",
+      "rank": "number",
+      "created_at": "ISO 8601 timestamp"
+    }
+  ]
+}
+```
+
+**Error Responses**
+- `400 Bad Request`: Invalid group_id format, request body, or validation failed
+- `500 Internal Server Error`: Failed to create result
 
 ## Middleware
 
@@ -175,6 +225,9 @@ This project follows Clean Architecture principles with dependency injection:
 - Use UUID v7 for all primary keys (time-sortable)
 - Use sqlc for type-safe database operations
 - All database operations should be in the UseCase layer
+- Optimized indexes for ranking queries:
+  - `idx_results_ranking`: (score DESC, created_at ASC) for global ranking
+  - `idx_results_group_score`: (group_id, score DESC) for group-specific ranking
 
 #### Validation
 - Use struct tags for request validation (`validate:"required"`)

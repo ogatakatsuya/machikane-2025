@@ -1,3 +1,11 @@
+export type QuestionType = {
+  id: number;
+  title: string;
+  text: string;
+  score: number;
+  answer: string[];
+};
+
 // 問題の解答状態
 export enum QuestionStatus {
   UNANSWERED = "unanswered",
@@ -6,19 +14,22 @@ export enum QuestionStatus {
 }
 
 // 個別の問題状態
-export interface QuestionState<TDate = Date> {
+export interface QuestionState {
   id: number;
   status: QuestionStatus;
   answer?: string;
-  answeredAt?: TDate;
+}
+
+export interface QuestionAnswerState {
+  id: number;
+  answer?: string;
 }
 
 export interface QuizData<TDate = string> {
   groupId: string;
   startedAt: TDate;
-  lastUpdatedAt: TDate;
   totalQuestions: number;
-  questionStates: Array<QuestionState<TDate>>;
+  QuestionAnswerState: Array<QuestionAnswerState>;
 }
 
 // 実行時用の型エイリアス（Dateオブジェクト使用）

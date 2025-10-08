@@ -113,7 +113,21 @@ Save quiz result for a specific group. Returns the result with its ranking posit
 **Request Body**
 ```json
 {
-  "score": "number (required, minimum: 0)"
+  "score": "number (required, minimum: 0)",
+  "context": {
+    "groupId": "string",
+    "startedAt": "ISO 8601 timestamp string",
+    "lastUpdatedAt": "ISO 8601 timestamp string", 
+    "totalQuestions": "number",
+    "questionStates": [
+      {
+        "id": "number",
+        "status": "unanswered | correct | incorrect",
+        "answer": "string (optional)",
+        "answeredAt": "ISO 8601 timestamp string (optional)"
+      }
+    ]
+  }
 }
 ```
 
@@ -123,6 +137,20 @@ Save quiz result for a specific group. Returns the result with its ranking posit
   "id": "uuid",
   "group_id": "uuid",
   "score": "number",
+  "context": {
+    "groupId": "string",
+    "startedAt": "ISO 8601 timestamp string",
+    "lastUpdatedAt": "ISO 8601 timestamp string",
+    "totalQuestions": "number",
+    "questionStates": [
+      {
+        "id": "number",
+        "status": "unanswered | correct | incorrect",
+        "answer": "string (optional)",
+        "answeredAt": "ISO 8601 timestamp string (optional)"
+      }
+    ]
+  },
   "rank": "number",
   "created_at": "ISO 8601 timestamp",
   "updated_at": "ISO 8601 timestamp",

@@ -8,6 +8,7 @@ import (
 	"database/sql"
 
 	"github.com/google/uuid"
+	"github.com/sqlc-dev/pqtype"
 )
 
 type Group struct {
@@ -19,9 +20,10 @@ type Group struct {
 }
 
 type Result struct {
-	ID        uuid.UUID    `json:"id"`
-	GroupID   uuid.UUID    `json:"group_id"`
-	Score     int32        `json:"score"`
-	CreatedAt sql.NullTime `json:"created_at"`
-	UpdatedAt sql.NullTime `json:"updated_at"`
+	ID        uuid.UUID             `json:"id"`
+	GroupID   uuid.UUID             `json:"group_id"`
+	Score     int32                 `json:"score"`
+	CreatedAt sql.NullTime          `json:"created_at"`
+	UpdatedAt sql.NullTime          `json:"updated_at"`
+	Context   pqtype.NullRawMessage `json:"context"`
 }

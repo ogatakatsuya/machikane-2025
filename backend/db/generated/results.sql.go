@@ -10,27 +10,44 @@ import (
 	"database/sql"
 
 	"github.com/google/uuid"
+	"github.com/sqlc-dev/pqtype"
 )
 
 const createResult = `-- name: CreateResult :one
-INSERT INTO results (id, group_id, score)
-VALUES ($1, $2, $3)
-RETURNING id, group_id, score, created_at, updated_at
+INSERT INTO results (id, group_id, score, context)
+VALUES ($1, $2, $3, $4)
+RETURNING id, group_id, score, context, created_at, updated_at
 `
 
 type CreateResultParams struct {
-	ID      uuid.UUID `json:"id"`
-	GroupID uuid.UUID `json:"group_id"`
-	Score   int32     `json:"score"`
+	ID      uuid.UUID             `json:"id"`
+	GroupID uuid.UUID             `json:"group_id"`
+	Score   int32                 `json:"score"`
+	Context pqtype.NullRawMessage `json:"context"`
 }
 
-func (q *Queries) CreateResult(ctx context.Context, arg CreateResultParams) (Result, error) {
-	row := q.db.QueryRowContext(ctx, createResult, arg.ID, arg.GroupID, arg.Score)
-	var i Result
+type CreateResultRow struct {
+	ID        uuid.UUID             `json:"id"`
+	GroupID   uuid.UUID             `json:"group_id"`
+	Score     int32                 `json:"score"`
+	Context   pqtype.NullRawMessage `json:"context"`
+	CreatedAt sql.NullTime          `json:"created_at"`
+	UpdatedAt sql.NullTime          `json:"updated_at"`
+}
+
+func (q *Queries) CreateResult(ctx context.Context, arg CreateResultParams) (CreateResultRow, error) {
+	row := q.db.QueryRowContext(ctx, createResult,
+		arg.ID,
+		arg.GroupID,
+		arg.Score,
+		arg.Context,
+	)
+	var i CreateResultRow
 	err := row.Scan(
 		&i.ID,
 		&i.GroupID,
 		&i.Score,
+		&i.Context,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

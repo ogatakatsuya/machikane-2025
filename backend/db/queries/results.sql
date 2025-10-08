@@ -1,7 +1,7 @@
 -- name: CreateResult :one
-INSERT INTO results (id, group_id, score)
-VALUES ($1, $2, $3)
-RETURNING id, group_id, score, created_at, updated_at;
+INSERT INTO results (id, group_id, score, context)
+VALUES ($1, $2, $3, $4)
+RETURNING id, group_id, score, context, created_at, updated_at;
 
 -- name: GetGroupWithResults :many
 SELECT 

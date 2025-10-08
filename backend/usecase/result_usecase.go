@@ -3,10 +3,12 @@ package usecase
 import (
 	"backend/dto"
 	"context"
+	"encoding/json"
 	"fmt"
 
 	db "backend/db/generated"
 	"github.com/google/uuid"
+	"github.com/sqlc-dev/pqtype"
 )
 
 type resultUseCase struct {
@@ -22,10 +24,24 @@ func NewResultUseCase(queries *db.Queries) ResultUseCase {
 func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req dto.CreateResultDto) (*dto.ResultResponseDto, error) {
 	resultID := uuid.Must(uuid.NewV7())
 
+	// Convert context to JSON
+	var contextJSON pqtype.NullRawMessage
+	if req.Context.GroupID != "" {
+		contextBytes, err := json.Marshal(req.Context)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal context: %w", err)
+		}
+		contextJSON = pqtype.NullRawMessage{
+			RawMessage: contextBytes,
+			Valid:      true,
+		}
+	}
+
 	params := db.CreateResultParams{
 		ID:      resultID,
 		GroupID: groupID,
 		Score:   req.Score,
+		Context: contextJSON,
 	}
 
 	result, err := u.queries.CreateResult(ctx, params)
@@ -73,6 +89,14 @@ func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req
 		Score:   result.Score,
 		Rank:    rank,
 		TopFive: topFive,
+	}
+
+	// Add context to response if available
+	if result.Context.Valid && len(result.Context.RawMessage) > 0 {
+		var contextData dto.SerializedQuizContext
+		if err := json.Unmarshal(result.Context.RawMessage, &contextData); err == nil {
+			response.Context = &contextData
+		}
 	}
 
 	if result.CreatedAt.Valid {

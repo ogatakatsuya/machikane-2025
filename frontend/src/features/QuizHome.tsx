@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { IMPORTANT_NOTICE, WARNING_LIST } from "@/lib/constants";
-import HamburgerIcon from "/public/hamburger.svg";
 
 const QuizHome = () => {
   const router = useRouter();
@@ -12,13 +11,7 @@ const QuizHome = () => {
     <div className="w-full min-h-screen">
       <div className="flex flex-col mb-12">
         <div className="bg-[#2c2880] h-10 flex items-center justify-center fixed top-0 left-0 right-0 text-white">
-          <button
-            className="absolute left-2 hover:cursor-pointer"
-            type="button"
-          >
-            <HamburgerIcon className="h-6 w-6" />
-          </button>
-          <p className="font-bold">謎解き概論I</p>
+          <p className="font-bold">教育機関のページ</p>
         </div>
 
         <div className="flex justify-center items-center py-7 mb-6 mt-10 bg-gradient-to-b from-[#2c2880] via-[#2c2880] via-70% to-black">

@@ -1,4 +1,10 @@
-import type { QuizContext, SerializedQuizContext } from "@/lib/quiz-types";
+import {
+  QuestionStatus,
+  type QuizContext,
+  type QuizSubmissionData,
+  type SerializedQuizContext,
+} from "@/lib/quiz-types";
+import { SAMPLE_QUESTIONS } from "./constants";
 
 /**
  * クイズの進捗状況を管理するクラス
@@ -114,15 +120,40 @@ export class QuizProgressManager {
   /**
    * API送信用データを生成
    */
-  generateSubmissionData(): SerializedQuizContext {
-    // TODO: 計算してcorrect/incorrectのステータスを含める
+  generateSubmissionData(): QuizSubmissionData {
+    const questionStates = this.context.QuestionAnswerState.map((state) => {
+      let status: QuestionStatus = QuestionStatus.UNANSWERED;
+      if (state.answer && state.answer.trim() !== "") {
+        const question = SAMPLE_QUESTIONS.find((q) => q.id === state.id);
+        if (question) {
+          status = question.answer.includes(state.answer.trim())
+            ? QuestionStatus.CORRECT
+            : QuestionStatus.INCORRECT;
+        }
+      }
+      return {
+        id: state.id,
+        status,
+        answer: state.answer?.trim() || undefined,
+      };
+    });
+
+    const score = questionStates.reduce((sum, q) => {
+      if (q.status === "correct") {
+        const question = SAMPLE_QUESTIONS.find((qq) => qq.id === q.id);
+        return sum + (question?.score ?? 0);
+      }
+      return sum;
+    }, 0);
+
     return {
-      groupId: this.context.groupId,
-      startedAt: this.context.startedAt.toISOString(),
-      totalQuestions: this.context.totalQuestions,
-      QuestionAnswerState: this.context.QuestionAnswerState.filter(
-        (state) => state.answer !== undefined,
-      ),
+      score,
+      context: {
+        groupId: this.context.groupId,
+        startedAt: this.context.startedAt.toISOString(),
+        totalQuestions: this.context.totalQuestions,
+        questionStates,
+      },
     };
   }
 

@@ -6,20 +6,6 @@ export type QuestionType = {
   answer: string[];
 };
 
-// 問題の解答状態
-export enum QuestionStatus {
-  UNANSWERED = "unanswered",
-  CORRECT = "correct",
-  INCORRECT = "incorrect",
-}
-
-// 個別の問題状態
-export interface QuestionState {
-  id: number;
-  status: QuestionStatus;
-  answer?: string;
-}
-
 export interface QuestionAnswerState {
   id: number;
   answer?: string;
@@ -37,3 +23,28 @@ export type QuizContext = QuizData<Date>;
 
 // シリアライズ用の型エイリアス（文字列使用）
 export type SerializedQuizContext = QuizData<string>;
+
+// 問題の解答状態
+export enum QuestionStatus {
+  UNANSWERED = "unanswered",
+  CORRECT = "correct",
+  INCORRECT = "incorrect",
+}
+
+// 個別の問題状態
+export interface QuestionState {
+  id: number;
+  status: QuestionStatus;
+  answer?: string;
+}
+
+// API送信用データ型
+export interface QuizSubmissionData {
+  score: number;
+  context: {
+    groupId: string;
+    startedAt: string;
+    totalQuestions: number;
+    questionStates: Array<QuestionState>;
+  };
+}

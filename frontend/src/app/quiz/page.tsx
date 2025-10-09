@@ -5,13 +5,14 @@ import { useEffect, useState } from "react";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
 import { submitQuizResults } from "@/lib/api";
 import { QUIZ_TIME_LIMIT, SAMPLE_QUESTIONS } from "@/lib/constants";
+import ClockIcon from "/public/clock.svg";
 
 const QuizTestPage = () => {
   const [groupId, setGroupId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [localAnswers, setLocalAnswers] = useState<Record<number, string>>({});
-  const [savedAnswers, setSavedAnswers] = useState<Record<number, string>>({});
+  const [lastSavedAt, setLastSavedAt] = useState<string>("");
   const [filterType, setFilterType] = useState<
     "all_questions" | "unanswered_questions"
   >("all_questions");
@@ -65,17 +66,12 @@ const QuizTestPage = () => {
         }
       });
       setLocalAnswers(contextAnswers);
-      setSavedAnswers(contextAnswers);
     }
   }, [context]);
 
-  // クイズの進行状況(終了したか, 回答数, 時間関連)
-  const _isFinished = Object.values(savedAnswers).every(
-    (ans) => ans.trim() !== "",
-  );
-  const answeredCount = Object.values(savedAnswers).filter(
-    (ans) => ans.trim() !== "",
-  ).length;
+  // クイズの進行状況(回答数, 時間関連)
+  const answeredCount =
+    context?.QuestionAnswerState.filter((q) => q.answer?.trim()).length || 0;
   const timeProgress = context
     ? (() => {
         const elapsedTime = Math.floor(
@@ -124,6 +120,13 @@ const QuizTestPage = () => {
       );
       updateMultipleAnswers(answers);
       saveProgress();
+      setLastSavedAt(
+        new Date().toLocaleTimeString("ja-JP", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+      );
       alert("回答状況を保存しました！");
     } catch (error) {
       console.error("Failed to save progress:", error);
@@ -132,7 +135,7 @@ const QuizTestPage = () => {
   };
 
   // 結果送信のテスト
-  const handleSubmitResults = () => {
+  const _handleSubmitResults = () => {
     try {
       submitQuizResults(generateSubmissionData());
       localStorage.removeItem("groupId");
@@ -148,14 +151,23 @@ const QuizTestPage = () => {
   // フィルター機能：表示する問題を決定（保存された状態を基準にする）
   const filteredQuestions =
     filterType === "unanswered_questions"
-      ? SAMPLE_QUESTIONS.filter((q) => !savedAnswers[q.id]?.trim())
+      ? context?.QuestionAnswerState.map((q) =>
+          !q.answer?.trim()
+            ? SAMPLE_QUESTIONS.find((sq) => sq.id === q.id)
+            : null,
+        ).filter((q) => !!q) || []
       : SAMPLE_QUESTIONS;
 
   const getAnswerStatusColor = (questionId: number) => {
-    if (savedAnswers[questionId]?.trim()) return "text-green-600 bg-green-100";
+    if (
+      context?.QuestionAnswerState.find(
+        (q) => q.id === questionId,
+      )?.answer?.trim()
+    )
+      return "text-green-600 bg-green-100";
     else if (localAnswers[questionId]?.trim())
       return "text-yellow-600 bg-yellow-100";
-    else return "text-gray-600 bg-gray-100";
+    else return "text-gray-600 bg-white";
   };
   const getTimeStatusColor = () => {
     if (timeProgress.percentage > 50) return ["bg-[#c8e8d3]", "bg-[#007c2a]"];
@@ -188,7 +200,7 @@ const QuizTestPage = () => {
             <p className="font-bold">謎解き試験</p>
           </div>
           <div className="bg-white pt-4 px-3 pb-2">
-            <div className="text-xs border-b border-gray-400 pb-2">
+            <div className="text-xs border-b border-gray-400 pb-2 space-y-1">
               <div
                 className={`${getTimeStatusColor()[0]} rounded-full h-2 mb-2`}
               >
@@ -199,12 +211,15 @@ const QuizTestPage = () => {
                   }}
                 />
               </div>
-              <p>
+              <p className="">
                 {SAMPLE_QUESTIONS.length}問中
                 <strong>{SAMPLE_QUESTIONS.length - answeredCount}</strong>
                 問の問題が残っています
               </p>
-              <p>{timeProgress.formattedRemaining}残っています！</p>
+              <p className="flex items-center gap-px">
+                <ClockIcon className="w-4 h-4 text-[#a234b5]" />
+                {timeProgress.formattedRemaining}残っています
+              </p>
             </div>
           </div>
         </div>
@@ -249,7 +264,9 @@ const QuizTestPage = () => {
           </ul>
         </div>
         <div className="fixed bottom-0 left-0 right-0 bg-[#f8f8f8] border-t border-gray-400 p-3">
-          <p className="text-xs text-center mb-2">最終保存</p>
+          <p className="text-xs text-center mb-2">
+            {lastSavedAt !== "" ? `最終保存: ${lastSavedAt}` : "未保存"}
+          </p>
           <div className="flex gap-x-3 mb-3">
             <div className="text-xs bg-white px-3 py-1 border">
               問題フィルタ (2)
@@ -291,17 +308,13 @@ const QuizTestPage = () => {
             >
               回答内容を保存
             </button>
-            <button
-              type="button"
-              onClick={handleSubmitResults}
-              className="w-full bg-[#262626] hover:bg-[#393939] text-white text-xs px-3 py-2 transition-colors"
-            >
-              提出
-            </button>
             {/* TODO: debug用要削除 */}
             <button
               type="button"
-              onClick={clearProgress}
+              onClick={() => {
+                clearProgress();
+                setLastSavedAt("");
+              }}
               className="w-full bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 transition-colors"
             >
               リセット

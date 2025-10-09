@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { QuizProgressManager } from "@/lib/quiz-progress-manager";
-import type { QuizContext, SerializedQuizContext } from "@/lib/quiz-types";
+import type { QuizContext, QuizSubmissionData } from "@/lib/quiz-types";
 
 interface UseQuizProgressOptions {
   groupId: string;
@@ -16,8 +16,7 @@ interface UseQuizProgressReturn {
   ) => void;
   saveProgress: () => void;
   clearProgress: () => void;
-  // TODO: 要変更
-  generateSubmissionData: () => SerializedQuizContext;
+  generateSubmissionData: () => QuizSubmissionData;
 }
 
 /**
@@ -118,8 +117,7 @@ export const useQuizProgress = (
   }, [groupId, totalQuestions]);
 
   // API送信用データ生成
-  // TODO: 要変更
-  const generateSubmissionData = useCallback((): SerializedQuizContext => {
+  const generateSubmissionData = useCallback((): QuizSubmissionData => {
     if (!managerRef.current) {
       alert("進捗の読み込みに失敗しました。（初期化されていません）");
       throw new Error("Quiz progress manager not initialized");

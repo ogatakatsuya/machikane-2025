@@ -1,7 +1,5 @@
 package dto
 
-import "time"
-
 // QuestionStatus represents the state of a question answer
 type QuestionStatus string
 
@@ -13,10 +11,9 @@ const (
 
 // QuestionState represents the state of an individual question
 type QuestionState struct {
-	ID         int             `json:"id"`
-	Status     QuestionStatus  `json:"status"`
-	Answer     *string         `json:"answer,omitempty"`
-	AnsweredAt *time.Time      `json:"answeredAt,omitempty"`
+	ID     int            `json:"id"`
+	Status QuestionStatus `json:"status"`
+	Answer *string        `json:"answer,omitempty"`
 }
 
 // SerializedQuizContext represents the quiz context data from frontend
@@ -24,7 +21,6 @@ type QuestionState struct {
 type SerializedQuizContext struct {
 	GroupID          string          `json:"groupId"`
 	StartedAt        string          `json:"startedAt"`        // ISO 8601 string
-	LastUpdatedAt    string          `json:"lastUpdatedAt"`    // ISO 8601 string
 	TotalQuestions   int             `json:"totalQuestions"`
 	QuestionStates   []QuestionState `json:"questionStates"`
 }

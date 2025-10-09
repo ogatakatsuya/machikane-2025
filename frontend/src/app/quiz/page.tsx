@@ -1,16 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
-import { submitQuizResults } from "@/lib/api";
+import { useTimer } from "@/hooks/useTimer";
 import { QUIZ_TIME_LIMIT, SAMPLE_QUESTIONS } from "@/lib/constants";
 import ClockIcon from "/public/clock.svg";
 
 const QuizTestPage = () => {
   const [groupId, setGroupId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [localAnswers, setLocalAnswers] = useState<Record<number, string>>({});
   const [lastSavedAt, setLastSavedAt] = useState<string>("");
   const [filterType, setFilterType] = useState<
@@ -69,47 +68,8 @@ const QuizTestPage = () => {
     }
   }, [context]);
 
-  // クイズの進行状況(回答数, 時間関連)
-  const answeredCount =
-    context?.QuestionAnswerState.filter((q) => q.answer?.trim()).length || 0;
-  const timeProgress = context
-    ? (() => {
-        const elapsedTime = Math.floor(
-          (currentTime.getTime() - context.startedAt.getTime()) / 1000,
-        );
-        const remainingTime = Math.max(0, QUIZ_TIME_LIMIT - elapsedTime);
-        const timePercentage = Math.max(
-          0,
-          Math.round((remainingTime / QUIZ_TIME_LIMIT) * 100),
-        );
-        const isTimeUp = remainingTime === 0;
-
-        return {
-          elapsed: elapsedTime,
-          remaining: remainingTime,
-          percentage: timePercentage,
-          isTimeUp,
-          formattedRemaining: `${Math.floor(remainingTime / 60)}分${String(remainingTime % 60).padStart(2, "0")}秒`,
-        };
-      })()
-    : {
-        elapsed: 0,
-        remaining: QUIZ_TIME_LIMIT,
-        percentage: 100,
-        isTimeUp: false,
-        formattedRemaining: `${Math.floor(QUIZ_TIME_LIMIT / 60)}分00秒`,
-      };
-
-  // 現在時刻を毎秒更新
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   // 現在の回答状況を保存
-  const handleSaveProgress = () => {
+  const handleSaveProgress = useCallback(() => {
     try {
       // ローカル回答を一括でコンテキストに反映
       const answers = Object.entries(localAnswers).map(
@@ -127,26 +87,43 @@ const QuizTestPage = () => {
           second: "2-digit",
         }),
       );
-      alert("回答状況を保存しました！");
     } catch (error) {
       console.error("Failed to save progress:", error);
       alert("回答状況の保存に失敗しました。");
     }
-  };
+  }, [localAnswers, updateMultipleAnswers, saveProgress]);
 
-  // 結果送信のテスト
-  const _handleSubmitResults = () => {
+  // 結果画面へ移動
+  const goToResults = useCallback(() => {
     try {
-      submitQuizResults(generateSubmissionData());
+      localStorage.setItem(
+        `quiz_submission_${groupId}`,
+        JSON.stringify(generateSubmissionData()),
+      );
       localStorage.removeItem("groupId");
       localStorage.removeItem(`quiz_progress_${groupId}`);
-      // TODO: 実際はAPIの結果を確認して成功/失敗を判定
-      alert("結果が送信されました！（コンソールを確認してください）");
+      router.push("/result");
     } catch (error) {
-      console.error("Failed to submit results:", error);
-      alert("結果の送信に失敗しました。");
+      console.error("Failed to generate results:", error);
+      alert("結果の生成に失敗しました。");
     }
-  };
+  }, [groupId, generateSubmissionData, router]);
+
+  // 時間終了時のコールバック
+  const onTimeUp = useCallback(() => {
+    alert("制限時間が終了しました。回答内容を保存して結果画面へ移動します。");
+    handleSaveProgress();
+    goToResults();
+  }, [handleSaveProgress, goToResults]);
+
+  // クイズの進行状況(回答数, 時間関連)
+  const answeredCount =
+    context?.QuestionAnswerState.filter((q) => q.answer?.trim()).length || 0;
+  const remainingTime = useTimer(
+    context?.startedAt || new Date(),
+    QUIZ_TIME_LIMIT,
+    onTimeUp,
+  );
 
   // フィルター機能：表示する問題を決定（保存された状態を基準にする）
   const filteredQuestions =
@@ -172,7 +149,8 @@ const QuizTestPage = () => {
   };
   // TODO: UI班要相談変更
   const getTimeStatusColor = () => {
-    if (timeProgress.percentage > 50) return ["bg-[#c8e8d3]", "bg-[#007c2a]"];
+    if (remainingTime / QUIZ_TIME_LIMIT > 0.5)
+      return ["bg-[#c8e8d3]", "bg-[#007c2a]"];
     else return ["bg-[#ecd0f1]", "bg-[#a234b5]"];
   };
 
@@ -209,7 +187,7 @@ const QuizTestPage = () => {
                 <div
                   className={`h-2 rounded-full transition-all duration-300 ${getTimeStatusColor()[1]}`}
                   style={{
-                    width: `${timeProgress.percentage}%`,
+                    width: `${(remainingTime / QUIZ_TIME_LIMIT) * 100}%`,
                   }}
                 />
               </div>
@@ -220,7 +198,11 @@ const QuizTestPage = () => {
               </p>
               <p className="flex items-center gap-px">
                 <ClockIcon className="w-4 h-4 text-[#a234b5]" />
-                {timeProgress.formattedRemaining}残っています
+                {(() => {
+                  if (!context)
+                    return `${Math.floor(QUIZ_TIME_LIMIT / 60)}分00秒`;
+                  return `${Math.floor(remainingTime / 60)}分${String(remainingTime % 60).padStart(2, "0")}秒`;
+                })()}残っています
               </p>
             </div>
           </div>

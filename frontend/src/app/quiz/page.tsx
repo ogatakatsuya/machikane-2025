@@ -97,7 +97,7 @@ const QuizTestPage = () => {
   const goToResults = useCallback(() => {
     try {
       localStorage.setItem(
-        `quiz_submission_${groupId}`,
+        "quiz_submission",
         JSON.stringify(generateSubmissionData()),
       );
       localStorage.removeItem("groupId");

@@ -48,3 +48,29 @@ export interface QuizSubmissionData {
     questionStates: Array<QuestionState>;
   };
 }
+
+export interface QuizResultResponse<TDate = string> {
+  id: string;
+  group_id: string;
+  score: number;
+  context: {
+    groupId: string;
+    startedAt: TDate;
+    totalQuestions: number;
+    questionStates: Array<QuestionState>;
+  };
+  rank: number;
+  created_at: TDate;
+  updated_at: TDate;
+  top_five: Array<{
+    id: string;
+    group_id: string;
+    group_name: string;
+    score: number;
+    rank: number;
+    created_at: TDate;
+  }>;
+}
+
+export type SerializedQuizResultResponse = QuizResultResponse<string>;
+export type QuizResult = QuizResultResponse<Date>;

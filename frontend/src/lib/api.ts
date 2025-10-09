@@ -1,5 +1,8 @@
 import { API_BASE_URL } from "./constants";
-import type { SerializedQuizContext } from "./quiz-types";
+import type {
+  QuizSubmissionData,
+  SerializedQuizResultResponse,
+} from "./quiz-types";
 import type {
   ApiErrorResponse,
   CreateGroupRequest,
@@ -60,7 +63,13 @@ export const createGroup = async (
 };
 
 // Quiz Results API
-// TODO: 実際のAPI仕様に合わせて実装を更新する
-export const submitQuizResults = (data: SerializedQuizContext): void => {
-  console.log("Submission data:", data);
+export const submitQuizResults = async (
+  data: QuizSubmissionData,
+): Promise<SerializedQuizResultResponse> => {
+  const groupId = data.context?.groupId;
+  if (!groupId) throw new Error("groupId is required for results API");
+  return apiRequest<SerializedQuizResultResponse>(`/results/${groupId}`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 };

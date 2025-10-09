@@ -11,6 +11,10 @@ const QuizTestPage = () => {
   const [isInitializing, setIsInitializing] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [localAnswers, setLocalAnswers] = useState<Record<number, string>>({});
+  const [savedAnswers, setSavedAnswers] = useState<Record<number, string>>({});
+  const [filterType, setFilterType] = useState<
+    "all_questions" | "unanswered_questions"
+  >("all_questions");
   const router = useRouter();
 
   // ローカルストレージからgroupIdを取得してから初期化
@@ -51,27 +55,27 @@ const QuizTestPage = () => {
     enabled: !!groupId, // groupIdが存在する場合のみ有効化
   });
 
-  // コンテキストが更新されたら、ローカル状態に反映
+  // コンテキストが更新されたら、ローカル状態と保存状態に反映
   useEffect(() => {
     if (context?.QuestionAnswerState) {
-      const existingAnswers: Record<number, string> = {};
+      const contextAnswers: Record<number, string> = {};
       context.QuestionAnswerState.forEach((state) => {
         if (state.answer) {
-          existingAnswers[state.id] = state.answer;
+          contextAnswers[state.id] = state.answer;
         }
       });
-      setLocalAnswers(existingAnswers);
+      setLocalAnswers(contextAnswers);
+      setSavedAnswers(contextAnswers);
     }
   }, [context]);
 
-  const _isFinished = Object.values(localAnswers).every(
+  // クイズの進行状況(終了したか, 回答数, 時間関連)
+  const _isFinished = Object.values(savedAnswers).every(
     (ans) => ans.trim() !== "",
   );
-  const answeredCount = Object.values(localAnswers).filter(
+  const answeredCount = Object.values(savedAnswers).filter(
     (ans) => ans.trim() !== "",
   ).length;
-
-  // 残り時間の計算
   const timeProgress = context
     ? (() => {
         const elapsedTime = Math.floor(
@@ -108,14 +112,6 @@ const QuizTestPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // ローカル回答を更新
-  const handleAnswerChange = (questionId: number, answer: string) => {
-    setLocalAnswers((prev) => ({
-      ...prev,
-      [questionId]: answer,
-    }));
-  };
-
   // 現在の回答状況を保存
   const handleSaveProgress = () => {
     try {
@@ -149,9 +145,21 @@ const QuizTestPage = () => {
     }
   };
 
-  const getStatusColor = (questionId: number) => {
-    if (localAnswers[questionId]?.trim()) return "text-green-600 bg-green-100";
+  // フィルター機能：表示する問題を決定（保存された状態を基準にする）
+  const filteredQuestions =
+    filterType === "unanswered_questions"
+      ? SAMPLE_QUESTIONS.filter((q) => !savedAnswers[q.id]?.trim())
+      : SAMPLE_QUESTIONS;
+
+  const getAnswerStatusColor = (questionId: number) => {
+    if (savedAnswers[questionId]?.trim()) return "text-green-600 bg-green-100";
+    else if (localAnswers[questionId]?.trim())
+      return "text-yellow-600 bg-yellow-100";
     else return "text-gray-600 bg-gray-100";
+  };
+  const getTimeStatusColor = () => {
+    if (timeProgress.percentage > 50) return ["bg-[#c8e8d3]", "bg-[#007c2a]"];
+    else return ["bg-[#ecd0f1]", "bg-[#a234b5]"];
   };
 
   // 初期化待ちまたはクイズデータの読み込み中
@@ -181,11 +189,13 @@ const QuizTestPage = () => {
           </div>
           <div className="bg-white pt-4 px-3 pb-2">
             <div className="text-xs border-b border-gray-400 pb-2">
-              <div className="bg-[#ecd0f1] rounded-full h-2 mb-2">
+              <div
+                className={`${getTimeStatusColor()[0]} rounded-full h-2 mb-2`}
+              >
                 <div
-                  className="h-2 rounded-full transition-all duration-300 bg-[#a234b5]"
+                  className={`h-2 rounded-full transition-all duration-300 ${getTimeStatusColor()[1]}`}
                   style={{
-                    width: `${(answeredCount / SAMPLE_QUESTIONS.length) * 100}%`,
+                    width: `${timeProgress.percentage}%`,
                   }}
                 />
               </div>
@@ -195,49 +205,29 @@ const QuizTestPage = () => {
                 問の問題が残っています
               </p>
               <p>{timeProgress.formattedRemaining}残っています！</p>
-              <div className="mt-2 flex space-x-2">
-                <button
-                  type="button"
-                  onClick={handleSaveProgress}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 rounded-md transition-colors duration-200 font-medium"
-                >
-                  回答状況を保存
-                </button>
-                <button
-                  type="button"
-                  onClick={clearProgress}
-                  className="bg-gray-600 hover:bg-gray-700 text-white text-xs px-3 py-1 rounded-md transition-colors duration-200 font-medium"
-                >
-                  リセット
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSubmitResults}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1 rounded-md transition-colors duration-200 font-medium"
-                >
-                  送信
-                </button>
-              </div>
             </div>
           </div>
         </div>
-        <div className="pt-40 px-3">
+        <div className="pt-34 pb-20 px-3">
           <h2>試験問題</h2>
-          <ul>
-            {SAMPLE_QUESTIONS.map((q) => (
-              <li
-                key={q.id}
-                className="py-6 border-b border-gray-300 space-y-3"
-              >
+          {filterType === "unanswered_questions" &&
+            filteredQuestions.length === 0 && (
+              <div className="py-8 text-center text-gray-500">
+                <p>すべての問題に回答済みです！</p>
+                <p className="text-xs mt-2">
+                  「全問題を表示」を選択して確認してください。
+                </p>
+              </div>
+            )}
+          <ul className="divide-y divide-gray-400">
+            {filteredQuestions.map((q) => (
+              <li key={q.id} className="py-6 space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold">
-                    <span className="border-2 rounded-full px-1 mr-px">
-                      {q.id}
-                    </span>
-                    {q.title}
+                    問題{q.id} {q.title}
                   </h3>
                   <div
-                    className={`border rounded-full px-3 py-1 font-bold text-sm ${getStatusColor(q.id)}`}
+                    className={`border rounded-full px-3 py-1 font-bold text-sm ${getAnswerStatusColor(q.id)}`}
                   >
                     {q.score}単位
                   </div>
@@ -246,14 +236,77 @@ const QuizTestPage = () => {
                 <input
                   value={localAnswers[q.id] || ""}
                   onChange={(e) => {
-                    handleAnswerChange(q.id, e.target.value);
+                    setLocalAnswers((prev) => ({
+                      ...prev,
+                      [q.id]: e.target.value,
+                    }));
                   }}
                   placeholder="回答を入力してください..."
-                  className="w-full p-3 border text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-400 text-xs rounded-xs"
                 />
               </li>
             ))}
           </ul>
+        </div>
+        <div className="fixed bottom-0 left-0 right-0 bg-[#f8f8f8] border-t border-gray-400 p-3">
+          <p className="text-xs text-center mb-2">最終保存</p>
+          <div className="flex gap-x-3 mb-3">
+            <div className="text-xs bg-white px-3 py-1 border">
+              問題フィルタ (2)
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                name="filter"
+                id="filter-all"
+                value="all_questions"
+                checked={filterType === "all_questions"}
+                onChange={() => setFilterType("all_questions")}
+                className="mr-px"
+              />
+              <label htmlFor="filter-all" className="text-xs">
+                全問題を表示
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                name="filter"
+                id="filter-unanswered"
+                value="unanswered_questions"
+                checked={filterType === "unanswered_questions"}
+                onChange={() => setFilterType("unanswered_questions")}
+                className="mr-px"
+              />
+              <label htmlFor="filter-unanswered" className="text-xs">
+                未回答問題を表示
+              </label>
+            </div>
+          </div>
+          <div className="w-full flex gap-x-2">
+            <button
+              type="button"
+              onClick={handleSaveProgress}
+              className="w-full bg-[#cdcdcd] hover:bg-[#bababa] text-[#2b2b2b] text-xs px-3 py-2 transition-colors"
+            >
+              回答内容を保存
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmitResults}
+              className="w-full bg-[#262626] hover:bg-[#393939] text-white text-xs px-3 py-2 transition-colors"
+            >
+              提出
+            </button>
+            {/* TODO: debug用要削除 */}
+            <button
+              type="button"
+              onClick={clearProgress}
+              className="w-full bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 transition-colors"
+            >
+              リセット
+            </button>
+          </div>
         </div>
       </div>
     </div>

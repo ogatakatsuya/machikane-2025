@@ -1,13 +1,12 @@
 import type { QuestionType } from "./quiz-types";
 
-// API Constants
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
-// App Constants
 export const RANGE = { min: 1, max: 4 } as const;
+export const QUIZ_TIME_LIMIT = 10 * 60;
 
-// Sample Questions and Time Limits
+// Created by Copilot
 export const SAMPLE_QUESTIONS: QuestionType[] = [
   { id: 1, title: "足し算", score: 1, text: "1 + 1 = ?", answer: ["2", "田"] },
   {
@@ -24,8 +23,56 @@ export const SAMPLE_QUESTIONS: QuestionType[] = [
     text: "TypeScript の T は何の略?",
     answer: ["Type"],
   },
+  {
+    id: 4,
+    title: "なぞなぞ",
+    score: 2,
+    text: "白いものを黒く塗ると何になる?",
+    answer: ["汚い", "きたない", "よごれた"],
+  },
+  {
+    id: 5,
+    title: "計算",
+    score: 3,
+    text: "5×5-3×3=?",
+    answer: ["16"],
+  },
+  {
+    id: 6,
+    title: "歴史",
+    score: 2,
+    text: "鎌倉幕府が成立した年は?",
+    answer: ["1192", "1185"],
+  },
+  {
+    id: 7,
+    title: "言葉遊び",
+    score: 4,
+    text: "「た」を「ら」に変えると美味しくなる食べ物は?",
+    answer: ["たまご", "卵", "らまご"],
+  },
+  {
+    id: 8,
+    title: "理科",
+    score: 2,
+    text: "水の沸点は摂氏何度?",
+    answer: ["100", "100度"],
+  },
+  {
+    id: 9,
+    title: "文字並び替え",
+    score: 3,
+    text: "「きつね」の文字を並び替えて作れる動物は?",
+    answer: ["ねこ", "猫"],
+  },
+  {
+    id: 10,
+    title: "推理",
+    score: 4,
+    text: "兄弟が3人います。太郎は次郎より年上、花子は太郎より年上です。一番年下は誰?",
+    answer: ["次郎", "じろう"],
+  },
 ];
-export const QUIZ_TIME_LIMIT = 10 * 60;
 
 export const WARNING_LIST = [
   "テストは静かな場所で受けてください。",

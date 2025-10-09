@@ -10,28 +10,46 @@ import (
 	"database/sql"
 
 	"github.com/google/uuid"
+	"github.com/sqlc-dev/pqtype"
 )
 
 const createResult = `-- name: CreateResult :one
-INSERT INTO results (id, group_id, score)
-VALUES ($1, $2, $3)
-RETURNING id, group_id, score, created_at
+INSERT INTO results (id, group_id, score, context)
+VALUES ($1, $2, $3, $4)
+RETURNING id, group_id, score, context, created_at, updated_at
 `
 
 type CreateResultParams struct {
-	ID      uuid.UUID `json:"id"`
-	GroupID uuid.UUID `json:"group_id"`
-	Score   int32     `json:"score"`
+	ID      uuid.UUID             `json:"id"`
+	GroupID uuid.UUID             `json:"group_id"`
+	Score   int32                 `json:"score"`
+	Context pqtype.NullRawMessage `json:"context"`
 }
 
-func (q *Queries) CreateResult(ctx context.Context, arg CreateResultParams) (Result, error) {
-	row := q.db.QueryRowContext(ctx, createResult, arg.ID, arg.GroupID, arg.Score)
-	var i Result
+type CreateResultRow struct {
+	ID        uuid.UUID             `json:"id"`
+	GroupID   uuid.UUID             `json:"group_id"`
+	Score     int32                 `json:"score"`
+	Context   pqtype.NullRawMessage `json:"context"`
+	CreatedAt sql.NullTime          `json:"created_at"`
+	UpdatedAt sql.NullTime          `json:"updated_at"`
+}
+
+func (q *Queries) CreateResult(ctx context.Context, arg CreateResultParams) (CreateResultRow, error) {
+	row := q.db.QueryRowContext(ctx, createResult,
+		arg.ID,
+		arg.GroupID,
+		arg.Score,
+		arg.Context,
+	)
+	var i CreateResultRow
 	err := row.Scan(
 		&i.ID,
 		&i.GroupID,
 		&i.Score,
+		&i.Context,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -81,6 +99,79 @@ func (q *Queries) GetGroupWithResults(ctx context.Context, id uuid.UUID) ([]GetG
 			&i.ResultID,
 			&i.Score,
 			&i.ResultCreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getResultRank = `-- name: GetResultRank :one
+SELECT rank FROM (
+    SELECT 
+        id,
+        ROW_NUMBER() OVER (ORDER BY score DESC, created_at ASC) as rank
+    FROM results
+) ranked_results
+WHERE id = $1
+`
+
+func (q *Queries) GetResultRank(ctx context.Context, id uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getResultRank, id)
+	var rank int64
+	err := row.Scan(&rank)
+	return rank, err
+}
+
+const getTopResults = `-- name: GetTopResults :many
+SELECT 
+    r.id,
+    r.group_id,
+    r.score,
+    r.created_at,
+    g.name as group_name,
+    g.group_size,
+    ROW_NUMBER() OVER (ORDER BY r.score DESC, r.created_at ASC) as rank
+FROM results r
+JOIN groups g ON r.group_id = g.id
+ORDER BY r.score DESC, r.created_at ASC
+LIMIT $1
+`
+
+type GetTopResultsRow struct {
+	ID        uuid.UUID    `json:"id"`
+	GroupID   uuid.UUID    `json:"group_id"`
+	Score     int32        `json:"score"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	GroupName string       `json:"group_name"`
+	GroupSize int32        `json:"group_size"`
+	Rank      int64        `json:"rank"`
+}
+
+func (q *Queries) GetTopResults(ctx context.Context, limit int32) ([]GetTopResultsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTopResults, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetTopResultsRow{}
+	for rows.Next() {
+		var i GetTopResultsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.Score,
+			&i.CreatedAt,
+			&i.GroupName,
+			&i.GroupSize,
+			&i.Rank,
 		); err != nil {
 			return nil, err
 		}

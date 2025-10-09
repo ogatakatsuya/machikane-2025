@@ -158,6 +158,7 @@ const QuizTestPage = () => {
         ).filter((q) => !!q) || []
       : SAMPLE_QUESTIONS;
 
+  // TODO: UI班要相談変更
   const getAnswerStatusColor = (questionId: number) => {
     if (
       context?.QuestionAnswerState.find(
@@ -169,6 +170,7 @@ const QuizTestPage = () => {
       return "text-yellow-600 bg-yellow-100";
     else return "text-gray-600 bg-white";
   };
+  // TODO: UI班要相談変更
   const getTimeStatusColor = () => {
     if (timeProgress.percentage > 50) return ["bg-[#c8e8d3]", "bg-[#007c2a]"];
     else return ["bg-[#ecd0f1]", "bg-[#a234b5]"];

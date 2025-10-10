@@ -14,9 +14,21 @@ import (
 )
 
 const createResult = `-- name: CreateResult :one
-INSERT INTO results (id, group_id, score, context)
-VALUES ($1, $2, $3, $4)
-RETURNING id, group_id, score, context, created_at, updated_at
+WITH inserted_result AS (
+    INSERT INTO results (id, group_id, score, context)
+    VALUES ($1, $2, $3, $4)
+    RETURNING id, group_id, score, context, created_at, updated_at
+)
+SELECT 
+    ir.id,
+    ir.group_id,
+    ir.score,
+    ir.context,
+    ir.created_at,
+    ir.updated_at,
+    g.name as group_name
+FROM inserted_result ir
+JOIN groups g ON ir.group_id = g.id
 `
 
 type CreateResultParams struct {
@@ -33,6 +45,7 @@ type CreateResultRow struct {
 	Context   pqtype.NullRawMessage `json:"context"`
 	CreatedAt sql.NullTime          `json:"created_at"`
 	UpdatedAt sql.NullTime          `json:"updated_at"`
+	GroupName string                `json:"group_name"`
 }
 
 func (q *Queries) CreateResult(ctx context.Context, arg CreateResultParams) (CreateResultRow, error) {
@@ -50,6 +63,7 @@ func (q *Queries) CreateResult(ctx context.Context, arg CreateResultParams) (Cre
 		&i.Context,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.GroupName,
 	)
 	return i, err
 }

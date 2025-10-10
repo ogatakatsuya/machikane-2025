@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	db "backend/db/generated"
+
 	"github.com/google/uuid"
 	"github.com/sqlc-dev/pqtype"
 )
@@ -78,11 +79,12 @@ func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req
 	}
 
 	response := &dto.ResultResponseDto{
-		ID:      result.ID,
-		GroupID: result.GroupID,
-		Score:   result.Score,
-		Rank:    rank,
-		TopFive: topFive,
+		ID:        result.ID,
+		GroupID:   result.GroupID,
+		GroupName: result.GroupName,
+		Score:     result.Score,
+		Rank:      rank,
+		TopFive:   topFive,
 	}
 
 	// Add context to response if available

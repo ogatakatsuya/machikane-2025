@@ -117,14 +117,12 @@ Save quiz result for a specific group. Returns the result with its ranking posit
   "context": {
     "groupId": "string",
     "startedAt": "ISO 8601 timestamp string",
-    "lastUpdatedAt": "ISO 8601 timestamp string", 
     "totalQuestions": "number",
     "questionStates": [
       {
         "id": "number",
         "status": "unanswered | correct | incorrect",
-        "answer": "string (optional)",
-        "answeredAt": "ISO 8601 timestamp string (optional)"
+        "answer": "string (optional)"
       }
     ]
   }
@@ -140,14 +138,12 @@ Save quiz result for a specific group. Returns the result with its ranking posit
   "context": {
     "groupId": "string",
     "startedAt": "ISO 8601 timestamp string",
-    "lastUpdatedAt": "ISO 8601 timestamp string",
     "totalQuestions": "number",
     "questionStates": [
       {
         "id": "number",
         "status": "unanswered | correct | incorrect",
-        "answer": "string (optional)",
-        "answeredAt": "ISO 8601 timestamp string (optional)"
+        "answer": "string (optional)"
       }
     ]
   },

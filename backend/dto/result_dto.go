@@ -17,12 +17,13 @@ type RankingItemDto struct {
 }
 
 type ResultResponseDto struct {
-	ID        uuid.UUID             `json:"id"`
-	GroupID   uuid.UUID             `json:"group_id"`
-	Score     int32                 `json:"score"`
+	ID        uuid.UUID              `json:"id"`
+	GroupID   uuid.UUID              `json:"group_id"`
+	GroupName string                 `json:"group_name"`
+	Score     int32                  `json:"score"`
 	Context   *SerializedQuizContext `json:"context,omitempty"`
-	Rank      int64                 `json:"rank"`
-	CreatedAt string                `json:"created_at"`
-	UpdatedAt string                `json:"updated_at"`
-	TopFive   []RankingItemDto      `json:"top_five"`
+	Rank      int64                  `json:"rank"`
+	CreatedAt string                 `json:"created_at"`
+	UpdatedAt string                 `json:"updated_at"`
+	TopFive   []RankingItemDto       `json:"top_five"`
 }

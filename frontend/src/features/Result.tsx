@@ -73,8 +73,7 @@ const Result = () => {
           <div className="bg-[#555] text-white w-5 h-5">
             <UserIcon className="w-5" />
           </div>
-          {/* TODO: チーム名を返してくれるようBEに実装依頼 */}
-          <span className="text-xs pl-2 pt-px">チーム名</span>
+          <span className="text-xs pl-2 pt-px">{results?.group_name || "不明なグループ"}</span>
         </div>
         <div className="mb-4">
           <ul className="flex text-[10px] text-white">

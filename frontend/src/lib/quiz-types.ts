@@ -52,6 +52,7 @@ export interface QuizSubmissionData {
 export interface QuizResultResponse<TDate = string> {
   id: string;
   group_id: string;
+  group_name: string;
   score: number;
   context: {
     groupId: string;

@@ -7,7 +7,7 @@ import { useTimer } from "@/hooks/useTimer";
 import { QUIZ_TIME_LIMIT, SAMPLE_QUESTIONS } from "@/lib/constants";
 import ClockIcon from "/public/clock.svg";
 
-const QuizTestPage = () => {
+const QuizPage = () => {
   const [groupId, setGroupId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [localAnswers, setLocalAnswers] = useState<Record<number, string>>({});
@@ -149,7 +149,7 @@ const QuizTestPage = () => {
   };
   // TODO: UI班要相談変更
   const getTimeStatusColor = () => {
-    if (remainingTime / QUIZ_TIME_LIMIT > 0.5)
+    if (remainingTime >= 60) // 1分以上
       return ["bg-[#c8e8d3]", "bg-[#007c2a]"];
     else return ["bg-[#ecd0f1]", "bg-[#a234b5]"];
   };
@@ -310,4 +310,4 @@ const QuizTestPage = () => {
   );
 };
 
-export default QuizTestPage;
+export default QuizPage;

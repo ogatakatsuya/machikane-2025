@@ -119,11 +119,7 @@ const QuizPage = () => {
   // クイズの進行状況(回答数, 時間関連)
   const answeredCount =
     context?.QuestionAnswerState.filter((q) => q.answer?.trim()).length || 0;
-  const remainingTime = useTimer(
-    context?.startedAt || new Date(),
-    QUIZ_TIME_LIMIT,
-    onTimeUp,
-  );
+  const remainingTime = useTimer(context?.startedAt, QUIZ_TIME_LIMIT, onTimeUp);
 
   // フィルター機能：表示する問題を決定（保存された状態を基準にする）
   const filteredQuestions =
@@ -149,7 +145,7 @@ const QuizPage = () => {
   };
   // TODO: UI班要相談変更
   const getTimeStatusColor = () => {
-    if (remainingTime >= 60) // 1分以上
+    if (remainingTime && remainingTime >= 60)
       return ["bg-[#c8e8d3]", "bg-[#007c2a]"];
     else return ["bg-[#ecd0f1]", "bg-[#a234b5]"];
   };
@@ -181,16 +177,18 @@ const QuizPage = () => {
           </div>
           <div className="bg-white pt-4 px-3 pb-2">
             <div className="text-xs border-b border-gray-400 pb-2 space-y-1">
-              <div
-                className={`${getTimeStatusColor()[0]} rounded-full h-2 mb-2`}
-              >
+              {remainingTime ? (
                 <div
-                  className={`h-2 rounded-full transition-all duration-300 ${getTimeStatusColor()[1]}`}
-                  style={{
-                    width: `${(remainingTime / QUIZ_TIME_LIMIT) * 100}%`,
-                  }}
-                />
-              </div>
+                  className={`${getTimeStatusColor()[0]} rounded-full h-2 mb-2`}
+                >
+                  <div
+                    className={`h-2 rounded-full transition-all duration-300 ${getTimeStatusColor()[1]}`}
+                    style={{
+                      width: `${(remainingTime / QUIZ_TIME_LIMIT) * 100}%`,
+                    }}
+                  />
+                </div>
+              ) : null}
               <p className="">
                 {SAMPLE_QUESTIONS.length}問中
                 <strong>{SAMPLE_QUESTIONS.length - answeredCount}</strong>
@@ -198,11 +196,9 @@ const QuizPage = () => {
               </p>
               <p className="flex items-center gap-px">
                 <ClockIcon className="w-4 h-4 text-[#a234b5]" />
-                {(() => {
-                  if (!context)
-                    return `${Math.floor(QUIZ_TIME_LIMIT / 60)}分00秒`;
-                  return `${Math.floor(remainingTime / 60)}分${String(remainingTime % 60).padStart(2, "0")}秒`;
-                })()}残っています
+                {remainingTime
+                  ? `${Math.floor(remainingTime / 60)}分${String(remainingTime % 60).padStart(2, "0")}秒残っています`
+                  : "--:--"}
               </p>
             </div>
           </div>

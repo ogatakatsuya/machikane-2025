@@ -1,41 +1,38 @@
 import { useEffect, useState } from "react";
 
-/**
- * 指定された時間（秒）後にページ遷移するタイマーフック
- * @param seconds - 制限時間（秒）
- * @param redirectTo - 遷移先のパス
- */
 export const useTimer = (
-  startedAt: Date,
-  seconds: number,
+  startedAt: Date | undefined,
+  seconds: number, // 制限時間
   onTimeUp: () => void,
 ) => {
-  // useStateを使って、コンポーネントの初期化時に一度だけ終了時刻を計算・設定
-  const [targetTime] = useState(() => {
-    const t = new Date(startedAt);
-    t.setSeconds(t.getSeconds() + seconds);
-    return t.getTime();
-  });
-
-  const [remainingTime, setRemainingTime] = useState(seconds);
+  const [remainingTime, setRemainingTime] = useState<number | null>(null);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      const now = Date.now();
-      const timeLeft = Math.round((targetTime - now) / 1000);
+    if (!startedAt) {
+      setRemainingTime(null);
+      return;
+    }
 
-      if (timeLeft <= 0) {
+    // 終了時刻
+    const targetTime = new Date(startedAt).getTime() + seconds * 1000;
+
+    const intervalId = setInterval(() => {
+      const timeLeft = Math.max(
+        0,
+        Math.round((targetTime - Date.now()) / 1000),
+      );
+
+      if (timeLeft === 0) {
         setRemainingTime(0);
-        clearInterval(intervalId); // タイマーを停止
-        onTimeUp(); // 時間切れ時の処理を呼び出す
+        clearInterval(intervalId);
+        onTimeUp();
       } else {
         setRemainingTime(timeLeft);
       }
-    }, 250); // 1秒より短い間隔で現在時刻との差を再計算する
+    }, 250);
 
-    // コンポーネントがアンマウントされる時にクリーンアップ
     return () => clearInterval(intervalId);
-  }, [targetTime, onTimeUp]); // 依存配列
+  }, [startedAt, seconds, onTimeUp]);
 
   return remainingTime;
 };

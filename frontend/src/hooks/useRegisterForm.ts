@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ApiError, createGroup } from "@/lib/api";
+import { RANGE } from "@/lib/constants";
 import type { CreateGroupRequest } from "@/lib/types";
-
-const RANGE = { min: 1, max: 3 } as const;
 
 export const registerFormSchema = z.object({
   name: z.string().min(1, {

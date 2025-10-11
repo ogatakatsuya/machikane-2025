@@ -1,9 +1,10 @@
 import {
-  type QuestionState,
   QuestionStatus,
   type QuizContext,
+  type QuizSubmissionData,
   type SerializedQuizContext,
 } from "@/lib/quiz-types";
+import { SAMPLE_QUESTIONS } from "./constants";
 
 /**
  * クイズの進捗状況を管理するクラス
@@ -35,11 +36,9 @@ export class QuizProgressManager {
     return {
       groupId,
       startedAt: new Date(),
-      lastUpdatedAt: new Date(),
       totalQuestions,
-      questionStates: Array.from({ length: totalQuestions }, (_, i) => ({
+      QuestionAnswerState: Array.from({ length: totalQuestions }, (_, i) => ({
         id: i + 1,
-        status: QuestionStatus.UNANSWERED,
       })),
     };
   }
@@ -62,16 +61,8 @@ export class QuizProgressManager {
       return {
         groupId: serialized.groupId,
         startedAt: new Date(serialized.startedAt),
-        lastUpdatedAt: new Date(serialized.lastUpdatedAt),
         totalQuestions: serialized.totalQuestions,
-        questionStates: serialized.questionStates.map(
-          (state: QuestionState<string>) => ({
-            ...state,
-            answeredAt: state.answeredAt
-              ? new Date(state.answeredAt)
-              : undefined,
-          }),
-        ),
+        QuestionAnswerState: serialized.QuestionAnswerState,
       };
     } catch (error) {
       console.warn("Failed to load from localStorage:", error);
@@ -81,44 +72,23 @@ export class QuizProgressManager {
   }
 
   /**
-   * 問題の状態を更新
+   * 複数の問題の回答を一括更新
    */
-  updateQuestionStatus(
-    questionId: number,
-    status: QuestionStatus,
-    answer: string,
+  updateMultipleAnswers(
+    answers: { questionId: number; answer: string }[],
   ): void {
-    const questionIndex = this.context.questionStates.findIndex(
-      (q) => q.id === questionId,
-    );
+    answers.forEach(({ questionId, answer }) => {
+      const questionIndex = this.context.QuestionAnswerState.findIndex(
+        (q) => q.id === questionId,
+      );
 
-    if (questionIndex === -1) {
-      throw new Error(`Question with id ${questionId} not found`);
-    }
-
-    // 状態を更新
-    const currentState = this.context.questionStates[questionIndex];
-    this.context.questionStates[questionIndex] = {
-      ...currentState,
-      status,
-      answer,
-      answeredAt: new Date(),
-    };
-    this.context.lastUpdatedAt = new Date();
-  }
-
-  /**
-   * 特定の問題の状態を取得
-   */
-  getQuestionState(questionId: number): QuestionState | undefined {
-    return this.context.questionStates.find((q) => q.id === questionId);
-  }
-
-  /**
-   * すべての問題状態を取得
-   */
-  getAllQuestionStates(): QuestionState[] {
-    return [...this.context.questionStates];
+      if (questionIndex !== -1) {
+        this.context.QuestionAnswerState[questionIndex] = {
+          ...this.context.QuestionAnswerState[questionIndex],
+          answer: answer.trim() || undefined,
+        };
+      }
+    });
   }
 
   /**
@@ -136,12 +106,8 @@ export class QuizProgressManager {
       const serialized: SerializedQuizContext = {
         groupId: this.context.groupId,
         startedAt: this.context.startedAt.toISOString(),
-        lastUpdatedAt: this.context.lastUpdatedAt.toISOString(),
         totalQuestions: this.context.totalQuestions,
-        questionStates: this.context.questionStates.map((state) => ({
-          ...state,
-          answeredAt: state.answeredAt?.toISOString(),
-        })),
+        QuestionAnswerState: this.context.QuestionAnswerState,
       };
 
       localStorage.setItem(this.storageKey, JSON.stringify(serialized));
@@ -154,20 +120,40 @@ export class QuizProgressManager {
   /**
    * API送信用データを生成
    */
-  generateSubmissionData(): SerializedQuizContext {
+  generateSubmissionData(): QuizSubmissionData {
+    const questionStates = this.context.QuestionAnswerState.map((state) => {
+      let status: QuestionStatus = QuestionStatus.UNANSWERED;
+      if (state.answer && state.answer.trim() !== "") {
+        const question = SAMPLE_QUESTIONS.find((q) => q.id === state.id);
+        if (question) {
+          status = question.answer.includes(state.answer.trim())
+            ? QuestionStatus.CORRECT
+            : QuestionStatus.INCORRECT;
+        }
+      }
+      return {
+        id: state.id,
+        status,
+        answer: state.answer?.trim() || undefined,
+      };
+    });
+
+    const score = questionStates.reduce((sum, q) => {
+      if (q.status === "correct") {
+        const question = SAMPLE_QUESTIONS.find((qq) => qq.id === q.id);
+        return sum + (question?.score ?? 0);
+      }
+      return sum;
+    }, 0);
+
     return {
-      groupId: this.context.groupId,
-      startedAt: this.context.startedAt.toISOString(),
-      lastUpdatedAt: this.context.lastUpdatedAt.toISOString(),
-      totalQuestions: this.context.totalQuestions,
-      questionStates: this.context.questionStates
-        .filter((state) => state.status !== QuestionStatus.UNANSWERED)
-        .map((state) => ({
-          id: state.id,
-          status: state.status,
-          answer: state.answer,
-          answeredAt: state.answeredAt?.toISOString(),
-        })),
+      score,
+      context: {
+        groupId: this.context.groupId,
+        startedAt: this.context.startedAt.toISOString(),
+        totalQuestions: this.context.totalQuestions,
+        questionStates,
+      },
     };
   }
 
@@ -176,14 +162,5 @@ export class QuizProgressManager {
    */
   clearStorage(): void {
     localStorage.removeItem(this.storageKey);
-  }
-
-  /**
-   * デバッグ用：コンテキストをコンソールに出力
-   * TODO: 開発完了後に削除予定
-   */
-  debug(): void {
-    console.log("Quiz Progress Manager Context:");
-    console.table(this.context);
   }
 }

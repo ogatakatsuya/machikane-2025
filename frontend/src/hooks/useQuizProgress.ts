@@ -1,11 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { QuizProgressManager } from "@/lib/quiz-progress-manager";
-import type {
-  QuestionState,
-  QuestionStatus,
-  QuizContext,
-  SerializedQuizContext,
-} from "@/lib/quiz-types";
+import type { QuizContext, QuizSubmissionData } from "@/lib/quiz-types";
 
 interface UseQuizProgressOptions {
   groupId: string;
@@ -16,19 +11,12 @@ interface UseQuizProgressOptions {
 interface UseQuizProgressReturn {
   context: QuizContext | null;
   isLoading: boolean;
-  updateQuestionStatus: (
-    questionId: number,
-    status: QuestionStatus,
-    answer: string,
+  updateMultipleAnswers: (
+    answers: { questionId: number; answer: string }[],
   ) => void;
-  getQuestionState: (questionId: number) => QuestionState | undefined;
   saveProgress: () => void;
   clearProgress: () => void;
-  generateSubmissionData: () => SerializedQuizContext;
-
-  // デバッグ用
-  // TODO: 開発完了後に削除予定
-  debug: () => void;
+  generateSubmissionData: () => QuizSubmissionData;
 }
 
 /**
@@ -80,9 +68,9 @@ export const useQuizProgress = (
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
-  // 問題状態の更新（解答時に保存）
-  const updateQuestionStatus = useCallback(
-    (questionId: number, status: QuestionStatus, answer: string) => {
+  // 複数の回答を一括更新（保存はしない）
+  const updateMultipleAnswers = useCallback(
+    (answers: { questionId: number; answer: string }[]): void => {
       if (!managerRef.current) {
         console.error("Quiz progress manager not initialized");
         alert("進捗の更新に失敗しました。（初期化されていません）");
@@ -90,25 +78,12 @@ export const useQuizProgress = (
       }
 
       try {
-        managerRef.current.updateQuestionStatus(questionId, status, answer);
+        managerRef.current.updateMultipleAnswers(answers);
         setContext(managerRef.current.getContext());
-        managerRef.current.saveToStorage(); // 自動保存
       } catch (error) {
-        console.error(
-          "Failed to update question status or save progress:",
-          error,
-        );
+        console.error("Failed to update multiple answers:", error);
         alert("進捗の更新に失敗しました。");
       }
-    },
-    [],
-  );
-
-  // 特定の問題状態を取得
-  const getQuestionState = useCallback(
-    (questionId: number): QuestionState | undefined => {
-      if (!managerRef.current) return undefined;
-      return managerRef.current.getQuestionState(questionId);
     },
     [],
   );
@@ -142,7 +117,7 @@ export const useQuizProgress = (
   }, [groupId, totalQuestions]);
 
   // API送信用データ生成
-  const generateSubmissionData = useCallback((): SerializedQuizContext => {
+  const generateSubmissionData = useCallback((): QuizSubmissionData => {
     if (!managerRef.current) {
       alert("進捗の読み込みに失敗しました。（初期化されていません）");
       throw new Error("Quiz progress manager not initialized");
@@ -150,22 +125,12 @@ export const useQuizProgress = (
     return managerRef.current.generateSubmissionData();
   }, []);
 
-  // デバッグ出力
-  // TODO: 開発完了後に削除予定
-  const debug = useCallback(() => {
-    if (managerRef.current) {
-      managerRef.current.debug();
-    }
-  }, []);
-
   return {
     context,
     isLoading,
-    updateQuestionStatus,
-    getQuestionState,
+    updateMultipleAnswers,
     saveProgress,
     clearProgress,
     generateSubmissionData,
-    debug,
   };
 };

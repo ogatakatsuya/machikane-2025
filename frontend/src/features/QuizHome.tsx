@@ -2,30 +2,16 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import HamburgerIcon from "/public/hamburger.svg";
+import { IMPORTANT_NOTICE, WARNING_LIST } from "@/lib/constants";
 
 const QuizHome = () => {
   const router = useRouter();
-
-  const warningList = [
-    "テストは静かな場所で受けてください。",
-    "他の人の答案を見ないでください。",
-    "時間を守り、途中退出はできません。",
-    "試験用紙は丁寧に扱ってください。",
-    "不明な点があれば、試験監督に質問してください。",
-  ];
 
   return (
     <div className="w-full min-h-screen">
       <div className="flex flex-col mb-12">
         <div className="bg-[#2c2880] h-10 flex items-center justify-center fixed top-0 left-0 right-0 text-white">
-          <button
-            className="absolute left-2 hover:cursor-pointer"
-            type="button"
-          >
-            <HamburgerIcon className="h-6 w-6" />
-          </button>
-          <p className="font-bold">謎解き概論I</p>
+          <p className="font-bold">教育機関のページ</p>
         </div>
 
         <div className="flex justify-center items-center py-7 mb-6 mt-10 bg-gradient-to-b from-[#2c2880] via-[#2c2880] via-70% to-black">
@@ -52,7 +38,7 @@ const QuizHome = () => {
                     </span>
                   </p>
                 </li>
-                {warningList.map((warning) => (
+                {WARNING_LIST.map((warning) => (
                   <li key={warning}>
                     <p className="text-sm">{warning}</p>
                   </li>
@@ -67,12 +53,11 @@ const QuizHome = () => {
             <h2 className="text-lg">重要なお知らせ</h2>
             <div className="border border-gray-300 p-4 pl-8 my-2">
               <ol className="list-disc pr-1 space-y-2">
-                <li>
-                  <p className="text-sm">
-                    {/* TODO: 重要なお知らせを取得orハードコーディング */}
-                    重要なお知らせはここに表示されます。
-                  </p>
-                </li>
+                {IMPORTANT_NOTICE.map((notice) => (
+                  <li key={notice}>
+                    <p className="text-sm">{notice}</p>
+                  </li>
+                ))}
               </ol>
             </div>
           </div>

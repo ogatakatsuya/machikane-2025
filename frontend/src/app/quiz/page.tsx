@@ -1,30 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import QuestionComponent from "@/components/QuestionComponent";
+import { useCallback, useEffect, useState } from "react";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
-import { submitQuizResults } from "@/lib/api";
-import { QuestionStatus } from "@/lib/quiz-types";
+import { useTimer } from "@/hooks/useTimer";
+import { QUIZ_TIME_LIMIT, SAMPLE_QUESTIONS } from "@/lib/constants";
+import ClockIcon from "/public/clock.svg";
 
-// サンプル問題データ
-const SAMPLE_QUESTIONS = [
-  { id: 1, text: "1 + 1 = ?", answer: ["2", "田"] },
-  {
-    id: 2,
-    text: "日本の首都は?",
-    answer: ["東京", "とうきょう", "Tokyo", "トウキョウ"],
-  },
-  { id: 3, text: "TypeScript の T は何の略?", answer: ["Type"] },
-];
-
-// クイズの制限時間（秒）
-const QUIZ_TIME_LIMIT = 10 * 60;
-
-const QuizTestPage = () => {
+const QuizPage = () => {
   const [groupId, setGroupId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [localAnswers, setLocalAnswers] = useState<Record<number, string>>({});
+  const [lastSavedAt, setLastSavedAt] = useState<string>("");
+  const [filterType, setFilterType] = useState<
+    "all_questions" | "unanswered_questions"
+  >("all_questions");
   const router = useRouter();
 
   // ローカルストレージからgroupIdを取得してから初期化
@@ -55,83 +45,109 @@ const QuizTestPage = () => {
   const {
     context,
     isLoading,
-    updateQuestionStatus,
-    getQuestionState,
+    updateMultipleAnswers,
     saveProgress,
     clearProgress,
     generateSubmissionData,
-    debug,
   } = useQuizProgress({
-    groupId: groupId || "", // groupIdがnullの場合は空文字
+    groupId: groupId || "",
     totalQuestions: SAMPLE_QUESTIONS.length,
     enabled: !!groupId, // groupIdが存在する場合のみ有効化
   });
 
-  const isFinished = context
-    ? context.questionStates.every((q) => q.status === QuestionStatus.CORRECT)
-    : false;
-
-  // 残り時間の計算
-  const timeProgress = context
-    ? (() => {
-        const elapsedTime = Math.floor(
-          (currentTime.getTime() - context.startedAt.getTime()) / 1000,
-        );
-        const remainingTime = Math.max(0, QUIZ_TIME_LIMIT - elapsedTime);
-        const timePercentage = Math.max(
-          0,
-          Math.round((remainingTime / QUIZ_TIME_LIMIT) * 100),
-        );
-        const isTimeUp = remainingTime === 0;
-
-        return {
-          elapsed: elapsedTime,
-          remaining: remainingTime,
-          percentage: timePercentage,
-          isTimeUp,
-          formattedRemaining: `${Math.floor(remainingTime / 60)}:${String(remainingTime % 60).padStart(2, "0")}`,
-        };
-      })()
-    : {
-        elapsed: 0,
-        remaining: QUIZ_TIME_LIMIT,
-        percentage: 100,
-        isTimeUp: false,
-        formattedRemaining: `${Math.floor(QUIZ_TIME_LIMIT / 60)}:00`,
-      };
-
-  // 現在時刻を毎秒更新
+  // コンテキストが更新されたら、ローカル状態と保存状態に反映
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleAnswer = (
-    questionId: number,
-    status: QuestionStatus,
-    answer: string,
-  ) => {
-    if (timeProgress.isTimeUp) {
-      alert("時間切れのため、これ以上回答できません。");
-      return;
+    if (context?.QuestionAnswerState) {
+      const contextAnswers: Record<number, string> = {};
+      context.QuestionAnswerState.forEach((state) => {
+        if (state.answer) {
+          contextAnswers[state.id] = state.answer;
+        }
+      });
+      setLocalAnswers(contextAnswers);
     }
-    updateQuestionStatus(questionId, status, answer);
-  };
+  }, [context]);
 
-  // 結果送信のテスト
-  const handleSubmitResults = () => {
+  // 現在の回答状況を保存
+  const handleSaveProgress = useCallback(() => {
     try {
-      submitQuizResults(generateSubmissionData());
+      // ローカル回答を一括でコンテキストに反映
+      const answers = Object.entries(localAnswers).map(
+        ([questionId, answer]) => ({
+          questionId: Number(questionId),
+          answer,
+        }),
+      );
+      updateMultipleAnswers(answers);
+      saveProgress();
+      setLastSavedAt(
+        new Date().toLocaleTimeString("ja-JP", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+      );
+    } catch (error) {
+      console.error("Failed to save progress:", error);
+      alert("回答状況の保存に失敗しました。");
+    }
+  }, [localAnswers, updateMultipleAnswers, saveProgress]);
+
+  // 結果画面へ移動
+  const goToResults = useCallback(() => {
+    try {
+      localStorage.setItem(
+        "quiz_submission",
+        JSON.stringify(generateSubmissionData()),
+      );
       localStorage.removeItem("groupId");
       localStorage.removeItem(`quiz_progress_${groupId}`);
-      // TODO: 実際はAPIの結果を確認して成功/失敗を判定
-      alert("結果が送信されました！（コンソールを確認してください）");
+      router.push("/result");
     } catch (error) {
-      console.error("Failed to submit results:", error);
-      alert("結果の送信に失敗しました。");
+      console.error("Failed to generate results:", error);
+      alert("結果の生成に失敗しました。");
     }
+  }, [groupId, generateSubmissionData, router]);
+
+  // 時間終了時のコールバック
+  const onTimeUp = useCallback(() => {
+    alert("制限時間が終了しました。回答内容を保存して結果画面へ移動します。");
+    handleSaveProgress();
+    goToResults();
+  }, [handleSaveProgress, goToResults]);
+
+  // クイズの進行状況(回答数, 時間関連)
+  const answeredCount =
+    context?.QuestionAnswerState.filter((q) => q.answer?.trim()).length || 0;
+  const remainingTime = useTimer(context?.startedAt, QUIZ_TIME_LIMIT, onTimeUp);
+
+  // フィルター機能：表示する問題を決定（保存された状態を基準にする）
+  const filteredQuestions =
+    filterType === "unanswered_questions"
+      ? context?.QuestionAnswerState.map((q) =>
+          !q.answer?.trim()
+            ? SAMPLE_QUESTIONS.find((sq) => sq.id === q.id)
+            : null,
+        ).filter((q) => !!q) || []
+      : SAMPLE_QUESTIONS;
+
+  // TODO: UI班要相談変更
+  const getAnswerStatusColor = (questionId: number) => {
+    if (
+      context?.QuestionAnswerState.find(
+        (q) => q.id === questionId,
+      )?.answer?.trim()
+    )
+      return "text-green-600 bg-green-100";
+    else if (localAnswers[questionId]?.trim())
+      return "text-yellow-600 bg-yellow-100";
+    else return "text-gray-600 bg-white";
+  };
+  // TODO: UI班要相談変更
+  const getTimeStatusColor = () => {
+    if (remainingTime && remainingTime >= 60)
+      return ["bg-[#c8e8d3]", "bg-[#007c2a]"];
+    else return ["bg-[#ecd0f1]", "bg-[#a234b5]"];
   };
 
   // 初期化待ちまたはクイズデータの読み込み中
@@ -153,163 +169,136 @@ const QuizTestPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* ヘッダー */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            クイズ進捗管理テスト
-          </h1>
-          <div className="text-sm text-gray-600 mb-4">
-            <span className="font-medium">グループID:</span> {groupId}
+    <div className="w-full min-h-screen">
+      <div className="flex flex-col mb-12">
+        <div className="fixed top-0 left-0 right-0">
+          <div className="bg-[#2c2880] h-10 flex items-center justify-center text-white">
+            <p className="font-bold">謎解き試験</p>
           </div>
-
-          {/* 残り時間表示 */}
-          <div className="bg-gray-200 rounded-full h-3 mb-4">
-            <div
-              className={`h-3 rounded-full transition-all duration-300 ${
-                timeProgress.percentage > 30
-                  ? "bg-green-600"
-                  : timeProgress.percentage > 10
-                    ? "bg-yellow-600"
-                    : "bg-red-600"
-              }`}
-              style={{ width: `${timeProgress.percentage}%` }}
-            ></div>
-          </div>
-
-          <div className="flex justify-between items-center text-sm text-gray-600 mb-2">
-            <span
-              className={`font-medium ${
-                timeProgress.percentage <= 10
-                  ? "text-red-600"
-                  : timeProgress.percentage <= 30
-                    ? "text-yellow-600"
-                    : "text-green-600"
-              }`}
-            >
-              残り時間: {timeProgress.formattedRemaining}
-            </span>
-            <span className="text-gray-500">
-              経過時間: {Math.floor(timeProgress.elapsed / 60)}:
-              {String(timeProgress.elapsed % 60).padStart(2, "0")}
-            </span>
-          </div>
-
-          {timeProgress.isTimeUp && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              ⏰ 時間切れです！クイズを終了してください。
+          <div className="bg-white pt-4 px-3 pb-2">
+            <div className="text-xs border-b border-gray-400 pb-2 space-y-1">
+              {remainingTime ? (
+                <div
+                  className={`${getTimeStatusColor()[0]} rounded-full h-2 mb-2`}
+                >
+                  <div
+                    className={`h-2 rounded-full transition-all duration-300 ${getTimeStatusColor()[1]}`}
+                    style={{
+                      width: `${(remainingTime / QUIZ_TIME_LIMIT) * 100}%`,
+                    }}
+                  />
+                </div>
+              ) : null}
+              <p className="">
+                {SAMPLE_QUESTIONS.length}問中
+                <strong>{SAMPLE_QUESTIONS.length - answeredCount}</strong>
+                問の問題が残っています
+              </p>
+              <p className="flex items-center gap-px">
+                <ClockIcon className="w-4 h-4 text-[#a234b5]" />
+                {remainingTime
+                  ? `${Math.floor(remainingTime / 60)}分${String(remainingTime % 60).padStart(2, "0")}秒残っています`
+                  : "--:--"}
+              </p>
             </div>
-          )}
-
-          {!timeProgress.isTimeUp && isFinished && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-              🎉 全ての問題が完了しました！
-            </div>
-          )}
-
-          {/* 操作ボタン */}
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => saveProgress()}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              手動保存
-            </button>
-
-            <button
-              type="button"
-              onClick={clearProgress}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
-              進捗リセット
-            </button>
-
-            <button
-              type="button"
-              onClick={debug}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              デバッグ出力
-            </button>
-
-            {(isFinished || timeProgress.isTimeUp) && (
-              <button
-                type="button"
-                onClick={handleSubmitResults}
-                className={`text-white px-4 py-2 rounded ${
-                  timeProgress.isTimeUp
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-green-600 hover:bg-green-700"
-                }`}
-              >
-                {timeProgress.isTimeUp ? "時間切れ - 結果を送信" : "結果を送信"}
-              </button>
-            )}
           </div>
         </div>
-
-        {/* 問題一覧 */}
-        <div className="space-y-4">
-          {SAMPLE_QUESTIONS.map((question) => {
-            const questionState = getQuestionState(question.id) || {
-              id: question.id,
-              status: QuestionStatus.UNANSWERED,
-              answer: undefined,
-            };
-
-            return (
-              <div key={question.id} className="bg-white rounded-lg shadow-md">
-                <QuestionComponent
-                  questionId={question.id}
-                  questionText={question.text}
-                  questionAnswer={question.answer}
-                  questionState={questionState}
-                  onAnswer={handleAnswer}
-                />
+        <div className="pt-34 pb-20 px-3">
+          <h2>試験問題</h2>
+          {filterType === "unanswered_questions" &&
+            filteredQuestions.length === 0 && (
+              <div className="py-8 text-center text-gray-500">
+                <p>すべての問題に回答済みです！</p>
+                <p className="text-xs mt-2">
+                  「全問題を表示」を選択して確認してください。
+                </p>
               </div>
-            );
-          })}
+            )}
+          <ul className="divide-y divide-gray-400">
+            {filteredQuestions.map((q) => (
+              <li key={q.id} className="py-6 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold">
+                    問題{q.id} {q.title}
+                  </h3>
+                  <div
+                    className={`border rounded-full px-3 py-1 font-bold text-sm ${getAnswerStatusColor(q.id)}`}
+                  >
+                    {q.score}単位
+                  </div>
+                </div>
+                <p className="text-xs px-2">{q.text}</p>
+                <input
+                  value={localAnswers[q.id] || ""}
+                  onChange={(e) => {
+                    setLocalAnswers((prev) => ({
+                      ...prev,
+                      [q.id]: e.target.value,
+                    }));
+                  }}
+                  placeholder="回答を入力してください..."
+                  className="w-full p-3 border border-gray-400 text-xs rounded-xs"
+                />
+              </li>
+            ))}
+          </ul>
         </div>
-
-        {/* 復帰テスト説明 */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mt-6">
-          <h3 className="text-lg font-semibold text-yellow-800 mb-3">
-            🧪 クイズ機能テスト手順
-          </h3>
-          <ol className="list-decimal list-inside space-y-2 text-yellow-700">
-            <li>
-              グループ登録（/register）でグループIDをローカルストレージに保存
-            </li>
-            <li>いくつか問題に回答してください（時間制限: 10分）</li>
-            <li>
-              ページをリロード（F5）またはブラウザを閉じて再度開いてください
-            </li>
-            <li>グループID、回答状態、残り時間が復帰されることを確認</li>
-            <li>時間切れ時の動作をテスト（回答無効化、強制終了）</li>
-            <li>開発者ツールのコンソールでデータを確認できます</li>
-          </ol>
-
-          <div className="mt-4 space-y-3">
-            <div className="p-3 bg-orange-50 rounded border border-orange-200">
-              <p className="text-orange-800 font-medium">⏰ 時間管理機能</p>
-              <ul className="text-orange-700 text-sm mt-2 space-y-1">
-                <li>
-                  <strong>制限時間:</strong>{" "}
-                  10分（ヘッダーのプログレスバーで可視化）
-                </li>
-                <li>
-                  <strong>色分け:</strong> 緑（余裕）→ 黄（注意）→ 赤（緊急）
-                </li>
-                <li>
-                  <strong>時間切れ時:</strong> 回答無効化、強制終了モード
-                </li>
-                <li>
-                  <strong>復帰時:</strong> 経過時間も正しく復元されます
-                </li>
-              </ul>
+        <div className="fixed bottom-0 left-0 right-0 bg-[#f8f8f8] border-t border-gray-400 p-3">
+          <p className="text-xs text-center mb-2">
+            {lastSavedAt !== "" ? `最終保存: ${lastSavedAt}` : "未保存"}
+          </p>
+          <div className="flex gap-x-3 mb-3">
+            <div className="text-xs bg-white px-3 py-1 border">
+              問題フィルタ ({filteredQuestions.length})
             </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                name="filter"
+                id="filter-all"
+                value="all_questions"
+                checked={filterType === "all_questions"}
+                onChange={() => setFilterType("all_questions")}
+                className="mr-px"
+              />
+              <label htmlFor="filter-all" className="text-xs">
+                全問題を表示
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                name="filter"
+                id="filter-unanswered"
+                value="unanswered_questions"
+                checked={filterType === "unanswered_questions"}
+                onChange={() => setFilterType("unanswered_questions")}
+                className="mr-px"
+              />
+              <label htmlFor="filter-unanswered" className="text-xs">
+                未回答問題を表示
+              </label>
+            </div>
+          </div>
+          <div className="w-full flex gap-x-2">
+            <button
+              type="button"
+              onClick={handleSaveProgress}
+              className="w-full bg-[#cdcdcd] hover:bg-[#bababa] text-[#2b2b2b] text-xs px-3 py-2 transition-colors"
+            >
+              回答内容を保存
+            </button>
+            {/* TODO: debug用要削除 */}
+            <button
+              type="button"
+              onClick={() => {
+                clearProgress();
+                setLastSavedAt("");
+              }}
+              className="w-full bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 transition-colors"
+            >
+              リセット
+            </button>
           </div>
         </div>
       </div>
@@ -317,4 +306,4 @@ const QuizTestPage = () => {
   );
 };
 
-export default QuizTestPage;
+export default QuizPage;

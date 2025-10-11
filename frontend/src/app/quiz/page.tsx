@@ -249,7 +249,7 @@ const QuizPage = () => {
           </p>
           <div className="flex gap-x-3 mb-3">
             <div className="text-xs bg-white px-3 py-1 border">
-              問題フィルタ (2)
+              問題フィルタ ({filteredQuestions.length})
             </div>
             <div className="flex items-center">
               <input

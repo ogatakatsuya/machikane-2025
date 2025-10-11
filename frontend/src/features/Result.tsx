@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import Modal from "@/components/Modal";
 import { submitQuizResults } from "@/lib/api";
 import { SAMPLE_QUESTIONS } from "@/lib/constants";
 import {
@@ -18,6 +19,7 @@ import UserIcon from "/public/user.svg";
 
 const Result = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
+  const [activeModal, setActiveModal] = useState<string | null>(null);
 
   useEffect(() => {
     const initializeQuiz = async () => {
@@ -29,6 +31,7 @@ const Result = () => {
             const result = await submitQuizResults(
               parsed as QuizSubmissionData,
             );
+            // TODO: 0単位時のエラー
             setResults({
               ...result,
               created_at: new Date(result.created_at),
@@ -57,6 +60,18 @@ const Result = () => {
     initializeQuiz();
   }, []);
 
+  const closeModal = () => setActiveModal(null);
+
+  // TODO: UI班要相談変更
+  const getAnswerStatusColor = (questionId: number) => {
+    const d = results?.context.questionStates.find((q) => q.id === questionId);
+    if (d?.status === QuestionStatus.CORRECT)
+      return "text-green-600 bg-green-100";
+    else if (d?.status === QuestionStatus.INCORRECT)
+      return "text-red-600 bg-red-100";
+    else return "text-gray-600 bg-white";
+  };
+
   return (
     <div className="bg-[#eeeecc] w-full min-h-screen">
       <div>
@@ -79,19 +94,35 @@ const Result = () => {
         </div>
         <div className="mb-4">
           <ul className="flex text-[10px] text-white">
-            <li className="flex flex-col items-center justify-center gap-1 bg-[#88AA33] w-20 h-16">
+            {/** biome-ignore lint/a11y/useKeyWithClickEvents: need */}
+            <li
+              className="flex flex-col items-center justify-center gap-1 bg-[#88AA33] w-20 h-16 cursor-pointer hover:opacity-80"
+              onClick={() => setActiveModal("result")}
+            >
               <UserIcon className="w-6" />
               <p>結果を見る</p>
             </li>
-            <li className="flex flex-col items-center justify-center gap-1 bg-[#e67e22] w-20 h-16">
+            {/** biome-ignore lint/a11y/useKeyWithClickEvents: need */}
+            <li
+              className="flex flex-col items-center justify-center gap-1 bg-[#e67e22] w-20 h-16 cursor-pointer hover:opacity-80"
+              onClick={() => setActiveModal("deviation")}
+            >
               <ChartIcon className="w-6" />
               <p>偏差値</p>
             </li>
-            <li className="flex flex-col items-center justify-center gap-1 bg-[#c6b] w-20 h-16">
+            {/** biome-ignore lint/a11y/useKeyWithClickEvents: need */}
+            <li
+              className="flex flex-col items-center justify-center gap-1 bg-[#c6b] w-20 h-16 cursor-pointer hover:opacity-80"
+              onClick={() => setActiveModal("ranking")}
+            >
               <GlobeIcon className="w-6" />
               <p>ランキング</p>
             </li>
-            <li className="flex flex-col items-center justify-center gap-1 bg-[#5498B8] w-20 h-16">
+            {/** biome-ignore lint/a11y/useKeyWithClickEvents: need */}
+            <li
+              className="flex flex-col items-center justify-center gap-1 bg-[#5498B8] w-20 h-16 cursor-pointer hover:opacity-80"
+              onClick={() => setActiveModal("share")}
+            >
               <ShareIcon className="w-6" />
               <p>共有</p>
             </li>
@@ -147,6 +178,154 @@ const Result = () => {
           </div>
         </div>
       </div>
+
+      {/* 結果詳細モーダル */}
+      <Modal
+        isOpen={activeModal === "result"}
+        onClose={closeModal}
+        title="結果を見る"
+      >
+        <ul className="divide-y divide-gray-400">
+          {SAMPLE_QUESTIONS.map((q) => (
+            <li key={q.id} className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-md font-semibold">
+                  問題{q.id} {q.title}
+                </h3>
+                <div
+                  className={`border rounded-full px-3 py-1 font-semibold text-sm ${getAnswerStatusColor(q.id)}`}
+                >
+                  {q.score}単位
+                </div>
+              </div>
+              <p className="text-xs px-2">{q.text}</p>
+              <input
+                value={
+                  results?.context.questionStates.find((qs) => qs.id === q.id)
+                    ?.answer || "未回答"
+                }
+                className="w-full p-3 border border-gray-400 text-xs rounded-xs"
+                disabled
+              />
+            </li>
+          ))}
+        </ul>
+      </Modal>
+
+      {/* 偏差値モーダル */}
+      {/* TODO: API */}
+      <Modal
+        isOpen={activeModal === "deviation"}
+        onClose={closeModal}
+        title="偏差値"
+      >
+        <div className="text-sm p-4">
+          <div className="max-w-sm mx-auto">
+            <div className="p-3 text-center">
+              <h3 className="font-bold mb-2">あなたの偏差値は</h3>
+              <div className="text-4xl font-bold text-blue-600 mb-2">62.5</div>
+            </div>
+            <div className="bg-blue-100 p-3 rounded text-center font-semibold">
+              <p>これは、参加者の中で...</p>
+              <p className="font-bold text-blue-600 text-lg my-1">
+                上位<span className="text-xl mx-px">10.56</span>%
+              </p>
+              <p>に位置しています</p>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ランキングモーダル */}
+      <Modal
+        isOpen={activeModal === "ranking"}
+        onClose={closeModal}
+        title="ランキング"
+      >
+        <div className="text-sm p-4">
+          <div className="p-3 mb-3 rounded">
+            <h3 className="font-bold mb-2">あなたの順位</h3>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600 mb-1">
+                第<span className="text-4xl mx-1">{results?.rank || "-"}</span>
+                位
+              </div>
+              <div className="text-xs text-gray-600">
+                {results?.score || 0}単位獲得
+              </div>
+            </div>
+          </div>
+          <div className="bg-[#f0f0f0] p-3 rounded-md">
+            <h3 className="font-bold mb-2">トップ5</h3>
+            <div className="space-y-2">
+              {results && results.top_five.length > 0 ? (
+                results?.top_five.map((team, index) => (
+                  <div
+                    key={team.id}
+                    className={`flex justify-between items-center p-2 rounded ${team.group_id === results.group_id ? "bg-yellow-200 font-bold" : "bg-white"}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                          index === 0
+                            ? "bg-yellow-500 text-white"
+                            : index === 1
+                              ? "bg-gray-400 text-white"
+                              : index === 2
+                                ? "bg-orange-600 text-white"
+                                : "bg-gray-200"
+                        }`}
+                      >
+                        {team.rank}
+                      </div>
+                      <span className="text-xs">{team.group_name}</span>
+                    </div>
+                    <div className="text-xs font-bold text-orange-600">
+                      {team.score}単位
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div>ランキングデータがありません。</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* 共有モーダル */}
+      <Modal
+        isOpen={activeModal === "share"}
+        onClose={closeModal}
+        title="結果を共有"
+      >
+        <div className="text-sm p-6 space-y-5">
+          <div>
+            <h3 className="font-bold text-lg text-center mb-2">
+              あなたの結果を共有しましょう！
+            </h3>
+            {/* TODO: UI班確認 */}
+            <div className="bg-gray-200 p-3 rounded text-xs">
+              <p>　チーム名：{results?.group_name || "不明"}</p>
+              <p>獲得単位数：{results?.score || 0}単位</p>
+              <p>　　　順位：第{results?.rank || "?"}位</p>
+              <p>　　偏差値：50</p>
+            </div>
+          </div>
+          {/* TODO: 要相談 */}
+          <div className="space-y-2">
+            <button
+              type="button"
+              className="w-full bg-blue-500 text-white p-2 rounded text-xs font-bold hover:bg-blue-600"
+              onClick={() => {
+                return;
+              }}
+            >
+              ボタン
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

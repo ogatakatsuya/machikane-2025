@@ -127,6 +127,47 @@ func (q *Queries) GetGroupWithResults(ctx context.Context, id uuid.UUID) ([]GetG
 	return items, nil
 }
 
+const getLatestResultByGroup = `-- name: GetLatestResultByGroup :one
+SELECT 
+    r.id,
+    r.group_id,
+    r.score,
+    r.context,
+    r.created_at,
+    r.updated_at,
+    g.name as group_name
+FROM results r
+JOIN groups g ON r.group_id = g.id
+WHERE r.group_id = $1
+ORDER BY r.created_at DESC
+LIMIT 1
+`
+
+type GetLatestResultByGroupRow struct {
+	ID        uuid.UUID             `json:"id"`
+	GroupID   uuid.UUID             `json:"group_id"`
+	Score     int32                 `json:"score"`
+	Context   pqtype.NullRawMessage `json:"context"`
+	CreatedAt sql.NullTime          `json:"created_at"`
+	UpdatedAt sql.NullTime          `json:"updated_at"`
+	GroupName string                `json:"group_name"`
+}
+
+func (q *Queries) GetLatestResultByGroup(ctx context.Context, groupID uuid.UUID) (GetLatestResultByGroupRow, error) {
+	row := q.db.QueryRowContext(ctx, getLatestResultByGroup, groupID)
+	var i GetLatestResultByGroupRow
+	err := row.Scan(
+		&i.ID,
+		&i.GroupID,
+		&i.Score,
+		&i.Context,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.GroupName,
+	)
+	return i, err
+}
+
 const getResultRank = `-- name: GetResultRank :one
 SELECT rank FROM (
     SELECT 

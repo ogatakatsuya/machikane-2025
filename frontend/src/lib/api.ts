@@ -65,11 +65,35 @@ export const createGroup = async (
 // Quiz Results API
 export const submitQuizResults = async (
   data: QuizSubmissionData,
-): Promise<SerializedQuizResultResponse> => {
+): Promise<void> => {
   const groupId = data.context?.groupId;
   if (!groupId) throw new Error("groupId is required for results API");
-  return apiRequest<SerializedQuizResultResponse>(`/results/${groupId}`, {
+
+  const url = `${API_BASE_URL}/results/${groupId}`;
+  const response = await fetch(url, {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
+  });
+
+  if (response.status !== 201) {
+    let message = `HTTP ${response.status}: ${response.statusText}`;
+    try {
+      const err = (await response.json()) as { error?: string };
+      if (err?.error) message = err.error;
+    } catch {
+      // ignore JSON parse error
+    }
+    throw new ApiError(response.status, message);
+  }
+};
+
+// Get Quiz Results API
+export const getQuizResults = async (
+  groupId: string,
+): Promise<SerializedQuizResultResponse> => {
+  if (!groupId) throw new Error("groupId is required for get results API");
+  return apiRequest<SerializedQuizResultResponse>(`/results/${groupId}`, {
+    method: "GET",
   });
 };

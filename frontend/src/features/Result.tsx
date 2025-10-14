@@ -1,15 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
-import { submitQuizResults } from "@/lib/api";
+import { getQuizResults } from "@/lib/api";
 import { SAMPLE_QUESTIONS } from "@/lib/constants";
-import {
-  QuestionStatus,
-  type QuizResult,
-  type QuizSubmissionData,
-} from "@/lib/quiz-types";
+import { QuestionStatus, type QuizResult } from "@/lib/quiz-types";
 import ArrowUpIcon from "/public/arrow-up.svg";
 import ChartIcon from "/public/chart.svg";
 import GlobeIcon from "/public/globe.svg";
@@ -20,45 +17,39 @@ import UserIcon from "/public/user.svg";
 const Result = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const initializeQuiz = async () => {
+    const initializeResult = async () => {
       try {
-        const submissionData = localStorage.getItem("quiz_submission");
-        if (submissionData) {
-          const parsed = JSON.parse(submissionData);
-          try {
-            const result = await submitQuizResults(
-              parsed as QuizSubmissionData,
-            );
-            // TODO: 0単位時のエラー
-            setResults({
-              ...result,
-              created_at: new Date(result.created_at),
-              updated_at: new Date(result.updated_at),
-              context: {
-                ...result.context,
-                startedAt: new Date(result.context.startedAt),
-              },
-              top_five: result.top_five.map((t) => ({
-                ...t,
-                created_at: new Date(t.created_at),
-              })),
-            });
-          } catch (apiError) {
-            alert("結果送信に失敗しました。");
-            console.error("API error:", apiError);
-          }
-        } else {
-          alert("提出データが見つかりません。");
+        const groupId = localStorage.getItem("groupId");
+        if (!groupId) {
+          alert("グループIDが見つかりません。最初からやり直してください。");
+          router.push("/");
+          return;
         }
+
+        const result = await getQuizResults(groupId);
+        setResults({
+          ...result,
+          created_at: new Date(result.created_at),
+          updated_at: new Date(result.updated_at),
+          context: {
+            ...result.context,
+            startedAt: new Date(result.context.startedAt),
+          },
+          top_five: result.top_five.map((t) => ({
+            ...t,
+            created_at: new Date(t.created_at),
+          })),
+        });
       } catch (error) {
-        console.error("Error loading submission data:", error);
-        alert("提出データの読み込み中にエラーが発生しました。");
+        console.error("Failed to load results:", error);
+        alert("結果の取得に失敗しました。");
       }
     };
-    initializeQuiz();
-  }, []);
+    initializeResult();
+  }, [router.push]);
 
   const closeModal = () => setActiveModal(null);
 

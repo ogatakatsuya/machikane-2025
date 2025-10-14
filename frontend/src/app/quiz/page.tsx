@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
 import { useTimer } from "@/hooks/useTimer";
+import { submitQuizResults } from "@/lib/api";
 import { QUIZ_TIME_LIMIT, SAMPLE_QUESTIONS } from "@/lib/constants";
 import ClockIcon from "/public/clock.svg";
 
@@ -94,18 +95,19 @@ const QuizPage = () => {
   }, [localAnswers, updateMultipleAnswers, saveProgress]);
 
   // 結果画面へ移動
-  const goToResults = useCallback(() => {
+  const goToResults = useCallback(async () => {
     try {
-      localStorage.setItem(
-        "quiz_submission",
-        JSON.stringify(generateSubmissionData()),
-      );
-      localStorage.removeItem("groupId");
+      const submission = generateSubmissionData();
+      await submitQuizResults(submission);
+
+      localStorage.removeItem("quiz_submission");
       localStorage.removeItem(`quiz_progress_${groupId}`);
+
+      // 結果画面へ遷移
       router.push("/result");
     } catch (error) {
-      console.error("Failed to generate results:", error);
-      alert("結果の生成に失敗しました。");
+      console.error("Failed to submit results:", error);
+      alert("結果の送信に失敗しました。通信状況をご確認ください。");
     }
   }, [groupId, generateSubmissionData, router]);
 

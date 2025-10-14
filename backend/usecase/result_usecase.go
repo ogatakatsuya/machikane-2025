@@ -22,7 +22,7 @@ func NewResultUseCase(queries *db.Queries) ResultUseCase {
 	}
 }
 
-func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req dto.CreateResultDto) (*dto.ResultResponseDto, error) {
+func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req dto.CreateResultDto) error {
 	resultID := uuid.Must(uuid.NewV7())
 
 	// Convert context to JSON
@@ -30,7 +30,7 @@ func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req
 	if req.Context.GroupID != "" {
 		contextBytes, err := json.Marshal(req.Context)
 		if err != nil {
-			return nil, fmt.Errorf("failed to marshal context: %w", err)
+			return fmt.Errorf("failed to marshal context: %w", err)
 		}
 		contextJSON = pqtype.NullRawMessage{
 			RawMessage: contextBytes,
@@ -45,12 +45,22 @@ func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req
 		Context: contextJSON,
 	}
 
-	result, err := u.queries.CreateResult(ctx, params)
+	_, err := u.queries.CreateResult(ctx, params)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create result: %w", err)
+		return fmt.Errorf("failed to create result: %w", err)
 	}
 
-	// Get the rank of the newly created result
+	return nil
+}
+
+func (u *resultUseCase) GetResults(ctx context.Context, groupID uuid.UUID) (*dto.ResultResponseDto, error) {
+	// Get the latest result for the group
+	result, err := u.queries.GetLatestResultByGroup(ctx, groupID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get latest result: %w", err)
+	}
+
+	// Get the rank of the result
 	var rank int64 = 1
 	rankResult, err := u.queries.GetResultRank(ctx, result.ID)
 	if err == nil {

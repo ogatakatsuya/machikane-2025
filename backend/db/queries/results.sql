@@ -15,6 +15,21 @@ SELECT
 FROM inserted_result ir
 JOIN groups g ON ir.group_id = g.id;
 
+-- name: GetLatestResultByGroup :one
+SELECT 
+    r.id,
+    r.group_id,
+    r.score,
+    r.context,
+    r.created_at,
+    r.updated_at,
+    g.name as group_name
+FROM results r
+JOIN groups g ON r.group_id = g.id
+WHERE r.group_id = $1
+ORDER BY r.created_at DESC
+LIMIT 1;
+
 -- name: GetGroupWithResults :many
 SELECT 
     g.id as group_id,

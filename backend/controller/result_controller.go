@@ -41,12 +41,31 @@ func (ctrl *resultController) CreateResult(c echo.Context) error {
 		})
 	}
 
-	response, err := ctrl.resultUseCase.CreateResult(c.Request().Context(), groupID, req)
+	err = ctrl.resultUseCase.CreateResult(c.Request().Context(), groupID, req)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Failed to create result: " + err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusCreated, response)
+	return c.NoContent(http.StatusCreated)
+}
+
+func (ctrl *resultController) GetResults(c echo.Context) error {
+	groupIDParam := c.Param("group_id")
+	groupID, err := uuid.Parse(groupIDParam)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Invalid group_id format: " + err.Error(),
+		})
+	}
+
+	response, err := ctrl.resultUseCase.GetResults(c.Request().Context(), groupID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "Failed to get results: " + err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, response)
 }

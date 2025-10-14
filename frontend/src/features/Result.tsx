@@ -1,15 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
 import { getQuizResults } from "@/lib/api";
 import { SAMPLE_QUESTIONS } from "@/lib/constants";
-import {
-  QuestionStatus,
-  type QuizResult,
-  type QuizSubmissionData,
-} from "@/lib/quiz-types";
+import { QuestionStatus, type QuizResult } from "@/lib/quiz-types";
 import ArrowUpIcon from "/public/arrow-up.svg";
 import ChartIcon from "/public/chart.svg";
 import GlobeIcon from "/public/globe.svg";
@@ -20,6 +17,7 @@ import UserIcon from "/public/user.svg";
 const Result = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const initializeResult = async () => {
@@ -27,6 +25,7 @@ const Result = () => {
         const groupId = localStorage.getItem("groupId");
         if (!groupId) {
           alert("グループIDが見つかりません。最初からやり直してください。");
+          router.push("/");
           return;
         }
 
@@ -50,7 +49,7 @@ const Result = () => {
       }
     };
     initializeResult();
-  }, []);
+  }, [router.push]);
 
   const closeModal = () => setActiveModal(null);
 

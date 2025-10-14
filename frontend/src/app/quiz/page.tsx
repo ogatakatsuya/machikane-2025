@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
 import { useTimer } from "@/hooks/useTimer";
-import { QUIZ_TIME_LIMIT, SAMPLE_QUESTIONS } from "@/lib/constants";
 import { submitQuizResults } from "@/lib/api";
+import { QUIZ_TIME_LIMIT, SAMPLE_QUESTIONS } from "@/lib/constants";
 import ClockIcon from "/public/clock.svg";
 
 const QuizPage = () => {
@@ -98,7 +98,7 @@ const QuizPage = () => {
   const goToResults = useCallback(async () => {
     try {
       const submission = generateSubmissionData();
-      const resultResponse = await submitQuizResults(submission);
+      await submitQuizResults(submission);
 
       localStorage.removeItem("quiz_submission");
       localStorage.removeItem(`quiz_progress_${groupId}`);

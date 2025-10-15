@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDebouncedCallback } from "@/hooks/useDebounce";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
 import { useTimer } from "@/hooks/useTimer";
 import { submitQuizResults } from "@/lib/api";
@@ -18,6 +19,7 @@ const QuizPage = () => {
   >("all_questions");
   const router = useRouter();
   const hasInitializedRef = useRef(false);
+  const localAnswersRef = useRef<Record<number, string>>({});
 
   // ローカルストレージからgroupIdを取得してから初期化
   useEffect(() => {
@@ -62,9 +64,14 @@ const QuizPage = () => {
     enabled: !!groupId, // groupIdが存在する場合のみ有効化
   });
 
-  // コンテキストが更新されたら、ローカル状態と保存状態に反映
   useEffect(() => {
-    if (context?.QuestionAnswerState) {
+    localAnswersRef.current = localAnswers;
+  }, [localAnswers]);
+
+  // コンテキストが更新されたら、ローカル状態と保存状態に反映（初回のみ）
+  const hasLoadedContextRef = useRef(false);
+  useEffect(() => {
+    if (context?.QuestionAnswerState && !hasLoadedContextRef.current) {
       const contextAnswers: Record<number, string> = {};
       context.QuestionAnswerState.forEach((state) => {
         if (state.answer) {
@@ -72,14 +79,15 @@ const QuizPage = () => {
         }
       });
       setLocalAnswers(contextAnswers);
+      hasLoadedContextRef.current = true;
     }
   }, [context]);
 
-  // 現在の回答状況を保存
-  const handleSaveProgress = useCallback(() => {
+  // 現在の回答状況を保存（デバウンス処理）
+  const handleSaveProgressInternal = useCallback(() => {
     try {
-      // ローカル回答を一括でコンテキストに反映
-      const answers = Object.entries(localAnswers).map(
+      const currentAnswers = { ...localAnswersRef.current };
+      const answers = Object.entries(currentAnswers).map(
         ([questionId, answer]) => ({
           questionId: Number(questionId),
           answer,
@@ -98,7 +106,13 @@ const QuizPage = () => {
       console.error("Failed to save progress:", error);
       alert("回答状況の保存に失敗しました。");
     }
-  }, [localAnswers, updateMultipleAnswers, saveProgress]);
+  }, [updateMultipleAnswers, saveProgress]);
+
+  // デバウンスされた保存処理
+  const handleSaveProgress = useDebouncedCallback(
+    handleSaveProgressInternal,
+    3000,
+  );
 
   // 結果画面へ移動
   const goToResults = useCallback(async () => {
@@ -119,9 +133,9 @@ const QuizPage = () => {
   // 時間終了時のコールバック
   const onTimeUp = useCallback(() => {
     alert("制限時間が終了しました。回答内容を保存して結果画面へ移動します。");
-    handleSaveProgress();
+    handleSaveProgressInternal();
     goToResults();
-  }, [handleSaveProgress, goToResults]);
+  }, [handleSaveProgressInternal, goToResults]);
 
   // クイズの進行状況(回答数, 時間関連)
   const answeredCount =
@@ -242,6 +256,7 @@ const QuizPage = () => {
                       ...prev,
                       [q.id]: e.target.value,
                     }));
+                    handleSaveProgress();
                   }}
                   placeholder="回答を入力してください..."
                   className="w-full p-3 border border-gray-400 text-xs rounded-xs"
@@ -250,11 +265,11 @@ const QuizPage = () => {
             ))}
           </ul>
         </div>
-        <div className="fixed bottom-0 left-0 right-0 bg-[#f8f8f8] border-t border-gray-400 p-3">
-          <p className="text-xs text-center mb-2">
+        <div className="fixed bottom-0 left-0 right-0 bg-[#f8f8f8] border-t border-gray-400 p-3 space-y-2">
+          <p className="text-xs text-center">
             {lastSavedAt !== "" ? `最終保存: ${lastSavedAt}` : "未保存"}
           </p>
-          <div className="flex gap-x-3 mb-3">
+          <div className="flex gap-x-3">
             <div className="text-xs bg-white px-3 py-1 border">
               問題フィルタ ({filteredQuestions.length})
             </div>
@@ -286,26 +301,6 @@ const QuizPage = () => {
                 未回答問題を表示
               </label>
             </div>
-          </div>
-          <div className="w-full flex gap-x-2">
-            <button
-              type="button"
-              onClick={handleSaveProgress}
-              className="w-full bg-[#cdcdcd] hover:bg-[#bababa] text-[#2b2b2b] text-xs px-3 py-2 transition-colors"
-            >
-              回答内容を保存
-            </button>
-            {/* TODO: debug用要削除 */}
-            <button
-              type="button"
-              onClick={() => {
-                clearProgress();
-                setLastSavedAt("");
-              }}
-              className="w-full bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 transition-colors"
-            >
-              リセット
-            </button>
           </div>
         </div>
       </div>

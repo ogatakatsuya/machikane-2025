@@ -83,3 +83,11 @@ export const WARNING_LIST = [
 ];
 
 export const IMPORTANT_NOTICE = ["重要なお知らせはここに表示されます。"];
+
+// TODO: biz班に確認
+export const snsData = {
+  title: "テスト：タイトル",
+  text: "テスト：テキスト",
+  url: "https://machikane-2025.i-maker.org/",
+  hashtags: ["まちかね祭"],
+};

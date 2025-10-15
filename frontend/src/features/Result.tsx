@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { isMobile } from "react-device-detect";
 import Modal from "@/components/Modal";
 import { getQuizResults } from "@/lib/api";
-import { SAMPLE_QUESTIONS } from "@/lib/constants";
+import { SAMPLE_QUESTIONS, snsData } from "@/lib/constants";
 import { QuestionStatus, type QuizResult } from "@/lib/quiz-types";
 import ArrowUpIcon from "/public/arrow-up.svg";
 import ChartIcon from "/public/chart.svg";
@@ -13,6 +14,7 @@ import GlobeIcon from "/public/globe.svg";
 import SearchIcon from "/public/search.svg";
 import ShareIcon from "/public/share.svg";
 import UserIcon from "/public/user.svg";
+import XLogo from "/public/x.svg";
 
 const Result = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
@@ -31,6 +33,7 @@ const Result = () => {
         }
 
         const result = await getQuizResults(groupId);
+        console.log("res:", result);
         setResults({
           ...result,
           created_at: new Date(result.created_at),
@@ -304,17 +307,35 @@ const Result = () => {
               <p>　　偏差値：50</p>
             </div>
           </div>
-          {/* TODO: 要相談 */}
-          <div className="space-y-2">
-            <button
-              type="button"
-              className="w-full bg-blue-500 text-white p-2 rounded text-xs font-bold hover:bg-blue-600"
-              onClick={() => {
-                return;
-              }}
+          {/* TODO: biz要相談 */}
+          <div className="flex flex-col gap-2">
+            <a
+              href={`http://twitter.com/share?url=${snsData.url}&text=${snsData.title}${snsData.text}&hashtags=${snsData.hashtags.join(",")}`}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+              className="w-full p-2 flex items-center justify-center gap-2 bg-black rounded-md text-white"
             >
-              ボタン
-            </button>
+              <XLogo className="w-4" />
+              <p>Xでポスト</p>
+            </a>
+            <a
+              href={
+                isMobile
+                  ? encodeURI(
+                      `https://line.me/R/share?text=${`${snsData.title}\n${snsData.text}\n${snsData.url}`}`,
+                    )
+                  : encodeURI(
+                      `https://social-plugins.line.me/lineit/share?url=${snsData.url}&text=${`${snsData.title}\n${snsData.text}`}`,
+                    )
+              }
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+              className="w-full p-1 flex items-center justify-center gap-2 bg-[#06c755] rounded-md text-white"
+            >
+              {/** biome-ignore lint/performance/noImgElement: need */}
+              <img className="w-7" src="/line.webp" alt="line_logo" />
+              <p>LINEで共有</p>
+            </a>
           </div>
         </div>
       </Modal>

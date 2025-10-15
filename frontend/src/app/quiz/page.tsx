@@ -56,7 +56,6 @@ const QuizPage = () => {
     isLoading,
     updateMultipleAnswers,
     saveProgress,
-    clearProgress,
     generateSubmissionData,
   } = useQuizProgress({
     groupId: groupId || "",
@@ -122,8 +121,8 @@ const QuizPage = () => {
 
       localStorage.removeItem("quiz_submission");
       localStorage.removeItem(`quiz_progress_${groupId}`);
-
-      router.push("/result");
+      router.push(`/result?groupId=${groupId}`);
+      localStorage.removeItem("groupId");
     } catch (error) {
       console.error("Failed to submit results:", error);
       alert("結果の送信に失敗しました。通信状況をご確認ください。");

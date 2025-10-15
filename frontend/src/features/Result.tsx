@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
 import { getQuizResults } from "@/lib/api";
@@ -18,11 +18,12 @@ const Result = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const initializeResult = async () => {
       try {
-        const groupId = localStorage.getItem("groupId");
+        const groupId = searchParams.get("groupId");
         if (!groupId) {
           alert("グループIDが見つかりません。最初からやり直してください。");
           router.push("/");
@@ -49,7 +50,7 @@ const Result = () => {
       }
     };
     initializeResult();
-  }, [router.push]);
+  }, [router, searchParams]);
 
   const closeModal = () => setActiveModal(null);
 

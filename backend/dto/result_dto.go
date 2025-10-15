@@ -3,7 +3,7 @@ package dto
 import "github.com/google/uuid"
 
 type CreateResultDto struct {
-	Score   int32                 `json:"score" validate:"required,min=0"`
+	Score   int32                 `json:"score"`
 	Context SerializedQuizContext `json:"context"`
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
 import { useTimer } from "@/hooks/useTimer";
 import { submitQuizResults } from "@/lib/api";
@@ -17,9 +17,14 @@ const QuizPage = () => {
     "all_questions" | "unanswered_questions"
   >("all_questions");
   const router = useRouter();
+  const hasInitializedRef = useRef(false);
 
   // ローカルストレージからgroupIdを取得してから初期化
   useEffect(() => {
+    if (hasInitializedRef.current) {
+      return;
+    }
+
     const initializeQuiz = () => {
       try {
         setIsInitializing(true);
@@ -36,6 +41,7 @@ const QuizPage = () => {
         alert("クイズの初期化に失敗しました。ページをリロードしてください。");
       } finally {
         setIsInitializing(false);
+        hasInitializedRef.current = true;
       }
     };
 
@@ -103,7 +109,6 @@ const QuizPage = () => {
       localStorage.removeItem("quiz_submission");
       localStorage.removeItem(`quiz_progress_${groupId}`);
 
-      // 結果画面へ遷移
       router.push("/result");
     } catch (error) {
       console.error("Failed to submit results:", error);

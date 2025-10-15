@@ -6,7 +6,7 @@ export const API_BASE_URL =
 export const RANGE = { min: 1, max: 4 } as const;
 export const QUIZ_TIME_LIMIT = 1 * 60;
 
-// Created by Copilot
+// TODO: Created by Copilot
 export const SAMPLE_QUESTIONS: QuestionType[] = [
   { id: 1, title: "足し算", score: 1, text: "1 + 1 = ?", answer: ["2", "田"] },
   {
@@ -75,14 +75,19 @@ export const SAMPLE_QUESTIONS: QuestionType[] = [
 ];
 
 export const WARNING_LIST = [
-  "テストは静かな場所で受けてください。",
-  "他の人の答案を見ないでください。",
-  "時間を守り、途中退出はできません。",
-  "試験用紙は丁寧に扱ってください。",
-  "不明な点があれば、試験監督に質問してください。",
+  "手持ちのライトで問題を照らしてください。",
+  "選んだ問題の解答を記入してください。",
+  "他チームとの協力は禁止です。",
+  "発見次第、注意させていただきます。",
+  "不具合がありましたら、スタッフまでお知らせください。",
 ];
 
-export const IMPORTANT_NOTICE = ["重要なお知らせはここに表示されます。"];
+export const IMPORTANT_NOTICE = [
+  "途中で諦めず、最後まで全力で単位を修得しましょう。",
+  "わからない問題はスタッフがヒントを教えてくれるかもしれません。",
+  "i.maker は阪大情報サイト「はんナビ」を運営しています。",
+  "ここまで読んだ方は観察力が高く、謎解きが得意な傾向にあります。",
+];
 
 // TODO: biz班に確認
 export const snsData = {

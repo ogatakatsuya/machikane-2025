@@ -132,8 +132,11 @@ const Result = () => {
             <p>
               年度・学年：<strong>2025年度・マチカネ学期</strong>
             </p>
-            <p className="font-bold pr-5">
-              <span className="text-4xl mr-1">{results?.score || 0}</span>単位
+            <p className="font-bold pr-2">
+              <span className="text-5xl mr-1 text-blue-700">
+                {results?.score || 0}
+              </span>
+              <span className="text-xl mr-2 text-blue-700">/45</span>単位
             </p>
           </div>
           <div className="px-2">

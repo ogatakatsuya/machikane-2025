@@ -163,10 +163,11 @@ const QuizPage = () => {
       return "text-yellow-600 bg-yellow-100";
     else return "text-gray-600 bg-white";
   };
-  // TODO: UI班要相談変更
   const getTimeStatusColor = () => {
-    if (remainingTime && remainingTime >= 60)
+    if (remainingTime && remainingTime >= 300)
       return ["bg-[#c8e8d3]", "bg-[#007c2a]"];
+    else if (remainingTime && remainingTime >= 120)
+      return ["bg-[#fef3c7]", "bg-[#d97706]"];
     else return ["bg-[#ecd0f1]", "bg-[#a234b5]"];
   };
 

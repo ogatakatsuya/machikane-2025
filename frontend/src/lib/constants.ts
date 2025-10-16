@@ -97,4 +97,4 @@ export const snsData = {
   hashtags: ["まちかね祭"],
 };
 
-export const UPDATE_RANKING_INTERVAL = 0.5 * 60;
+export const UPDATE_RANKING_INTERVAL = 10 * 60;

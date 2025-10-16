@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import LoadingPage from "@/components/LoadingPage";
 import { useDebouncedCallback } from "@/hooks/useDebounce";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
 import { useTimer } from "@/hooks/useTimer";
@@ -166,18 +167,15 @@ const QuizPage = () => {
   // 初期化待ちまたはクイズデータの読み込み中
   if (isInitializing || !groupId || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">
-            {isInitializing
-              ? "初期化中..."
-              : !groupId
-                ? "グループIDを取得中..."
-                : "クイズデータを読み込み中..."}
-          </p>
-        </div>
-      </div>
+      <LoadingPage
+        text={
+          isInitializing
+            ? "初期化中..."
+            : !groupId
+              ? "グループIDを取得中..."
+              : "クイズデータを読み込み中..."
+        }
+      />
     );
   }
 

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
+import LoadingPage from "@/components/LoadingPage";
 import Modal from "@/components/Modal";
 import { getQuizResults } from "@/lib/api";
 import { SAMPLE_QUESTIONS, snsData } from "@/lib/constants";
@@ -19,6 +20,7 @@ import XLogo from "/public/x.svg";
 const Result = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -33,7 +35,6 @@ const Result = () => {
         }
 
         const result = await getQuizResults(groupId);
-        console.log("res:", result);
         setResults({
           ...result,
           created_at: new Date(result.created_at),
@@ -50,6 +51,8 @@ const Result = () => {
       } catch (error) {
         console.error("Failed to load results:", error);
         alert("結果の取得に失敗しました。");
+      } finally {
+        setIsLoading(false);
       }
     };
     initializeResult();
@@ -65,6 +68,10 @@ const Result = () => {
       return "text-red-600 bg-red-100";
     else return "text-gray-600 bg-gray-100";
   };
+
+  if (isLoading) {
+    return <LoadingPage text="結果を読み込み中..." />;
+  }
 
   return (
     <div className="bg-[#eeeecc] w-full min-h-screen">

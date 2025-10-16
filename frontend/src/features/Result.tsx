@@ -57,14 +57,13 @@ const Result = () => {
 
   const closeModal = () => setActiveModal(null);
 
-  // TODO: UI班要相談変更
   const getAnswerStatusColor = (questionId: number) => {
     const d = results?.context.questionStates.find((q) => q.id === questionId);
     if (d?.status === QuestionStatus.CORRECT)
       return "text-green-600 bg-green-100";
     else if (d?.status === QuestionStatus.INCORRECT)
       return "text-red-600 bg-red-100";
-    else return "text-gray-600 bg-white";
+    else return "text-gray-600 bg-gray-100";
   };
 
   return (
@@ -130,7 +129,9 @@ const Result = () => {
           </h2>
           <div className="flex justify-between text-xs m-4 space-y-2">
             <p>
-              年度・学年：<strong>2025年度・マチカネ学期</strong>
+              年度・学年：
+              <br />
+              <strong>2025年度・マチカネ学期</strong>
             </p>
             <p className="font-bold pr-2">
               <span className="text-5xl mr-1 text-blue-700">

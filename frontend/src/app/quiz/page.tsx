@@ -110,7 +110,7 @@ const QuizPage = () => {
   // デバウンスされた保存処理
   const handleSaveProgress = useDebouncedCallback(
     handleSaveProgressInternal,
-    3000,
+    5000,
   );
 
   // 結果画面へ移動
@@ -151,16 +151,8 @@ const QuizPage = () => {
         ).filter((q) => !!q) || []
       : SAMPLE_QUESTIONS;
 
-  // TODO: UI班要相談変更
   const getAnswerStatusColor = (questionId: number) => {
-    if (
-      context?.QuestionAnswerState.find(
-        (q) => q.id === questionId,
-      )?.answer?.trim()
-    )
-      return "text-green-600 bg-green-100";
-    else if (localAnswers[questionId]?.trim())
-      return "text-yellow-600 bg-yellow-100";
+    if (localAnswers[questionId]?.trim()) return "text-green-600 bg-green-100";
     else return "text-gray-600 bg-white";
   };
   const getTimeStatusColor = () => {

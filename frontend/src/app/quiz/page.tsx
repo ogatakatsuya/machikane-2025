@@ -68,6 +68,23 @@ const QuizPage = () => {
     localAnswersRef.current = localAnswers;
   }, [localAnswers]);
 
+  // ブラウザ終了時の保存
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const currentAnswers = { ...localAnswersRef.current };
+      const answers = Object.entries(currentAnswers).map(
+        ([questionId, answer]) => ({
+          questionId: Number(questionId),
+          answer,
+        }),
+      );
+      updateMultipleAnswers(answers);
+      saveProgress();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [updateMultipleAnswers]);
+
   // コンテキストが更新されたら、ローカル状態と保存状態に反映（初回のみ）
   const hasLoadedContextRef = useRef(false);
   useEffect(() => {

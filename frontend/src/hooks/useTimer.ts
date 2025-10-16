@@ -11,7 +11,7 @@ export const useTimer = (
 
   useEffect(() => {
     onTimeUpRef.current = onTimeUp;
-  });
+  }, [onTimeUp]);
 
   useEffect(() => {
     if (!startedAt) {

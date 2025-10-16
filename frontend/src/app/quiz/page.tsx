@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import LoadingPage from "@/components/LoadingPage";
+import { useDebouncedCallback } from "@/hooks/useDebounce";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
 import { useTimer } from "@/hooks/useTimer";
 import { submitQuizResults } from "@/lib/api";
@@ -17,9 +19,15 @@ const QuizPage = () => {
     "all_questions" | "unanswered_questions"
   >("all_questions");
   const router = useRouter();
+  const hasInitializedRef = useRef(false);
+  const localAnswersRef = useRef<Record<number, string>>({});
 
   // ローカルストレージからgroupIdを取得してから初期化
   useEffect(() => {
+    if (hasInitializedRef.current) {
+      return;
+    }
+
     const initializeQuiz = () => {
       try {
         setIsInitializing(true);
@@ -36,6 +44,7 @@ const QuizPage = () => {
         alert("クイズの初期化に失敗しました。ページをリロードしてください。");
       } finally {
         setIsInitializing(false);
+        hasInitializedRef.current = true;
       }
     };
 
@@ -48,7 +57,6 @@ const QuizPage = () => {
     isLoading,
     updateMultipleAnswers,
     saveProgress,
-    clearProgress,
     generateSubmissionData,
   } = useQuizProgress({
     groupId: groupId || "",
@@ -56,9 +64,31 @@ const QuizPage = () => {
     enabled: !!groupId, // groupIdが存在する場合のみ有効化
   });
 
-  // コンテキストが更新されたら、ローカル状態と保存状態に反映
   useEffect(() => {
-    if (context?.QuestionAnswerState) {
+    localAnswersRef.current = localAnswers;
+  }, [localAnswers]);
+
+  // ブラウザ終了時の保存
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const currentAnswers = { ...localAnswersRef.current };
+      const answers = Object.entries(currentAnswers).map(
+        ([questionId, answer]) => ({
+          questionId: Number(questionId),
+          answer,
+        }),
+      );
+      updateMultipleAnswers(answers);
+      saveProgress();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [updateMultipleAnswers, saveProgress]);
+
+  // コンテキストが更新されたら、ローカル状態と保存状態に反映（初回のみ）
+  const hasLoadedContextRef = useRef(false);
+  useEffect(() => {
+    if (context?.QuestionAnswerState && !hasLoadedContextRef.current) {
       const contextAnswers: Record<number, string> = {};
       context.QuestionAnswerState.forEach((state) => {
         if (state.answer) {
@@ -66,14 +96,15 @@ const QuizPage = () => {
         }
       });
       setLocalAnswers(contextAnswers);
+      hasLoadedContextRef.current = true;
     }
   }, [context]);
 
-  // 現在の回答状況を保存
-  const handleSaveProgress = useCallback(() => {
+  // 現在の回答状況を保存（デバウンス処理）
+  const handleSaveProgressInternal = useCallback(() => {
     try {
-      // ローカル回答を一括でコンテキストに反映
-      const answers = Object.entries(localAnswers).map(
+      const currentAnswers = { ...localAnswersRef.current };
+      const answers = Object.entries(currentAnswers).map(
         ([questionId, answer]) => ({
           questionId: Number(questionId),
           answer,
@@ -92,7 +123,13 @@ const QuizPage = () => {
       console.error("Failed to save progress:", error);
       alert("回答状況の保存に失敗しました。");
     }
-  }, [localAnswers, updateMultipleAnswers, saveProgress]);
+  }, [updateMultipleAnswers, saveProgress]);
+
+  // デバウンスされた保存処理
+  const handleSaveProgress = useDebouncedCallback(
+    handleSaveProgressInternal,
+    5000,
+  );
 
   // 結果画面へ移動
   const goToResults = useCallback(async () => {
@@ -102,9 +139,8 @@ const QuizPage = () => {
 
       localStorage.removeItem("quiz_submission");
       localStorage.removeItem(`quiz_progress_${groupId}`);
-
-      // 結果画面へ遷移
-      router.push("/result");
+      router.push(`/result?groupId=${groupId}`);
+      localStorage.removeItem("groupId");
     } catch (error) {
       console.error("Failed to submit results:", error);
       alert("結果の送信に失敗しました。通信状況をご確認ください。");
@@ -114,9 +150,9 @@ const QuizPage = () => {
   // 時間終了時のコールバック
   const onTimeUp = useCallback(() => {
     alert("制限時間が終了しました。回答内容を保存して結果画面へ移動します。");
-    handleSaveProgress();
+    handleSaveProgressInternal();
     goToResults();
-  }, [handleSaveProgress, goToResults]);
+  }, [handleSaveProgressInternal, goToResults]);
 
   // クイズの進行状況(回答数, 時間関連)
   const answeredCount =
@@ -133,40 +169,30 @@ const QuizPage = () => {
         ).filter((q) => !!q) || []
       : SAMPLE_QUESTIONS;
 
-  // TODO: UI班要相談変更
   const getAnswerStatusColor = (questionId: number) => {
-    if (
-      context?.QuestionAnswerState.find(
-        (q) => q.id === questionId,
-      )?.answer?.trim()
-    )
-      return "text-green-600 bg-green-100";
-    else if (localAnswers[questionId]?.trim())
-      return "text-yellow-600 bg-yellow-100";
+    if (localAnswers[questionId]?.trim()) return "text-green-600 bg-green-100";
     else return "text-gray-600 bg-white";
   };
-  // TODO: UI班要相談変更
   const getTimeStatusColor = () => {
-    if (remainingTime && remainingTime >= 60)
+    if (remainingTime && remainingTime >= 300)
       return ["bg-[#c8e8d3]", "bg-[#007c2a]"];
+    else if (remainingTime && remainingTime >= 120)
+      return ["bg-[#fef3c7]", "bg-[#d97706]"];
     else return ["bg-[#ecd0f1]", "bg-[#a234b5]"];
   };
 
   // 初期化待ちまたはクイズデータの読み込み中
   if (isInitializing || !groupId || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">
-            {isInitializing
-              ? "初期化中..."
-              : !groupId
-                ? "グループIDを取得中..."
-                : "クイズデータを読み込み中..."}
-          </p>
-        </div>
-      </div>
+      <LoadingPage
+        text={
+          isInitializing
+            ? "初期化中..."
+            : !groupId
+              ? "グループIDを取得中..."
+              : "クイズデータを読み込み中..."
+        }
+      />
     );
   }
 
@@ -237,6 +263,7 @@ const QuizPage = () => {
                       ...prev,
                       [q.id]: e.target.value,
                     }));
+                    handleSaveProgress();
                   }}
                   placeholder="回答を入力してください..."
                   className="w-full p-3 border border-gray-400 text-xs rounded-xs"
@@ -245,11 +272,11 @@ const QuizPage = () => {
             ))}
           </ul>
         </div>
-        <div className="fixed bottom-0 left-0 right-0 bg-[#f8f8f8] border-t border-gray-400 p-3">
-          <p className="text-xs text-center mb-2">
+        <div className="fixed bottom-0 left-0 right-0 bg-[#f8f8f8] border-t border-gray-400 p-3 space-y-2">
+          <p className="text-xs text-center">
             {lastSavedAt !== "" ? `最終保存: ${lastSavedAt}` : "未保存"}
           </p>
-          <div className="flex gap-x-3 mb-3">
+          <div className="flex gap-x-3">
             <div className="text-xs bg-white px-3 py-1 border">
               問題フィルタ ({filteredQuestions.length})
             </div>
@@ -281,26 +308,6 @@ const QuizPage = () => {
                 未回答問題を表示
               </label>
             </div>
-          </div>
-          <div className="w-full flex gap-x-2">
-            <button
-              type="button"
-              onClick={handleSaveProgress}
-              className="w-full bg-[#cdcdcd] hover:bg-[#bababa] text-[#2b2b2b] text-xs px-3 py-2 transition-colors"
-            >
-              回答内容を保存
-            </button>
-            {/* TODO: debug用要削除 */}
-            <button
-              type="button"
-              onClick={() => {
-                clearProgress();
-                setLastSavedAt("");
-              }}
-              className="w-full bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 transition-colors"
-            >
-              リセット
-            </button>
           </div>
         </div>
       </div>

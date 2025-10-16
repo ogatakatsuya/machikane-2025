@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { isMobile } from "react-device-detect";
+import LoadingPage from "@/components/LoadingPage";
 import Modal from "@/components/Modal";
 import { getQuizResults } from "@/lib/api";
-import { SAMPLE_QUESTIONS } from "@/lib/constants";
+import { SAMPLE_QUESTIONS, snsData } from "@/lib/constants";
 import { QuestionStatus, type QuizResult } from "@/lib/quiz-types";
 import ArrowUpIcon from "/public/arrow-up.svg";
 import ChartIcon from "/public/chart.svg";
@@ -13,16 +15,19 @@ import GlobeIcon from "/public/globe.svg";
 import SearchIcon from "/public/search.svg";
 import ShareIcon from "/public/share.svg";
 import UserIcon from "/public/user.svg";
+import XLogo from "/public/x.svg";
 
 const Result = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const initializeResult = async () => {
       try {
-        const groupId = localStorage.getItem("groupId");
+        const groupId = searchParams.get("groupId");
         if (!groupId) {
           alert("グループIDが見つかりません。最初からやり直してください。");
           router.push("/");
@@ -46,22 +51,27 @@ const Result = () => {
       } catch (error) {
         console.error("Failed to load results:", error);
         alert("結果の取得に失敗しました。");
+      } finally {
+        setIsLoading(false);
       }
     };
     initializeResult();
-  }, [router.push]);
+  }, [router, searchParams]);
 
   const closeModal = () => setActiveModal(null);
 
-  // TODO: UI班要相談変更
   const getAnswerStatusColor = (questionId: number) => {
     const d = results?.context.questionStates.find((q) => q.id === questionId);
     if (d?.status === QuestionStatus.CORRECT)
       return "text-green-600 bg-green-100";
     else if (d?.status === QuestionStatus.INCORRECT)
       return "text-red-600 bg-red-100";
-    else return "text-gray-600 bg-white";
+    else return "text-gray-600 bg-gray-100";
   };
+
+  if (isLoading) {
+    return <LoadingPage text="結果を読み込み中..." />;
+  }
 
   return (
     <div className="bg-[#eeeecc] w-full min-h-screen">
@@ -126,10 +136,15 @@ const Result = () => {
           </h2>
           <div className="flex justify-between text-xs m-4 space-y-2">
             <p>
-              年度・学年：<strong>2025年度・マチカネ学期</strong>
+              年度・学年：
+              <br />
+              <strong>2025年度・マチカネ学期</strong>
             </p>
-            <p className="font-bold pr-5">
-              <span className="text-4xl mr-1">{results?.score || 0}</span>単位
+            <p className="font-bold pr-2">
+              <span className="text-5xl mr-1 text-blue-700">
+                {results?.score || 0}
+              </span>
+              <span className="text-xl mr-2 text-blue-700">/45</span>単位
             </p>
           </div>
           <div className="px-2">
@@ -303,17 +318,35 @@ const Result = () => {
               <p>　　偏差値：50</p>
             </div>
           </div>
-          {/* TODO: 要相談 */}
-          <div className="space-y-2">
-            <button
-              type="button"
-              className="w-full bg-blue-500 text-white p-2 rounded text-xs font-bold hover:bg-blue-600"
-              onClick={() => {
-                return;
-              }}
+          {/* TODO: biz要相談 */}
+          <div className="flex flex-col gap-2">
+            <a
+              href={`http://twitter.com/share?url=${snsData.url}&text=${snsData.title}${snsData.text}&hashtags=${snsData.hashtags.join(",")}`}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+              className="w-full p-2 flex items-center justify-center gap-2 bg-black rounded-md text-white"
             >
-              ボタン
-            </button>
+              <XLogo className="w-4" />
+              <p>Xでポスト</p>
+            </a>
+            <a
+              href={
+                isMobile
+                  ? encodeURI(
+                      `https://line.me/R/share?text=${`${snsData.title}\n${snsData.text}\n${snsData.url}`}`,
+                    )
+                  : encodeURI(
+                      `https://social-plugins.line.me/lineit/share?url=${snsData.url}&text=${`${snsData.title}\n${snsData.text}`}`,
+                    )
+              }
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+              className="w-full p-1 flex items-center justify-center gap-2 bg-[#06c755] rounded-md text-white"
+            >
+              {/** biome-ignore lint/performance/noImgElement: need */}
+              <img className="w-7" src="/line.webp" alt="line_logo" />
+              <p>LINEで共有</p>
+            </a>
           </div>
         </div>
       </Modal>

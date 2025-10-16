@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const useTimer = (
   startedAt: Date | undefined,
@@ -6,10 +6,17 @@ export const useTimer = (
   onTimeUp: () => void,
 ) => {
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
+  const onTimeUpRef = useRef(onTimeUp);
+  const hasCalledTimeUpRef = useRef(false);
+
+  useEffect(() => {
+    onTimeUpRef.current = onTimeUp;
+  }, [onTimeUp]);
 
   useEffect(() => {
     if (!startedAt) {
       setRemainingTime(null);
+      hasCalledTimeUpRef.current = false;
       return;
     }
 
@@ -25,14 +32,17 @@ export const useTimer = (
       if (timeLeft === 0) {
         setRemainingTime(0);
         clearInterval(intervalId);
-        onTimeUp();
+        if (!hasCalledTimeUpRef.current) {
+          hasCalledTimeUpRef.current = true;
+          onTimeUpRef.current();
+        }
       } else {
         setRemainingTime(timeLeft);
       }
     }, 250);
 
     return () => clearInterval(intervalId);
-  }, [startedAt, seconds, onTimeUp]);
+  }, [startedAt, seconds]);
 
   return remainingTime;
 };

@@ -30,14 +30,6 @@ const QuizHome = () => {
             <h2 className="text-lg">注意事項</h2>
             <div className="border border-gray-300 p-4 pl-8 my-2">
               <ol className="list-disc pr-1 space-y-2">
-                <li>
-                  <p className="text-sm">
-                    問題を開始したら、
-                    <span className="text-red-600 font-bold">
-                      終了するまで絶対にページをリロードしたり、他のページに遷移しないでください。
-                    </span>
-                  </p>
-                </li>
                 {WARNING_LIST.map((warning) => (
                   <li key={warning}>
                     <p className="text-sm">{warning}</p>

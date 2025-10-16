@@ -56,18 +56,6 @@ export const useQuizProgress = (
     initializeManager();
   }, [enabled, groupId, totalQuestions]);
 
-  // ブラウザ終了時の保存
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (managerRef.current) {
-        // ブラウザ終了時には必ず保存
-        managerRef.current.saveToStorage();
-      }
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, []);
-
   // 複数の回答を一括更新（保存はしない）
   const updateMultipleAnswers = useCallback(
     (answers: { questionId: number; answer: string }[]): void => {

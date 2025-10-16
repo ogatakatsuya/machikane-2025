@@ -83,7 +83,7 @@ const QuizPage = () => {
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [updateMultipleAnswers]);
+  }, [updateMultipleAnswers, saveProgress]);
 
   // コンテキストが更新されたら、ローカル状態と保存状態に反映（初回のみ）
   const hasLoadedContextRef = useRef(false);

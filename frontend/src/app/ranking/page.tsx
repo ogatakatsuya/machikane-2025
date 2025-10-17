@@ -2,15 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingPage from "@/components/LoadingPage";
+import { getRankings } from "@/lib/api";
 import { UPDATE_RANKING_INTERVAL } from "@/lib/constants";
-
-interface RankingItem {
-  id: string;
-  group_name: string;
-  score: number;
-  rank: number;
-  time: number;
-}
+import type { RankingItem } from "@/lib/types";
 
 const getRankBadge = (rank: number) => {
   if (rank === 1)
@@ -49,16 +43,23 @@ const getRankBadge = (rank: number) => {
   };
 };
 
+const formatChallengeTime = (dateString: string) => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleString("ja-JP", {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "Invalid Date";
+  }
+};
+
 const AutoScrollList = ({ items }: { items: RankingItem[] }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(true);
-
-  // TODO: 日付もフォーマットする
-  const formatChallengeTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
 
   // 自動スクロール機能
   useEffect(() => {
@@ -112,7 +113,7 @@ const AutoScrollList = ({ items }: { items: RankingItem[] }) => {
                       {item.group_name}
                     </h3>
                     <div className="text-sm text-yellow-300/80">
-                      🕐 挑戦日時: {formatChallengeTime(item.time || 0)}
+                      🕐 挑戦日時: {formatChallengeTime(item.created_at)}
                     </div>
                   </div>
                   <div className="text-center">
@@ -135,14 +136,14 @@ const AutoScrollList = ({ items }: { items: RankingItem[] }) => {
         onClick={() => setIsAutoScrollEnabled(!isAutoScrollEnabled)}
         className={`absolute bottom-2 right-2 px-2 py-1 rounded text-xs transition-all duration-300 ${
           isAutoScrollEnabled
-            ? "bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400/60 hover:text-yellow-400"
-            : "bg-gray-500/20 hover:bg-gray-500/30 text-gray-400/60 hover:text-gray-400"
+            ? "bg-gray-500/20 hover:bg-gray-500/30 text-gray-400/60 hover:text-gray-400"
+            : "bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400/60 hover:text-yellow-400"
         }`}
         title={
           isAutoScrollEnabled ? "自動スクロールを停止" : "自動スクロールを開始"
         }
       >
-        {isAutoScrollEnabled ? "▶" : "⏸"}
+        {isAutoScrollEnabled ? "⏸" : "▶"}
       </button>
     </div>
   );
@@ -152,7 +153,7 @@ const AutoScrollList = ({ items }: { items: RankingItem[] }) => {
 const UpdateIndicator = ({ isUpdating }: { isUpdating: boolean }) => {
   return (
     <div
-      className={`fixed top-6 right-8 z-50 transition-all duration-500 ${isUpdating ? "scale-130 opacity-100" : "scale-100 opacity-70"}`}
+      className={`fixed top-6 right-8 z-50 transition-all duration-500 ${isUpdating ? "scale-125 opacity-100" : "scale-100 opacity-70"}`}
     >
       <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
         <div
@@ -173,29 +174,20 @@ const RankingPage = () => {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [remainingTime, setRemainingTime] = useState(UPDATE_RANKING_INTERVAL);
 
-  // TODO: ダミー．API実装後
-  const generateDummyRankings = useCallback((): RankingItem[] => {
-    return Array.from({ length: 50 }, (_, i) => ({
-      id: `team-${i + 1}`,
-      group_name: `チーム${i + 1}`,
-      score: Math.max(0, 1000 - i * 15 - Math.floor(Math.random() * 50)),
-      rank: i + 1,
-      created_at: new Date(Date.now() - Math.random() * 3600000).toISOString(),
-      time: Math.floor(300 + Math.random() * 1200), // 5-25分
-    }));
-  }, []);
-
   // 10分ごとの自動更新
   const fetchRankings = useCallback(async () => {
     setIsUpdating(true);
 
-    // TODO: ダミーAPI呼び出しのシミュレーション
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const response = await getRankings(0, 50);
+      setRankings(response.rankings);
+    } catch (error) {
+      console.error("Failed to fetch rankings:", error);
+    }
 
-    setRankings(generateDummyRankings());
     setLastUpdated(new Date());
     setIsUpdating(false);
-  }, [generateDummyRankings]);
+  }, []);
 
   // 初回データ読み込み
   useEffect(() => {
@@ -229,18 +221,12 @@ const RankingPage = () => {
       );
       setRemainingTime(remainingSeconds);
     };
+    updateCountdown();
     const countdownInterval = setInterval(updateCountdown, 1000);
     return () => clearInterval(countdownInterval);
   }, [lastUpdated]);
 
   const formatRemainingTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
-
-  // TODO: 日付もフォーマットする
-  const formatChallengeTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
@@ -349,7 +335,7 @@ const RankingPage = () => {
                       <span className="text-sm font-mono ml-1">単位</span>
                     </div>
                     <div className="text-yellow-300/80 text-sm font-mono">
-                      🕐 {formatChallengeTime(item.time || 0)}
+                      🕐 {formatChallengeTime(item.created_at)}
                     </div>
                   </div>
                 </div>
@@ -361,9 +347,9 @@ const RankingPage = () => {
         {/* 4位以下のランキングリスト */}
         <div className="bg-black/80 backdrop-blur-md rounded-2xl p-6 border-2 border-yellow-500/50 shadow-2xl">
           <h2 className="text-3xl font-bold text-yellow-400 mb-6 text-center flex items-center justify-center gap-3 font-mono">
-            <span className="text-4xl">�</span>
+            <span className="text-4xl">🔍</span>
             DETECTIVE BOARD
-            <span className="text-4xl">�</span>
+            <span className="text-4xl">🔍</span>
           </h2>
 
           <div className="max-h-96 overflow-hidden">

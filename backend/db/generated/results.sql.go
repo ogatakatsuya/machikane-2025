@@ -197,8 +197,13 @@ SELECT
 FROM results r
 JOIN groups g ON r.group_id = g.id
 ORDER BY r.score DESC, r.created_at ASC
-LIMIT $1
+LIMIT $1 OFFSET $2
 `
+
+type GetTopResultsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
 
 type GetTopResultsRow struct {
 	ID        uuid.UUID    `json:"id"`
@@ -210,8 +215,8 @@ type GetTopResultsRow struct {
 	Rank      int64        `json:"rank"`
 }
 
-func (q *Queries) GetTopResults(ctx context.Context, limit int32) ([]GetTopResultsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getTopResults, limit)
+func (q *Queries) GetTopResults(ctx context.Context, arg GetTopResultsParams) ([]GetTopResultsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTopResults, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

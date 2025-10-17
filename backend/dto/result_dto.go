@@ -27,3 +27,7 @@ type ResultResponseDto struct {
 	UpdatedAt string                 `json:"updated_at"`
 	TopFive   []RankingItemDto       `json:"top_five"`
 }
+
+type RankingResponseDto struct {
+	Rankings []RankingItemDto `json:"rankings"`
+}

@@ -5,4 +5,5 @@ import "github.com/labstack/echo/v4"
 type ResultController interface {
 	CreateResult(c echo.Context) error
 	GetResults(c echo.Context) error
+	GetRanking(c echo.Context) error
 }

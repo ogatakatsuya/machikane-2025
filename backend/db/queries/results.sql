@@ -66,4 +66,4 @@ SELECT
 FROM results r
 JOIN groups g ON r.group_id = g.id
 ORDER BY r.score DESC, r.created_at ASC
-LIMIT $1;
+LIMIT $1 OFFSET $2;

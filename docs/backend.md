@@ -167,6 +167,33 @@ Save quiz result for a specific group. Returns the result with its ranking posit
 - `400 Bad Request`: Invalid group_id format, request body, or validation failed
 - `500 Internal Server Error`: Failed to create result
 
+### GET /ranking
+
+Get paginated ranking results
+
+**Query Parameters**
+- `offset`: Starting position (optional, default: 0)
+- `limit`: Number of results to return (optional, default: 30)
+
+**Response (200 OK)**
+```json
+{
+  "rankings": [
+    {
+      "id": "uuid",
+      "group_id": "uuid", 
+      "group_name": "string",
+      "score": "number",
+      "rank": "number",
+      "created_at": "ISO 8601 timestamp"
+    }
+  ]
+}
+```
+
+**Error Responses**
+- `500 Internal Server Error`: Failed to get ranking
+
 ## Middleware
 
 - **Logger**: Request logging

@@ -66,6 +66,7 @@ func main() {
 	e.POST("/groups", groupController.CreateGroup)
 	e.POST("/results/:group_id", resultController.CreateResult)
 	e.GET("/results/:group_id", resultController.GetResults)
+	e.GET("/ranking", resultController.GetRanking)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))

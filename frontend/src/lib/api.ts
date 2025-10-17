@@ -7,6 +7,7 @@ import type {
   ApiErrorResponse,
   CreateGroupRequest,
   GroupResponse,
+  RankingResponse,
 } from "./types";
 
 export class ApiError extends Error {
@@ -96,4 +97,17 @@ export const getQuizResults = async (
   return apiRequest<SerializedQuizResultResponse>(`/results/${groupId}`, {
     method: "GET",
   });
+};
+
+// Get Rankings API
+export const getRankings = async (
+  offset = 0,
+  limit = 30,
+): Promise<RankingResponse> => {
+  return apiRequest<RankingResponse>(
+    `/ranking?offset=${offset}&limit=${limit}`,
+    {
+      method: "GET",
+    },
+  );
 };

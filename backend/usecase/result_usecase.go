@@ -68,7 +68,10 @@ func (u *resultUseCase) GetResults(ctx context.Context, groupID uuid.UUID) (*dto
 	}
 
 	// Get top 5 results
-	topResults, err := u.queries.GetTopResults(ctx, 5)
+	topResults, err := u.queries.GetTopResults(ctx, db.GetTopResultsParams{
+		Limit:  5,
+		Offset: 0,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get top results: %w", err)
 	}
@@ -111,6 +114,38 @@ func (u *resultUseCase) GetResults(ctx context.Context, groupID uuid.UUID) (*dto
 
 	if result.UpdatedAt.Valid {
 		response.UpdatedAt = result.UpdatedAt.Time.Format("2006-01-02T15:04:05Z07:00")
+	}
+
+	return response, nil
+}
+
+func (u *resultUseCase) GetRanking(ctx context.Context, offset, limit int32) (*dto.RankingResponseDto, error) {
+	// Get top results with ranking
+	topResults, err := u.queries.GetTopResults(ctx, db.GetTopResultsParams{
+		Limit:  limit,
+		Offset: offset,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get top results: %w", err)
+	}
+
+	rankings := make([]dto.RankingItemDto, 0, len(topResults))
+	for _, tr := range topResults {
+		item := dto.RankingItemDto{
+			ID:        tr.ID,
+			GroupID:   tr.GroupID,
+			GroupName: tr.GroupName,
+			Score:     tr.Score,
+			Rank:      tr.Rank,
+		}
+		if tr.CreatedAt.Valid {
+			item.CreatedAt = tr.CreatedAt.Time.Format("2006-01-02T15:04:05Z07:00")
+		}
+		rankings = append(rankings, item)
+	}
+
+	response := &dto.RankingResponseDto{
+		Rankings: rankings,
 	}
 
 	return response, nil

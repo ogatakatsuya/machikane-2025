@@ -96,3 +96,5 @@ export const snsData = {
   url: "https://machikane-2025.i-maker.org/",
   hashtags: ["まちかね祭"],
 };
+
+export const UPDATE_RANKING_INTERVAL = 10 * 60; // seconds

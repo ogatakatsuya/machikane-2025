@@ -16,6 +16,7 @@ import SearchIcon from "/public/search.svg";
 import ShareIcon from "/public/share.svg";
 import UserIcon from "/public/user.svg";
 import XLogo from "/public/x.svg";
+import InstagramLogo from "/public/instagram.svg";
 
 const Result = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
@@ -347,6 +348,13 @@ const Result = () => {
               <img className="w-7" src="/line.webp" alt="line_logo" />
               <p>LINEで共有</p>
             </a>
+            <button
+              type="button"
+              className="w-full p-2 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-md text-white"
+            >
+              <InstagramLogo className="w-6" />
+              <p>Instagramストーリーで共有</p>
+            </button>
           </div>
         </div>
       </Modal>

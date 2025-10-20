@@ -12,11 +12,11 @@ import { QuestionStatus, type QuizResult } from "@/lib/quiz-types";
 import ArrowUpIcon from "/public/arrow-up.svg";
 import ChartIcon from "/public/chart.svg";
 import GlobeIcon from "/public/globe.svg";
+import InstagramLogo from "/public/instagram.svg";
 import SearchIcon from "/public/search.svg";
 import ShareIcon from "/public/share.svg";
 import UserIcon from "/public/user.svg";
 import XLogo from "/public/x.svg";
-import InstagramLogo from "/public/instagram.svg";
 
 const Result = () => {
   const [results, setResults] = useState<QuizResult | null>(null);

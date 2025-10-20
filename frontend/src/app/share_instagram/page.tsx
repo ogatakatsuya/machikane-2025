@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { getQuizResults } from "@/lib/api";
 import { snsData } from "@/lib/constants";
 import type { QuizResult } from "@/lib/quiz-types";
 
-const ShareInstagramPage = () => {
+const ShareInstagramContent = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
   const [currentTime, setCurrentTime] = useState<string>("");
   const searchParams = useSearchParams();
@@ -42,7 +42,6 @@ const ShareInstagramPage = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    // クライアント側でのみ現在時刻を設定
     setCurrentTime(new Date().toLocaleString());
   }, []);
 
@@ -165,6 +164,14 @@ const ShareInstagramPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const ShareInstagramPage = () => {
+  return (
+    <Suspense fallback={<div>読み込み中...</div>}>
+      <ShareInstagramContent />
+    </Suspense>
   );
 };
 

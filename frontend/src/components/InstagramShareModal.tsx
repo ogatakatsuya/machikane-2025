@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import Modal from "./Modal";
 import InstagramLogo from "/public/instagram.svg";
+import Modal from "./Modal";
 
 interface InstagramShareModalProps {
   isOpen: boolean;
@@ -11,7 +11,11 @@ interface InstagramShareModalProps {
   groupId: string;
 }
 
-const InstagramShareModal = ({ isOpen, onClose, groupId }: InstagramShareModalProps) => {
+const InstagramShareModal = ({
+  isOpen,
+  onClose,
+  groupId,
+}: InstagramShareModalProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [imageData, setImageData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -19,11 +23,11 @@ const InstagramShareModal = ({ isOpen, onClose, groupId }: InstagramShareModalPr
   const generateImage = async () => {
     setIsGenerating(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`/api/instagram-share/${groupId}`);
       const data = await response.json();
-      
+
       if (data.status === "OK") {
         setImageData(data.image);
       } else {
@@ -39,7 +43,7 @@ const InstagramShareModal = ({ isOpen, onClose, groupId }: InstagramShareModalPr
 
   const downloadImage = () => {
     if (!imageData) return;
-    
+
     const link = document.createElement("a");
     link.href = `data:image/png;base64,${imageData}`;
     link.download = `machikane-quiz-result-${groupId}.png`;
@@ -55,7 +59,11 @@ const InstagramShareModal = ({ isOpen, onClose, groupId }: InstagramShareModalPr
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Instagramストーリーで共有">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Instagramストーリーで共有"
+    >
       <div className="p-6 space-y-4">
         {!imageData && !isGenerating && (
           <div className="text-center space-y-4">
@@ -64,10 +72,12 @@ const InstagramShareModal = ({ isOpen, onClose, groupId }: InstagramShareModalPr
             </div>
             <h3 className="text-lg font-semibold">結果画像を生成します</h3>
             <p className="text-gray-600 text-sm">
-              Instagramストーリー用の画像を生成し、<br />
+              Instagramストーリー用の画像を生成し、
+              <br />
               ダウンロードできるようにします。
             </p>
             <button
+              type="button"
               onClick={generateImage}
               className="w-full py-3 px-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity"
             >
@@ -80,18 +90,19 @@ const InstagramShareModal = ({ isOpen, onClose, groupId }: InstagramShareModalPr
           <div className="text-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
             <h3 className="text-lg font-semibold">画像を生成中...</h3>
-            <p className="text-gray-600 text-sm">
-              しばらくお待ちください
-            </p>
+            <p className="text-gray-600 text-sm">しばらくお待ちください</p>
           </div>
         )}
 
         {error && (
           <div className="text-center space-y-4">
             <div className="text-red-500 text-6xl">⚠️</div>
-            <h3 className="text-lg font-semibold text-red-600">エラーが発生しました</h3>
+            <h3 className="text-lg font-semibold text-red-600">
+              エラーが発生しました
+            </h3>
             <p className="text-gray-600 text-sm">{error}</p>
             <button
+              type="button"
               onClick={generateImage}
               className="w-full py-3 px-4 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition-colors"
             >
@@ -111,16 +122,20 @@ const InstagramShareModal = ({ isOpen, onClose, groupId }: InstagramShareModalPr
                 className="w-full max-w-sm mx-auto"
               />
             </div>
-            <h3 className="text-lg font-semibold text-green-600">画像が生成されました！</h3>
+            <h3 className="text-lg font-semibold text-green-600">
+              画像が生成されました！
+            </h3>
             <div className="space-y-2">
               <button
+                type="button"
                 onClick={downloadImage}
                 className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
               >
                 📱 画像をダウンロード
               </button>
               <p className="text-xs text-gray-500">
-                画像をダウンロードして、Instagramアプリで<br />
+                画像をダウンロードして、Instagramアプリで
+                <br />
                 ストーリーにアップロードしてください
               </p>
             </div>

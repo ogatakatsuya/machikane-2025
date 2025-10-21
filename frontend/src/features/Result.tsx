@@ -12,6 +12,7 @@ import { QuestionStatus, type QuizResult } from "@/lib/quiz-types";
 import ArrowUpIcon from "/public/arrow-up.svg";
 import ChartIcon from "/public/chart.svg";
 import GlobeIcon from "/public/globe.svg";
+import InstagramLogo from "/public/instagram.svg";
 import SearchIcon from "/public/search.svg";
 import ShareIcon from "/public/share.svg";
 import UserIcon from "/public/user.svg";
@@ -75,14 +76,13 @@ const Result = () => {
 
   return (
     <div className="bg-[#eeeecc] w-full min-h-screen">
-      <div>
-        {/* TODO: ロゴアイコンに変更 */}
+      <div className="pt-1">
         <Image
-          src="/nazotoki_icon.png"
+          src="/imaker_logo.webp"
           alt="謎解きアイコン"
-          width={48}
-          height={48}
-          className="object-contain mb-6"
+          width={141}
+          height={44}
+          className="object-contain mb-6 ml-1"
           priority
         />
         <div className="flex w-fit bg-[#ccc] h-[22px] min-w-32 p-px ml-1 mb-4">
@@ -219,7 +219,7 @@ const Result = () => {
       </Modal>
 
       {/* 偏差値モーダル */}
-      {/* TODO: API */}
+      {/* TODO: 偏差値 */}
       <Modal
         isOpen={activeModal === "deviation"}
         onClose={closeModal}
@@ -229,12 +229,12 @@ const Result = () => {
           <div className="max-w-sm mx-auto">
             <div className="p-3 text-center">
               <h3 className="font-bold mb-2">あなたの偏差値は</h3>
-              <div className="text-4xl font-bold text-blue-600 mb-2">62.5</div>
+              <div className="text-4xl font-bold text-blue-600 mb-2">???</div>
             </div>
             <div className="bg-blue-100 p-3 rounded text-center font-semibold">
               <p>これは、参加者の中で...</p>
               <p className="font-bold text-blue-600 text-lg my-1">
-                上位<span className="text-xl mx-px">10.56</span>%
+                上位<span className="text-xl mx-px">???</span>%
               </p>
               <p>に位置しています</p>
             </div>
@@ -257,7 +257,7 @@ const Result = () => {
                 位
               </div>
               <div className="text-xs text-gray-600">
-                {results?.score || 0}単位獲得
+                {results?.score || 0}単位修得
               </div>
             </div>
           </div>
@@ -307,21 +307,60 @@ const Result = () => {
       >
         <div className="text-sm p-6 space-y-5">
           <div>
-            <h3 className="font-bold text-lg text-center mb-2">
+            <h3 className="font-bold text-lg text-center mb-4">
               あなたの結果を共有しましょう！
             </h3>
-            {/* TODO: UI班確認 */}
-            <div className="bg-gray-200 p-3 rounded text-xs">
-              <p>　チーム名：{results?.group_name || "不明"}</p>
-              <p>獲得単位数：{results?.score || 0}単位</p>
-              <p>　　　順位：第{results?.rank || "?"}位</p>
-              <p>　　偏差値：50</p>
+
+            <div className="p-4 rounded-lg border-2 border-gray-200 shadow-md">
+              <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-200">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <UserIcon className="w-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-bold text-base text-gray-800">
+                    {results?.group_name || "不明"}
+                  </p>
+                  <p className="text-xs text-gray-500">マチカネ謎解き2025</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                  <p className="text-xs text-gray-600 text-center mb-1">
+                    修得単位数
+                  </p>
+                  <div className="flex items-end justify-center gap-1">
+                    <span className="text-3xl font-bold text-blue-600">
+                      {results?.score || 0}
+                    </span>
+                    <span className="text-sm font-semibold text-blue-600 mb-1">
+                      / 45 単位
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-center">
+                  <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
+                    <p className="text-[10px] text-gray-600 mb-1">順位</p>
+                    <p className="text-xl font-bold text-orange-600">
+                      第{results?.rank || "?"}位
+                    </p>
+                  </div>
+
+                  <div className="bg-green-50 rounded-lg p-3 border border-green-100">
+                    <p className="text-[10px] text-gray-600 mb-1">偏差値</p>
+                    {/* TODO: 偏差値 */}
+                    <p className="text-xl font-bold text-green-600">??</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          {/* TODO: biz要相談 */}
           <div className="flex flex-col gap-2">
             <a
-              href={`http://twitter.com/share?url=${snsData.url}&text=${snsData.title}${snsData.text}&hashtags=${snsData.hashtags.join(",")}`}
+              href={encodeURI(
+                `http://twitter.com/share?text=【${snsData.title}】\n${results?.score || 0}単位修得！第${results?.rank || "?"}位でした🎓\n${snsData.text}&hashtags=${snsData.hashtags.join(",")}`,
+              )}
               target="_blank"
               rel="nofollow noopener noreferrer"
               className="w-full p-2 flex items-center justify-center gap-2 bg-black rounded-md text-white"
@@ -333,10 +372,10 @@ const Result = () => {
               href={
                 isMobile
                   ? encodeURI(
-                      `https://line.me/R/share?text=${`${snsData.title}\n${snsData.text}\n${snsData.url}`}`,
+                      `https://line.me/R/share?text=${`【${snsData.title}】\n${results?.score || 0}単位修得！第${results?.rank || "?"}位でした🎓\n${snsData.text}`}`,
                     )
                   : encodeURI(
-                      `https://social-plugins.line.me/lineit/share?url=${snsData.url}&text=${`${snsData.title}\n${snsData.text}`}`,
+                      `https://social-plugins.line.me/lineit/share?text=${`【${snsData.title}】\n${results?.score || 0}単位修得！第${results?.rank || "?"}位でした🎓\n${snsData.text}`}`,
                     )
               }
               target="_blank"
@@ -347,6 +386,14 @@ const Result = () => {
               <img className="w-7" src="/line.webp" alt="line_logo" />
               <p>LINEで共有</p>
             </a>
+            {/* TODO: Instagram Share */}
+            <button
+              type="button"
+              className="w-full p-2 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-md text-white"
+            >
+              <InstagramLogo className="w-6" />
+              <p>Instagramストーリーで共有</p>
+            </button>
           </div>
         </div>
       </Modal>

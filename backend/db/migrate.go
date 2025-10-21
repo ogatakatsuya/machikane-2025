@@ -12,23 +12,47 @@ import (
 )
 
 func Migrate(db *sql.DB) error {
-	// Check if database exists by pinging
-	if err := db.Ping(); err != nil {
-		// If ping fails, try to create the database
+	var targetDB *sql.DB
+	var shouldCloseDB bool
+	
+	if db == nil {
+		// Try to create database if it doesn't exist
 		if err := createDatabaseIfNotExists(); err != nil {
 			return fmt.Errorf("failed to create database: %w", err)
 		}
-
-		// Reconnect to the newly created database
+		
+		// Connect to the database
 		newDB, err := Connect()
 		if err != nil {
-			return fmt.Errorf("failed to reconnect to database: %w", err)
+			return fmt.Errorf("failed to connect to database: %w", err)
 		}
-		defer newDB.Close()
-		db = newDB
+		targetDB = newDB
+		shouldCloseDB = true
+	} else {
+		// Check if database exists by pinging
+		if err := db.Ping(); err != nil {
+			// If ping fails, try to create the database
+			if err := createDatabaseIfNotExists(); err != nil {
+				return fmt.Errorf("failed to create database: %w", err)
+			}
+			
+			// Reconnect to the newly created database
+			newDB, err := Connect()
+			if err != nil {
+				return fmt.Errorf("failed to reconnect to database: %w", err)
+			}
+			defer newDB.Close()
+			targetDB = newDB
+		} else {
+			targetDB = db
+		}
+	}
+	
+	if shouldCloseDB {
+		defer targetDB.Close()
 	}
 
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	driver, err := postgres.WithInstance(targetDB, &postgres.Config{})
 	if err != nil {
 		return fmt.Errorf("failed to create postgres driver: %w", err)
 	}

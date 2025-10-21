@@ -23,17 +23,17 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 }
 
 func main() {
+	// Try to run migrations first (will create database if needed)
+	if err := db.Migrate(nil); err != nil {
+		log.Fatal("Failed to run migrations:", err)
+	}
+
 	// Database connection
 	database, err := db.Connect()
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
 	defer database.Close()
-
-	// Run migrations
-	if err := db.Migrate(database); err != nil {
-		log.Fatal("Failed to run migrations:", err)
-	}
 
 	// Echo instance
 	e := echo.New()

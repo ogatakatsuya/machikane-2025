@@ -8,7 +8,7 @@ import InstagramShareModal from "@/components/InstagramShareModal";
 import LoadingPage from "@/components/LoadingPage";
 import Modal from "@/components/Modal";
 import { getQuizResults } from "@/lib/api";
-import { SAMPLE_QUESTIONS, snsData } from "@/lib/constants";
+import { QUESTIONS, snsData } from "@/lib/constants";
 import { QuestionStatus, type QuizResult } from "@/lib/quiz-types";
 import ArrowUpIcon from "/public/arrow-up.svg";
 import ChartIcon from "/public/chart.svg";
@@ -163,7 +163,7 @@ const Result = () => {
                   <tr className="h-8" key={qs.id}>
                     <td className="border border-white text-center">{qs.id}</td>
                     <td className="border border-white pl-2 font-bold">
-                      {SAMPLE_QUESTIONS.find((q) => q.id === qs.id)?.title ||
+                      {QUESTIONS.find((q) => q.id === qs.id)?.title ||
                         "不明な科目"}
                     </td>
                     <td className="border border-white text-center">
@@ -194,7 +194,7 @@ const Result = () => {
         title="結果を見る"
       >
         <ul className="divide-y divide-gray-400">
-          {SAMPLE_QUESTIONS.map((q) => (
+          {QUESTIONS.map((q) => (
             <li key={q.id} className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-md font-semibold">
@@ -206,7 +206,6 @@ const Result = () => {
                   {q.score}単位
                 </div>
               </div>
-              <p className="text-xs px-2">{q.text}</p>
               <input
                 value={
                   results?.context.questionStates.find((qs) => qs.id === q.id)

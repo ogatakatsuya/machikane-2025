@@ -4,7 +4,7 @@ import {
   type QuizSubmissionData,
   type SerializedQuizContext,
 } from "@/lib/quiz-types";
-import { SAMPLE_QUESTIONS } from "./constants";
+import { QUESTIONS } from "./constants";
 
 /**
  * クイズの進捗状況を管理するクラス
@@ -124,7 +124,7 @@ export class QuizProgressManager {
     const questionStates = this.context.QuestionAnswerState.map((state) => {
       let status: QuestionStatus = QuestionStatus.UNANSWERED;
       if (state.answer && state.answer.trim() !== "") {
-        const question = SAMPLE_QUESTIONS.find((q) => q.id === state.id);
+        const question = QUESTIONS.find((q) => q.id === state.id);
         if (question) {
           status = question.answer.includes(state.answer.trim())
             ? QuestionStatus.CORRECT
@@ -140,7 +140,7 @@ export class QuizProgressManager {
 
     const score = questionStates.reduce((sum, q) => {
       if (q.status === "correct") {
-        const question = SAMPLE_QUESTIONS.find((qq) => qq.id === q.id);
+        const question = QUESTIONS.find((qq) => qq.id === q.id);
         return sum + (question?.score ?? 0);
       }
       return sum;

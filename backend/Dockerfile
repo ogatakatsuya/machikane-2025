@@ -27,6 +27,9 @@ WORKDIR /root/
 # Copy the binary from builder stage
 COPY --from=builder /app/main .
 
+# Copy migration files
+COPY --from=builder /app/db/migrations ./db/migrations
+
 # Expose port
 EXPOSE 8080
 

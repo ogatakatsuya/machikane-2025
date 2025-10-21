@@ -8,11 +8,10 @@ const Register = () => {
       <div className="max-w-96 flex flex-col">
         <h2 className="text-center text-xl my-4">i.maker 謎解き支援システム</h2>
         <div className="flex justify-end">
-          {/* TODO: imakerのアイコンロゴに変更 */}
           <Image
-            src="/nazotoki_icon.png"
+            src="/imaker_logo.webp"
             alt="謎解きアイコン"
-            width={39}
+            width={125}
             height={39}
             className="object-contain"
             priority

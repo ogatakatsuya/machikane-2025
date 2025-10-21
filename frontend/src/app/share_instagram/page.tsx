@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { getQuizResults } from "@/lib/api";
-import { snsData } from "@/lib/constants";
 import type { QuizResult } from "@/lib/quiz-types";
 
 const ShareInstagramContent = () => {
@@ -56,11 +55,26 @@ const ShareInstagramContent = () => {
 
         {/* ヘッダー */}
         <div className="relative z-10 flex flex-col items-center pt-12">
+          <div className="absolute -top-2 -right-18 rotate-12">
+            <div className="relative">
+              <div className="bg-gradient-to-r from-red-500 via-red-600 to-orange-500 rounded-2xl px-6 py-3 shadow-2xl border-4 border-white">
+                <div className="absolute -top-1 -left-1 -right-1 -bottom-1 bg-gradient-to-r from-yellow-400 via-red-400 to-orange-400 rounded-2xl blur-md opacity-75 -z-10" />
+                <div className="flex items-center gap-2">
+                  <span className="text-[36px]">📍</span>
+                  <p className="text-[32px] font-black text-white tracking-wider drop-shadow-lg">
+                    A101で出店中！
+                  </p>
+                  <span className="text-[36px]">✨</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="relative mb-8">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full blur-xl opacity-50" />
             <div className="relative bg-white rounded-full">
               <Image
-                src="/nazotoki_icon.png"
+                src="/nazotoki_icon.webp"
                 alt="謎解きアイコン"
                 width={200}
                 height={200}
@@ -96,7 +110,7 @@ const ShareInstagramContent = () => {
             <div className="p-12 space-y-10">
               <div className="border-l-4 border-amber-500 pl-6 bg-gradient-to-r from-amber-50 to-transparent py-4">
                 <p className="text-[24px] text-gray-600 mb-2 font-light">
-                  Team Name
+                  チーム名
                 </p>
                 <p className="text-[48px] font-bold text-gray-900 leading-tight ml-4">
                   {results?.group_name || "不明"}
@@ -105,7 +119,7 @@ const ShareInstagramContent = () => {
 
               <div className="text-center py-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
                 <p className="text-[28px] text-gray-600 mb-3 font-light tracking-wider">
-                  Total Credits Earned
+                  修得単位数
                 </p>
                 <div className="flex items-end justify-center gap-3">
                   <span className="text-[120px] font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 leading-none">
@@ -115,9 +129,7 @@ const ShareInstagramContent = () => {
                     単位
                   </span>
                 </div>
-                <div className="text-[25px] text-gray-500 mt-2">
-                  / 45 Credits
-                </div>
+                <div className="text-[25px] text-gray-500 mt-2">/ 45 単位</div>
               </div>
 
               <div className="relative bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 pb-3 border-2 border-orange-300">
@@ -125,7 +137,7 @@ const ShareInstagramContent = () => {
                   🏆
                 </div>
                 <p className="text-[28px] text-gray-600 mb-3 font-light">
-                  Overall Ranking
+                  ランキング
                 </p>
                 <div className="flex items-end justify-center gap-2">
                   <span className="text-[48px] font-bold text-orange-600">
@@ -155,11 +167,9 @@ const ShareInstagramContent = () => {
         {/* フッターエリア */}
         <div className="relative z-10 flex flex-col items-center pb-8">
           <div className="w-24 h-px bg-gradient-to-r from-transparent via-white to-transparent mb-4" />
-          <p className="text-[32px] text-white/90 font-light tracking-wide">
-            {snsData.url}
-          </p>
-          <p className="text-[20px] text-white/70 mt-4 tracking-widest">
-            #マチカネ謎解き2025
+          <p className="text-[20px] text-white/70 mt-4 flex gap-4">
+            <span>#マチカネ謎解き2025</span>
+            <span>#imaker</span>
           </p>
         </div>
       </div>

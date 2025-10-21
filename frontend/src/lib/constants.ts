@@ -4,7 +4,7 @@ export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
 export const RANGE = { min: 1, max: 4 } as const;
-export const QUIZ_TIME_LIMIT = 1 * 60;
+export const QUIZ_TIME_LIMIT = 10 * 60;
 
 // TODO: Created by Copilot
 export const SAMPLE_QUESTIONS: QuestionType[] = [
@@ -89,12 +89,10 @@ export const IMPORTANT_NOTICE = [
   "ここまで読んだ方は観察力が高く、謎解きが得意な傾向にあります。",
 ];
 
-// TODO: biz班に確認
 export const snsData = {
-  title: "テスト：タイトル",
-  text: "テスト：テキスト",
-  url: "https://machikane-2025.i-maker.org/",
-  hashtags: ["まちかね祭"],
+  title: "マチカネ謎解き2025",
+  text: "あなたも単位を修得しよう！A101で出店中🎓✨",
+  hashtags: ["まちかね祭", "imaker"],
 };
 
 export const UPDATE_RANKING_INTERVAL = 10 * 60; // seconds

@@ -10,36 +10,36 @@ const getRankBadge = (rank: number) => {
   if (rank === 1)
     return {
       icon: "🏆",
-      color: "text-yellow-500",
-      bg: "bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-300",
-      shadow: "shadow-yellow-200",
+      color: "text-yellow-300",
+      bg: "bg-gradient-to-br from-yellow-400 to-orange-500 border-yellow-300",
+      shadow: "shadow-yellow-400",
     };
   if (rank === 2)
     return {
       icon: "🥈",
-      color: "text-gray-600",
-      bg: "bg-gradient-to-br from-gray-100 to-gray-200 border-gray-300",
-      shadow: "shadow-gray-200",
+      color: "text-gray-100",
+      bg: "bg-gradient-to-br from-gray-300 to-gray-400 border-gray-300",
+      shadow: "shadow-gray-300",
     };
   if (rank === 3)
     return {
       icon: "🥉",
-      color: "text-amber-700",
-      bg: "bg-gradient-to-br from-amber-100 to-amber-200 border-amber-300",
-      shadow: "shadow-amber-200",
+      color: "text-amber-200",
+      bg: "bg-gradient-to-br from-amber-500 to-amber-700 border-amber-400",
+      shadow: "shadow-amber-400",
     };
   if (rank <= 10)
     return {
       icon: rank.toString(),
-      color: "text-yellow-600",
-      bg: "bg-gradient-to-br from-yellow-50 to-yellow-100",
-      shadow: "shadow-yellow-100",
+      color: "text-cyan-200",
+      bg: "bg-gradient-to-br from-cyan-600 to-cyan-800",
+      shadow: "shadow-cyan-400",
     };
   return {
     icon: rank.toString(),
-    color: "text-gray-100",
-    bg: "bg-gradient-to-br from-gray-700 to-gray-600",
-    shadow: "shadow-gray-100",
+    color: "text-blue-200",
+    bg: "bg-gradient-to-br from-blue-700 to-blue-900",
+    shadow: "shadow-blue-400",
   };
 };
 
@@ -100,28 +100,31 @@ const AutoScrollList = ({ items }: { items: RankingItem[] }) => {
             return (
               <div
                 key={item.id}
-                className="bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border-2 border-yellow-600/30 transition-all duration-300 shadow-lg min-h-[80px]"
+                className="bg-gradient-to-r from-blue-900/60 via-blue-800/60 to-cyan-900/60 rounded-xl p-4 border-2 border-cyan-500/40 shadow-lg min-h-[80px] relative overflow-hidden"
               >
-                <div className="flex items-center gap-4">
+                <div className="absolute top-2 right-4 w-2 h-2 bg-cyan-300/40 rounded-full animate-pulse" />
+                <div className="absolute bottom-3 right-8 w-1.5 h-1.5 bg-cyan-400/30 rounded-full animate-pulse delay-75" />
+
+                <div className="flex items-center gap-4 relative z-10">
                   <div
-                    className={`w-14 h-14 rounded-lg border-2 border-yellow-500/50 flex items-center justify-center text-lg font-bold ${badge.bg} ${badge.color} shadow-md`}
+                    className={`w-14 h-14 rounded-full border-3 flex items-center justify-center text-2xl font-bold ${badge.bg} ${badge.color} relative`}
                   >
                     {badge.icon}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-yellow-100 font-bold text-xl truncate font-mono">
+                    <h3 className="text-cyan-100 font-bold text-xl truncate">
                       {item.group_name}
                     </h3>
-                    <div className="text-sm text-yellow-300/80">
-                      🕐 挑戦日時: {formatChallengeTime(item.created_at)}
+                    <div className="text-sm text-cyan-300/70">
+                      挑戦日時: {formatChallengeTime(item.created_at)}
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-yellow-400 font-mono">
+                  <div className="text-center bg-blue-950/50 rounded-lg px-4 py-2 border border-cyan-500/30">
+                    <div className="text-4xl font-bold text-yellow-300 drop-shadow-[0_2px_8px_rgba(253,224,71,0.5)]">
                       {item.score}
                     </div>
-                    <div className="text-yellow-600 text-sm font-mono">
-                      CREDITS
+                    <div className="text-cyan-400 text-sm font-bold tracking-wider">
+                      単位
                     </div>
                   </div>
                 </div>
@@ -134,16 +137,16 @@ const AutoScrollList = ({ items }: { items: RankingItem[] }) => {
       <button
         type="button"
         onClick={() => setIsAutoScrollEnabled(!isAutoScrollEnabled)}
-        className={`absolute bottom-2 right-2 px-2 py-1 rounded text-xs transition-all duration-300 ${
+        className={`absolute bottom-2 right-2 px-3 py-1.5 rounded-lg text-xs transition-all duration-300 border z-10 ${
           isAutoScrollEnabled
-            ? "bg-gray-500/20 hover:bg-gray-500/30 text-gray-400/60 hover:text-gray-400"
-            : "bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400/60 hover:text-yellow-400"
+            ? "bg-cyan-900/40 hover:bg-cyan-900/60 text-cyan-300/60 hover:text-cyan-300 border-cyan-500/30"
+            : "bg-cyan-600/40 hover:bg-cyan-600/60 text-cyan-200/80 hover:text-cyan-200 border-cyan-400/50"
         }`}
         title={
           isAutoScrollEnabled ? "自動スクロールを停止" : "自動スクロールを開始"
         }
       >
-        {isAutoScrollEnabled ? "⏸" : "▶"}
+        {isAutoScrollEnabled ? "⏸ 停止" : "▶ 再生"}
       </button>
     </div>
   );
@@ -153,14 +156,14 @@ const AutoScrollList = ({ items }: { items: RankingItem[] }) => {
 const UpdateIndicator = ({ isUpdating }: { isUpdating: boolean }) => {
   return (
     <div
-      className={`fixed top-6 right-8 z-50 transition-all duration-500 ${isUpdating ? "scale-125 opacity-100" : "scale-100 opacity-70"}`}
+      className={`fixed top-6 right-8 z-50 transition-all duration-500 ${isUpdating ? "scale-110 opacity-100" : "scale-100 opacity-80"}`}
     >
-      <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
+      <div className="bg-blue-900/60 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/20">
         <div
-          className={`w-3 h-3 rounded-full ${isUpdating ? "bg-green-400 animate-pulse" : "bg-blue-400"}`}
+          className={`w-3 h-3 rounded-full ${isUpdating ? "bg-cyan-400 animate-pulse" : "bg-cyan-500"}`}
         />
-        <span className="text-white text-sm font-medium">
-          {isUpdating ? "更新中..." : "更新待機中"}
+        <span className="text-cyan-200 text-sm font-medium">
+          {isUpdating ? "更新中..." : "待機中"}
         </span>
       </div>
     </div>
@@ -243,51 +246,30 @@ const RankingPage = () => {
   if (loading) return <LoadingPage text="TOP50ランキングを読み込み中..." />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 relative">
+    <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-cyan-900 relative overflow-hidden">
       <UpdateIndicator isUpdating={isUpdating} />
 
       <div className="absolute inset-0 overflow-hidden">
-        {/* TODO: いる？背景暗号文 */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="text-yellow-500 text-xl font-mono absolute top-10 left-10 animate-pulse">
-            01110100 01101000 01100101
-          </div>
-          <div className="text-yellow-500 text-xl font-mono absolute top-20 right-20 animate-pulse">
-            CIPHER
-          </div>
-          <div className="text-yellow-500 text-xl font-mono absolute bottom-20 left-20 animate-pulse">
-            ?!@#$%^&*()
-          </div>
-          <div className="text-yellow-500 text-xl font-mono absolute bottom-10 right-10 animate-pulse">
-            DECODE
-          </div>
-        </div>
-
-        {/* 格子グリッド */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-            linear-gradient(rgba(255, 255, 0, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 0, 0.1) 1px, transparent 1px)
-          `,
-            backgroundSize: "30px 30px",
-          }}
-        />
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-cyan-400/10 to-transparent" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-6 py-8">
+      <div className="relative z-10 container mx-auto px-6 py-4">
         {/* ヘッダー */}
         <div className="text-center mb-12">
-          <div className="inline-block bg-black/80 backdrop-blur-md rounded-2xl px-8 py-6 border-2 border-yellow-500/50 shadow-xl">
-            <h1 className="text-5xl font-bold mb-3 flex items-center justify-center gap-4 font-mono">
-              <span className="text-4xl">🔍</span>
-              <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                MYSTERY RANKING
-              </span>
-              <span className="text-4xl">🔍</span>
-            </h1>
-            <div className="flex items-center justify-center gap-4 text-yellow-300/90 font-mono text-sm">
+          <div className="inline-block bg-blue-950/80 backdrop-blur-md rounded-3xl px-8 py-6 border-3 border-cyan-400/60 shadow-2xl shadow-cyan-500/20">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <span className="text-5xl">🔍</span>
+              <h1 className="text-5xl font-bold">
+                <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(253,224,71,0.5)]">
+                  修得単位数ランキング
+                </span>
+              </h1>
+              <span className="text-5xl">🔍</span>
+            </div>
+            <div className="text-cyan-200 text-lg mb-3 font-bold">
+              大阪湾に沈んだ単位を取り戻せ！
+            </div>
+            <div className="flex items-center justify-center gap-4 text-cyan-300/80 text-sm">
               <span>最終更新: {formatLastUpdated(lastUpdated)}</span>
               <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
               <span>次回更新: {formatRemainingTime(remainingTime)}</span>
@@ -300,11 +282,12 @@ const RankingPage = () => {
           <div className="grid grid-cols-3 gap-6 items-end">
             {rankings.slice(0, 3).map((item, index) => {
               const badge = getRankBadge(item.rank);
-              const podiumHeights = ["h-40", "h-32", "h-28"];
+              const podiumHeights = ["h-48", "h-40", "h-36"];
+              const ropeLengths = ["h-32", "h-24", "h-20"];
               const podiumColors = [
-                "bg-gradient-to-t from-yellow-600 to-yellow-400 border-yellow-300",
-                "bg-gradient-to-t from-gray-600 to-gray-400 border-gray-300",
-                "bg-gradient-to-t from-amber-700 to-amber-500 border-amber-400",
+                "bg-gradient-to-t from-yellow-600 via-yellow-500 to-yellow-400 border-yellow-300",
+                "bg-gradient-to-t from-gray-500 via-gray-400 to-gray-300 border-gray-300",
+                "bg-gradient-to-t from-amber-700 via-amber-600 to-amber-500 border-amber-400",
               ];
 
               return (
@@ -313,28 +296,33 @@ const RankingPage = () => {
                   className={`text-center ${index === 1 ? "order-first" : index === 0 ? "order-2" : "order-3"}`}
                 >
                   <div
-                    className={`${podiumColors[index]} ${podiumHeights[index]} rounded-t-2xl mx-8 mb-2 flex items-start justify-center shadow-2xl border-2`}
+                    className={`${podiumColors[index]} ${podiumHeights[index]} rounded-t-3xl mx-8 mb-2 flex justify-center border-3 relative`}
                   >
-                    <div className="text-center">
+                    <div className="text-center relative z-10 -mt-10">
                       <div
-                        className={`w-20 h-20 rounded-xl border-4 flex items-center justify-center text-3xl font-bold mb-2 -mt-6 ${badge.bg} ${badge.color} shadow-xl`}
+                        className={`w-30 h-30 rounded-full border-4 flex items-center justify-center text-6xl font-bold mb-2 ${badge.bg} ${badge.color} shadow-2xl`}
                       >
                         {badge.icon}
                       </div>
-                      <div className="text-black font-bold text-lg drop-shadow-lg font-mono">
+                      <div className="text-white font-bold text-4xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mb-1 tracking-wider">
                         {item.rank}位
                       </div>
                     </div>
                   </div>
-                  <div className="bg-black/80 backdrop-blur-sm rounded-2xl p-4 border-2 border-yellow-500/30">
-                    <h3 className="text-yellow-100 font-bold text-lg mb-2 truncate font-mono">
+
+                  <div className="bg-gradient-to-br from-blue-900/80 via-blue-800/80 to-cyan-900/80 rounded-2xl p-4 border-2 border-cyan-400/50 shadow-xl">
+                    <h3 className="text-cyan-100 font-bold text-xl mb-2 truncate">
                       {item.group_name}
                     </h3>
-                    <div className="text-3xl font-bold text-yellow-400 mb-1 font-mono">
-                      {item.score}
-                      <span className="text-sm font-mono ml-1">単位</span>
+                    <div className="bg-blue-950/60 rounded-lg px-3 py-2 border border-cyan-500/40 mb-2">
+                      <div className="text-5xl font-bold text-yellow-300 drop-shadow-[0_2px_10px_rgba(253,224,71,0.6)]">
+                        {item.score}
+                      </div>
+                      <div className="text-cyan-300 text-lg font-bold tracking-widest">
+                        単位
+                      </div>
                     </div>
-                    <div className="text-yellow-300/80 text-sm font-mono">
+                    <div className="text-cyan-300/70 text-sm">
                       🕐 {formatChallengeTime(item.created_at)}
                     </div>
                   </div>
@@ -345,10 +333,12 @@ const RankingPage = () => {
         </div>
 
         {/* 4位以下のランキングリスト */}
-        <div className="bg-black/80 backdrop-blur-md rounded-2xl p-6 border-2 border-yellow-500/50 shadow-2xl">
-          <h2 className="text-3xl font-bold text-yellow-400 mb-6 text-center flex items-center justify-center gap-3 font-mono">
+        <div className="bg-blue-950/80 backdrop-blur-md rounded-3xl p-6 border-3 border-cyan-400/60 shadow-2xl shadow-cyan-500/20">
+          <h2 className="text-3xl font-bold text-cyan-200 mb-6 text-center flex items-center justify-center gap-3">
             <span className="text-4xl">🔍</span>
-            DETECTIVE BOARD
+            <span className="bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent">
+              単位修得状況
+            </span>
             <span className="text-4xl">🔍</span>
           </h2>
 
@@ -356,23 +346,21 @@ const RankingPage = () => {
             <AutoScrollList items={rankings.slice(3)} />
           </div>
 
-          <div className="mt-6 text-center space-y-2">
-            <div className="inline-flex items-center gap-2 text-yellow-500/70 text-sm font-mono">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-              <span>CONTINUOUS AUTO SCROLL</span>
-              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-            </div>
-            <div className="text-xs text-yellow-600/60 font-mono">
-              {rankings.slice(3).length} TEAMS
+          <div className="mt-6 text-center">
+            <div className="inline-flex items-center gap-2 text-cyan-400/70 text-sm">
+              <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+              <span>自動スクロール中</span>
+              <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>
 
         {/* フッター */}
-        <div className="mt-8 text-center">
-          <div className="bg-black/80 backdrop-blur-sm rounded-xl px-6 py-4 inline-block border border-yellow-500/30 text-yellow-400/90 text-sm font-mono">
-            🔍 MYSTERY CHALLENGE 2025 | 🔄 REAL-TIME | 👥 {rankings.length}{" "}
-            TEAMS
+        <div className="mt-4 text-center">
+          <div className="bg-blue-950/80 rounded-xl px-6 py-4 inline-flex divide-x-2 border-2 border-cyan-400/40 text-cyan-300/90 text-sm shadow-lg">
+            <span className="px-4">マチカネ謎解き@A101</span>
+            <span className="px-4">🌊 大阪湾に沈んだ単位を取り戻せ！</span>
+            <span className="px-4">👥 {rankings.length} チーム参加中</span>
           </div>
         </div>
       </div>

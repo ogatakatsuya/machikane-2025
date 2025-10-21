@@ -16,7 +16,7 @@ const QuizHome = () => {
 
         <div className="flex justify-center items-center py-7 mb-6 mt-10 bg-gradient-to-b from-[#2c2880] via-[#2c2880] via-70% to-black">
           <Image
-            src="/nazotoki_icon.webp"
+            src="/pmb.webp"
             alt="謎解きアイコン"
             width={100}
             height={100}

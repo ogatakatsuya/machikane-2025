@@ -15,7 +15,7 @@ const Home = () => {
   return (
     <div className="bg-[#272727] min-h-screen pt-8 p-10 flex flex-col items-center gap-8">
       <Image
-        src="/nazotoki_icon.webp"
+        src="/pmb.webp"
         alt="謎解きアイコン"
         width={160}
         height={160}

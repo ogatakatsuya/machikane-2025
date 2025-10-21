@@ -74,7 +74,7 @@ const ShareInstagramContent = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full blur-xl opacity-50" />
             <div className="relative bg-white rounded-full">
               <Image
-                src="/nazotoki_icon.webp"
+                src="/pmb.webp"
                 alt="謎解きアイコン"
                 width={200}
                 height={200}

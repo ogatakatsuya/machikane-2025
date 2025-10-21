@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -57,7 +59,12 @@ func Migrate(db *sql.DB) error {
 		return fmt.Errorf("failed to create postgres driver: %w", err)
 	}
 
-	m, err := migrate.NewWithDatabaseInstance("file://db/migrations", "postgres", driver)
+	// Get the absolute path to migrations directory
+	_, currentFile, _, _ := runtime.Caller(0)
+	migrationsDir := filepath.Join(filepath.Dir(currentFile), "migrations")
+	migrationsURL := fmt.Sprintf("file://%s", migrationsDir)
+	
+	m, err := migrate.NewWithDatabaseInstance(migrationsURL, "postgres", driver)
 	if err != nil {
 		return fmt.Errorf("failed to create migrate instance: %w", err)
 	}

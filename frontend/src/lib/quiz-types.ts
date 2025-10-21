@@ -1,7 +1,6 @@
 export type QuestionType = {
   id: number;
   title: string;
-  text: string;
   score: number;
   answer: string[];
 };

@@ -7,7 +7,7 @@ import { useDebouncedCallback } from "@/hooks/useDebounce";
 import { useQuizProgress } from "@/hooks/useQuizProgress";
 import { useTimer } from "@/hooks/useTimer";
 import { submitQuizResults } from "@/lib/api";
-import { QUIZ_TIME_LIMIT, SAMPLE_QUESTIONS } from "@/lib/constants";
+import { QUESTIONS, QUIZ_TIME_LIMIT } from "@/lib/constants";
 import ClockIcon from "/public/clock.svg";
 
 const QuizPage = () => {
@@ -60,7 +60,7 @@ const QuizPage = () => {
     generateSubmissionData,
   } = useQuizProgress({
     groupId: groupId || "",
-    totalQuestions: SAMPLE_QUESTIONS.length,
+    totalQuestions: QUESTIONS.length,
     enabled: !!groupId, // groupIdが存在する場合のみ有効化
   });
 
@@ -163,11 +163,9 @@ const QuizPage = () => {
   const filteredQuestions =
     filterType === "unanswered_questions"
       ? context?.QuestionAnswerState.map((q) =>
-          !q.answer?.trim()
-            ? SAMPLE_QUESTIONS.find((sq) => sq.id === q.id)
-            : null,
+          !q.answer?.trim() ? QUESTIONS.find((sq) => sq.id === q.id) : null,
         ).filter((q) => !!q) || []
-      : SAMPLE_QUESTIONS;
+      : QUESTIONS;
 
   const getAnswerStatusColor = (questionId: number) => {
     if (localAnswers[questionId]?.trim()) return "text-green-600 bg-green-100";
@@ -218,8 +216,8 @@ const QuizPage = () => {
                 </div>
               ) : null}
               <p className="">
-                {SAMPLE_QUESTIONS.length}問中
-                <strong>{SAMPLE_QUESTIONS.length - answeredCount}</strong>
+                {QUESTIONS.length}問中
+                <strong>{QUESTIONS.length - answeredCount}</strong>
                 問の問題が残っています
               </p>
               <p className="flex items-center gap-px">
@@ -255,7 +253,7 @@ const QuizPage = () => {
                     {q.score}単位
                   </div>
                 </div>
-                <p className="text-xs px-2">{q.text}</p>
+                {/* <p className="text-xs px-2">{q.text}</p> */}
                 <input
                   value={localAnswers[q.id] || ""}
                   onChange={(e) => {

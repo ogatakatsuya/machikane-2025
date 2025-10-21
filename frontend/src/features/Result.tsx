@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
+import InstagramShareModal from "@/components/InstagramShareModal";
 import LoadingPage from "@/components/LoadingPage";
 import Modal from "@/components/Modal";
 import { getQuizResults } from "@/lib/api";
@@ -22,6 +23,7 @@ const Result = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isInstagramModalOpen, setIsInstagramModalOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -386,10 +388,10 @@ const Result = () => {
               <img className="w-7" src="/line.webp" alt="line_logo" />
               <p>LINEで共有</p>
             </a>
-            {/* TODO: Instagram Share */}
             <button
               type="button"
-              className="w-full p-2 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-md text-white"
+              onClick={() => setIsInstagramModalOpen(true)}
+              className="w-full p-2 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-md text-white hover:opacity-90 transition-opacity"
             >
               <InstagramLogo className="w-6" />
               <p>Instagramストーリーで共有</p>
@@ -397,6 +399,13 @@ const Result = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Instagram共有モーダル */}
+      <InstagramShareModal
+        isOpen={isInstagramModalOpen}
+        onClose={() => setIsInstagramModalOpen(false)}
+        groupId={results?.group_id || ""}
+      />
     </div>
   );
 };

@@ -60,8 +60,12 @@ func Migrate(db *sql.DB) error {
 	}
 
 	// Get the absolute path to migrations directory
-	_, currentFile, _, _ := runtime.Caller(0)
-	migrationsDir := filepath.Join(filepath.Dir(currentFile), "migrations")
+	migrationsDir := "/root/db/migrations"
+	// Fallback for local development
+	if _, err := os.Stat(migrationsDir); os.IsNotExist(err) {
+		_, currentFile, _, _ := runtime.Caller(0)
+		migrationsDir = filepath.Join(filepath.Dir(currentFile), "migrations")
+	}
 	migrationsURL := fmt.Sprintf("file://%s", migrationsDir)
 	
 	m, err := migrate.NewWithDatabaseInstance(migrationsURL, "postgres", driver)

@@ -46,11 +46,17 @@ const ShareInstagramContent = () => {
 
   return (
     <div className="fixed left-0 top-0">
-      <div className="w-[1080px] h-[1920px] bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] flex flex-col items-center justify-between p-20 text-white relative overflow-hidden">
+      <div className="w-[1080px] h-[1920px] bg-gradient-to-b from-blue-950 via-blue-900 to-cyan-900 flex flex-col items-center justify-between p-20 text-white relative overflow-hidden">
         {/* 背景 */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 right-20 w-96 h-96 border-4 border-white rounded-full" />
-          <div className="absolute bottom-40 left-20 w-72 h-72 border-4 border-white rounded-full" />
+          <div className="absolute top-20 right-20 w-96 h-96 border-4 border-cyan-400 rounded-full" />
+          <div className="absolute bottom-40 left-20 w-72 h-72 border-4 border-cyan-300 rounded-full" />
+        </div>
+        
+        {/* 釣り糸 */}
+        <div className="absolute top-[180px] left-49">
+          <div className="w-1 h-[600px] bg-gradient-to-b from-gray-300 via-gray-400 to-transparent opacity-60" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-yellow-300 rounded-full animate-pulse" />
         </div>
 
         {/* ヘッダー */}
@@ -71,7 +77,7 @@ const ShareInstagramContent = () => {
           </div>
 
           <div className="relative mb-8">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full blur-xl opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-full blur-xl opacity-50" />
             <div className="relative bg-white rounded-full">
               <Image
                 src="/pmb.webp"
@@ -85,27 +91,38 @@ const ShareInstagramContent = () => {
 
           <div className="text-center space-y-4 mb-6">
             <div className="flex items-center justify-center gap-4">
-              <div className="w-16 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
-              <p className="text-[28px] font-light tracking-[0.3em] text-amber-300">
+              <div className="w-16 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+              <p className="text-[28px] font-light tracking-[0.3em] text-cyan-300">
                 2025
               </p>
-              <div className="w-16 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+              <div className="w-16 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
             </div>
             <h1 className="text-[64px] font-bold leading-tight tracking-wide">
-              マチカネ<span className="text-amber-400">謎解き</span>
+              <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(253,224,71,0.5)]">
+                マチカネ謎解き
+              </span>
             </h1>
-            <div className="w-32 h-1 bg-gradient-to-r from-amber-400 to-amber-600 mx-auto" />
+            <div className="text-cyan-200 text-[22px] font-bold">
+              大阪湾に沈んだ単位を取り戻せ！
+            </div>
           </div>
         </div>
 
         {/* 成績証明書 */}
         <div className="relative z-10 w-full">
-          <div className="bg-white/95 rounded-2xl border-4 border-amber-500/30 overflow-hidden">
-            <div className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 p-6">
-              <h2 className="text-[42px] font-bold text-center text-white tracking-wide drop-shadow-lg">
-                履修成績証明書
-              </h2>
+          <div className="relative">
+            <div className="absolute -top-16 left-32 -translate-x-1/2 z-30">
+              <div className="text-[70px] drop-shadow-lg">🪝</div>
             </div>
+            
+            <div className="bg-white/95 rounded-2xl border-4 border-amber-500/30 overflow-hidden shadow-2xl">
+              <div className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 p-6">
+                <h2 className="text-[42px] font-bold text-center text-white tracking-wide drop-shadow-lg flex items-center justify-center gap-3">
+                  <span className="text-[48px]">🎓</span>
+                  履修成績証明書
+                  <span className="text-[48px]">🎓</span>
+                </h2>
+              </div>
 
             <div className="p-12 space-y-10">
               <div className="border-l-4 border-amber-500 pl-6 bg-gradient-to-r from-amber-50 to-transparent py-4">
@@ -161,16 +178,17 @@ const ShareInstagramContent = () => {
                 Issued by i.maker
               </p>
             </div>
+            </div>
           </div>
         </div>
 
         {/* フッターエリア */}
         <div className="relative z-10 flex flex-col items-center pb-8">
-          <div className="w-24 h-px bg-gradient-to-r from-transparent via-white to-transparent mb-4" />
-          <p className="text-[20px] text-white/70 mt-4 flex gap-4">
+          <div className="bg-blue-950/80 rounded-xl px-6 py-4 inline-flex gap-4 border-2 border-cyan-400/40 text-cyan-200 text-[20px] shadow-lg">
             <span>#マチカネ謎解き2025</span>
+            <span className="text-cyan-400">•</span>
             <span>#imaker</span>
-          </p>
+          </div>
         </div>
       </div>
     </div>

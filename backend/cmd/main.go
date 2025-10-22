@@ -23,17 +23,17 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 }
 
 func main() {
+	// Try to run migrations first (will create database if needed)
+	if err := db.Migrate(nil); err != nil {
+		log.Fatal("Failed to run migrations:", err)
+	}
+
 	// Database connection
 	database, err := db.Connect()
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
 	defer database.Close()
-
-	// Run migrations
-	if err := db.Migrate(database); err != nil {
-		log.Fatal("Failed to run migrations:", err)
-	}
 
 	// Echo instance
 	e := echo.New()
@@ -62,7 +62,7 @@ func main() {
 	resultController := controller.NewResultController(resultUseCase)
 
 	// Routes
-	e.GET("/", hello)
+	e.GET("/health", health)
 	e.POST("/groups", groupController.CreateGroup)
 	e.POST("/results/:group_id", resultController.CreateResult)
 	e.GET("/results/:group_id", resultController.GetResults)
@@ -72,7 +72,6 @@ func main() {
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
-// Handler
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
+func health(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{"status": "ok"})
 }

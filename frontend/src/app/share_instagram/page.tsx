@@ -52,7 +52,7 @@ const ShareInstagramContent = () => {
           <div className="absolute top-20 right-20 w-96 h-96 border-4 border-cyan-400 rounded-full" />
           <div className="absolute bottom-40 left-20 w-72 h-72 border-4 border-cyan-300 rounded-full" />
         </div>
-        
+
         {/* 釣り糸 */}
         <div className="absolute top-[180px] left-49">
           <div className="w-1 h-[600px] bg-gradient-to-b from-gray-300 via-gray-400 to-transparent opacity-60" />
@@ -114,7 +114,7 @@ const ShareInstagramContent = () => {
             <div className="absolute -top-16 left-32 -translate-x-1/2 z-30">
               <div className="text-[70px] drop-shadow-lg">🪝</div>
             </div>
-            
+
             <div className="bg-white/95 rounded-2xl border-4 border-amber-500/30 overflow-hidden shadow-2xl">
               <div className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 p-6">
                 <h2 className="text-[42px] font-bold text-center text-white tracking-wide drop-shadow-lg flex items-center justify-center gap-3">
@@ -124,60 +124,62 @@ const ShareInstagramContent = () => {
                 </h2>
               </div>
 
-            <div className="p-12 space-y-10">
-              <div className="border-l-4 border-amber-500 pl-6 bg-gradient-to-r from-amber-50 to-transparent py-4">
-                <p className="text-[24px] text-gray-600 mb-2 font-light">
-                  チーム名
-                </p>
-                <p className="text-[48px] font-bold text-gray-900 leading-tight ml-4">
-                  {results?.group_name || "不明"}
-                </p>
+              <div className="p-12 space-y-10">
+                <div className="border-l-4 border-amber-500 pl-6 bg-gradient-to-r from-amber-50 to-transparent py-4">
+                  <p className="text-[24px] text-gray-600 mb-2 font-light">
+                    チーム名
+                  </p>
+                  <p className="text-[48px] font-bold text-gray-900 leading-tight ml-4">
+                    {results?.group_name || "不明"}
+                  </p>
+                </div>
+
+                <div className="text-center py-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
+                  <p className="text-[28px] text-gray-600 mb-3 font-light tracking-wider">
+                    修得単位数
+                  </p>
+                  <div className="flex items-end justify-center gap-3">
+                    <span className="text-[120px] font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 leading-none">
+                      {results?.score || 0}
+                    </span>
+                    <span className="text-[56px] font-bold text-blue-600">
+                      単位
+                    </span>
+                  </div>
+                  <div className="text-[25px] text-gray-500 mt-2">
+                    / 45 単位
+                  </div>
+                </div>
+
+                <div className="relative bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 pb-3 border-2 border-orange-300">
+                  <div className="absolute top-4 right-4 w-16 h-16 text-[40px]">
+                    🏆
+                  </div>
+                  <p className="text-[28px] text-gray-600 mb-3 font-light">
+                    ランキング
+                  </p>
+                  <div className="flex items-end justify-center gap-2">
+                    <span className="text-[48px] font-bold text-orange-600">
+                      第
+                    </span>
+                    <span className="text-[100px] font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 leading-none">
+                      {results?.rank || "?"}
+                    </span>
+                    <span className="text-[48px] font-bold text-orange-600">
+                      位
+                    </span>
+                  </div>
+                  <p className="text-right text-[18px] text-gray-500 mt-4 font-light italic">
+                    {currentTime && `※${currentTime}時点での順位`}
+                  </p>
+                </div>
               </div>
 
-              <div className="text-center py-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
-                <p className="text-[28px] text-gray-600 mb-3 font-light tracking-wider">
-                  修得単位数
-                </p>
-                <div className="flex items-end justify-center gap-3">
-                  <span className="text-[120px] font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 leading-none">
-                    {results?.score || 0}
-                  </span>
-                  <span className="text-[56px] font-bold text-blue-600">
-                    単位
-                  </span>
-                </div>
-                <div className="text-[25px] text-gray-500 mt-2">/ 45 単位</div>
-              </div>
-
-              <div className="relative bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 pb-3 border-2 border-orange-300">
-                <div className="absolute top-4 right-4 w-16 h-16 text-[40px]">
-                  🏆
-                </div>
-                <p className="text-[28px] text-gray-600 mb-3 font-light">
-                  ランキング
-                </p>
-                <div className="flex items-end justify-center gap-2">
-                  <span className="text-[48px] font-bold text-orange-600">
-                    第
-                  </span>
-                  <span className="text-[100px] font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 leading-none">
-                    {results?.rank || "?"}
-                  </span>
-                  <span className="text-[48px] font-bold text-orange-600">
-                    位
-                  </span>
-                </div>
-                <p className="text-right text-[18px] text-gray-500 mt-4 font-light italic">
-                  {currentTime && `※${currentTime}時点での順位`}
+              <div className="bg-gradient-to-r from-gray-100 to-gray-200 p-4 border-t-2 border-gray-300">
+                <p className="text-[18px] text-gray-600 text-center font-light">
+                  Issued by i.maker
                 </p>
               </div>
-            </div>
-
-            <div className="bg-gradient-to-r from-gray-100 to-gray-200 p-4 border-t-2 border-gray-300">
-              <p className="text-[18px] text-gray-600 text-center font-light">
-                Issued by i.maker
-              </p>
-            </div>
             </div>
           </div>
         </div>

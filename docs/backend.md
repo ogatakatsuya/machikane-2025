@@ -8,6 +8,8 @@ Go language and Echo framework based backend API server
 
 - **Language**: Go 1.24.3
 - **Framework**: [Echo v4](https://echo.labstack.com/)
+- **Database**: PostgreSQL with [sqlc](https://sqlc.dev/) for type-safe queries
+- **Cache**: Redis via [Upstash](https://upstash.com/)
 - **Port**: 8080
 
 ## Project Structure
@@ -26,9 +28,15 @@ backend/
 │   ├── group_interface.go
 │   ├── result_usecase.go
 │   └── result_interface.go
+├── repository/         # Data access layer with caching
+│   ├── repository_interface.go
+│   ├── group_repository.go
+│   └── result_repository.go
 ├── dto/                # Data Transfer Objects
 │   ├── group_dto.go
 │   └── result_dto.go
+├── cache/              # Redis client and utilities
+│   └── redis.go
 ├── db/
 │   ├── generated/      # sqlc generated code
 │   ├── migrations/     # Database migrations
@@ -43,6 +51,15 @@ backend/
 ### Prerequisites
 
 - Go 1.24.3+
+- PostgreSQL database
+- Redis instance (or Upstash Redis)
+
+### Environment Variables
+
+```bash
+# Required for Redis connection
+REDIS_TOKEN=your_upstash_redis_token
+```
 
 ### Installation
 
@@ -250,14 +267,25 @@ This project follows Clean Architecture principles with dependency injection:
    - Depends on UseCase interfaces
 
 2. **UseCase Layer** (`usecase/`)
-   - Business logic implementation
-   - Depends on database interfaces
-   - Independent of HTTP concerns
+   - Business logic coordination
+   - Depends on Repository interfaces
+   - Independent of HTTP and data concerns
 
-3. **DTO Layer** (`dto/`)
+3. **Repository Layer** (`repository/`)
+   - Data access abstraction
+   - Database operations with caching
+   - Redis cache management
+   - Depends on database and cache clients
+
+4. **DTO Layer** (`dto/`)
    - Data Transfer Objects
    - Request/Response structures
    - Validation tags
+
+5. **Cache Layer** (`cache/`)
+   - Redis client wrapper
+   - Connection management
+   - Key generation utilities
 
 ### Coding Conventions
 
@@ -266,6 +294,7 @@ This project follows Clean Architecture principles with dependency injection:
 - Use dependency injection pattern
 - Controllers depend on UseCase interfaces
 - UseCases depend on Repository interfaces
+- Repositories depend on database and cache clients
 
 #### Naming Conventions
 - **Files**: snake_case (e.g., `group_controller.go`)
@@ -278,13 +307,20 @@ This project follows Clean Architecture principles with dependency injection:
 - Use `fmt.Errorf` for error wrapping
 - Return detailed error messages in API responses for debugging
 
-#### Database
+#### Database & Caching
 - Use UUID v7 for all primary keys (time-sortable)
 - Use sqlc for type-safe database operations
-- All database operations should be in the UseCase layer
+- All database operations should be in the Repository layer
+- Redis caching for performance optimization
 - Optimized indexes for ranking queries:
   - `idx_results_ranking`: (score DESC, created_at ASC) for global ranking
   - `idx_results_group_score`: (group_id, score DESC) for group-specific ranking
+
+#### Caching Strategy
+- **Ranking Cache**: Key format `ranking:{limit}:{offset}`
+- **TTL**: 5 minutes for ranking data
+- **Cache Invalidation**: Automatic on new result creation
+- **Fallback**: Always serve from database if cache fails
 
 #### Validation
 - Use struct tags for request validation (`validate:"required"`)
@@ -298,21 +334,52 @@ type CreateEntityDto struct {
     Name string `json:"name" validate:"required"`
 }
 
-// 2. Define interface
+// 2. Define repository interface
+type EntityRepository interface {
+    CreateEntity(ctx context.Context, dto CreateEntityDto) (*EntityResponseDto, error)
+}
+
+// 3. Implement repository
+type entityRepository struct {
+    queries *db.Queries
+    redisClient *cache.RedisClient
+}
+
+// 4. Define usecase interface
 type EntityUseCase interface {
     CreateEntity(ctx context.Context, dto CreateEntityDto) (*EntityResponseDto, error)
 }
 
-// 3. Implement usecase
+// 5. Implement usecase
 type entityUseCase struct {
-    queries *db.Queries
+    entityRepo EntityRepository
 }
 
-// 4. Implement controller
+// 6. Implement controller
 type entityController struct {
     entityUseCase EntityUseCase
 }
 ```
+
+## Caching & Performance
+
+### Redis Caching
+
+#### Connection
+- **Provider**: Upstash Redis
+- **URL**: `rediss://default:{token}@nice-earwig-18408.upstash.io:6379`
+- **Authentication**: Token-based via `REDIS_TOKEN` environment variable
+
+#### Caching Strategy
+- **Ranking Queries**: Cached for 5 minutes with key `ranking:{limit}:{offset}`
+- **Cache Invalidation**: Triggered on new result creation
+- **Error Handling**: Graceful fallback to database if Redis fails
+- **Common Cache Keys**: Pre-warmed for popular pagination combinations
+
+#### Performance Benefits
+- **Reduced Database Load**: Frequently accessed rankings served from cache
+- **Faster Response Times**: Sub-millisecond cache lookups
+- **Scalability**: Better handling of concurrent ranking requests
 
 ## Statistical Calculations
 
@@ -333,7 +400,7 @@ The system calculates deviation scores in real-time without requiring additional
 
 #### Performance Features
 - **No Additional Queries**: Uses existing rank and top results data
-- **Real-time Calculation**: Computed during API response generation
+- **Real-time Calculation**: Computed in repository layer
 - **Lightweight**: Statistical estimation provides sufficient accuracy
 
 ### Percentile (正答率)

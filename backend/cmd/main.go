@@ -1,8 +1,10 @@
 package main
 
 import (
+	"backend/cache"
 	"backend/controller"
 	"backend/db"
+	"backend/repository"
 	"backend/usecase"
 	"log"
 	"net/http"
@@ -18,7 +20,7 @@ type CustomValidator struct {
 	validator *validator.Validate
 }
 
-func (cv *CustomValidator) Validate(i interface{}) error {
+func (cv *CustomValidator) Validate(i any) error {
 	return cv.validator.Struct(i)
 }
 
@@ -54,11 +56,20 @@ func main() {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
+	// Initialize Redis client
+	redisClient, err := cache.NewRedisClient()
+	if err != nil {
+		log.Fatal("Failed to connect to Redis:", err)
+	}
+	defer redisClient.Close()
+
 	// Initialize dependencies
 	queries := dbGenerated.New(database)
-	groupUseCase := usecase.NewGroupUseCase(queries)
+	groupRepo := repository.NewGroupRepository(queries)
+	groupUseCase := usecase.NewGroupUseCase(groupRepo)
 	groupController := controller.NewGroupController(groupUseCase)
-	resultUseCase := usecase.NewResultUseCase(queries)
+	resultRepo := repository.NewResultRepository(queries, redisClient)
+	resultUseCase := usecase.NewResultUseCase(resultRepo)
 	resultController := controller.NewResultController(resultUseCase)
 
 	// Routes

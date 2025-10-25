@@ -40,6 +40,34 @@ const InstagramShareModal = ({
     }
   };
 
+  const saveImage = async () => {
+    if (!imageData) return;
+
+    try {
+      // base64をblobに変換
+      const base64Response = await fetch(`data:image/png;base64,${imageData}`);
+      const blob = await base64Response.blob();
+      const file = new File([blob], `machikane-quiz-result-${groupId}.png`, { 
+        type: 'image/png' 
+      });
+
+      // Web Share APIが利用可能でファイル共有がサポートされている場合
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+        });
+        return;
+      }
+
+      // フォールバック: 従来のダウンロード方式
+      downloadImage();
+    } catch (error) {
+      console.error('Share failed:', error);
+      // エラーが発生した場合はダウンロードにフォールバック
+      downloadImage();
+    }
+  };
+
   const downloadImage = () => {
     if (!imageData) return;
 
@@ -119,11 +147,14 @@ const InstagramShareModal = ({
             <div className="space-y-2">
               <button
                 type="button"
-                onClick={downloadImage}
+                onClick={saveImage}
                 className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
               >
-                画像をダウンロード
+                📱 画像を保存
               </button>
+              <p className="text-xs text-gray-500 text-center">
+                スマホの場合、写真アプリに保存されます
+              </p>
             </div>
           </div>
         )}

@@ -375,7 +375,7 @@ const Result = () => {
             </button>
             <a
               href={encodeURI(
-                `http://twitter.com/share?text=【${snsData.title}】\n${results?.score || 0}単位修得！第${results?.rank || "?"}位でした🎓\n${snsData.text}&hashtags=${snsData.hashtags.join(",")}`,
+                `http://twitter.com/share?text=【${snsData.title}】\n${results?.score || 0}単位修得！第${results?.rank || "?"}位でした🎓\nhttps://machikane-2025.i-maker.org/ranking\n${snsData.text}&hashtags=${snsData.hashtags.join(",")}`,
               )}
               target="_blank"
               rel="nofollow noopener noreferrer"

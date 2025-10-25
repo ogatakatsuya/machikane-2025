@@ -16,13 +16,13 @@ import (
 func Migrate(db *sql.DB) error {
 	var targetDB *sql.DB
 	var shouldCloseDB bool
-	
+
 	if db == nil {
 		// Try to create database if it doesn't exist
 		if err := createDatabaseIfNotExists(); err != nil {
 			return fmt.Errorf("failed to create database: %w", err)
 		}
-		
+
 		// Connect to the database
 		newDB, err := Connect()
 		if err != nil {
@@ -37,7 +37,7 @@ func Migrate(db *sql.DB) error {
 			if err := createDatabaseIfNotExists(); err != nil {
 				return fmt.Errorf("failed to create database: %w", err)
 			}
-			
+
 			// Reconnect to the newly created database
 			newDB, err := Connect()
 			if err != nil {
@@ -49,7 +49,7 @@ func Migrate(db *sql.DB) error {
 			targetDB = db
 		}
 	}
-	
+
 	if shouldCloseDB {
 		defer targetDB.Close()
 	}
@@ -67,7 +67,7 @@ func Migrate(db *sql.DB) error {
 		migrationsDir = filepath.Join(filepath.Dir(currentFile), "migrations")
 	}
 	migrationsURL := fmt.Sprintf("file://%s", migrationsDir)
-	
+
 	m, err := migrate.NewWithDatabaseInstance(migrationsURL, "postgres", driver)
 	if err != nil {
 		return fmt.Errorf("failed to create migrate instance: %w", err)

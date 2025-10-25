@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"backend/dto"
+	"backend/repository"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,64 +14,13 @@ import (
 )
 
 type resultUseCase struct {
-	queries *db.Queries
+	resultRepo repository.ResultRepository
 }
 
-func NewResultUseCase(queries *db.Queries) ResultUseCase {
+func NewResultUseCase(resultRepo repository.ResultRepository) ResultUseCase {
 	return &resultUseCase{
-		queries: queries,
+		resultRepo: resultRepo,
 	}
-}
-
-// calculateDeviationFromRank calculates deviation score and percentile using existing rank and top results
-func (u *resultUseCase) calculateDeviationFromRank(score int32, rank int64, topResults []db.GetTopResultsRow) (float64, float64) {
-	// Calculate percentile based on score (simple score/45 * 100)
-	percentile := (float64(score) / 45.0) * 100
-	if percentile > 100 {
-		percentile = 100
-	}
-	if percentile < 0 {
-		percentile = 0
-	}
-	
-	// Estimate mean and standard deviation from score distribution
-	// Assume quiz scores follow normal distribution with mean around 60% of max score
-	maxScore := float64(45) // From frontend: /45 units
-	estimatedMean := maxScore * 0.6 // Assume average is 60% of max
-	estimatedStdDev := maxScore * 0.2 // Assume std dev is 20% of max score
-	
-	// If we have top results, use them to refine estimates
-	if len(topResults) >= 3 {
-		highScores := make([]float64, 0, len(topResults))
-		for _, tr := range topResults {
-			highScores = append(highScores, float64(tr.Score))
-		}
-		
-		// Adjust mean estimate based on top scores
-		topAvg := 0.0
-		for _, s := range highScores {
-			topAvg += s
-		}
-		topAvg /= float64(len(highScores))
-		
-		// If top average is much higher than our estimate, adjust
-		if topAvg > estimatedMean*1.2 {
-			estimatedMean = (estimatedMean + topAvg*0.8) / 1.8
-		}
-	}
-	
-	// Calculate deviation score (mean=50, stddev=10)
-	deviation := 50 + 10*(float64(score)-estimatedMean)/estimatedStdDev
-	
-	// Clamp deviation to reasonable range
-	if deviation < 20 {
-		deviation = 20
-	}
-	if deviation > 80 {
-		deviation = 80
-	}
-	
-	return deviation, percentile
 }
 
 func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req dto.CreateResultDto) error {
@@ -96,7 +46,7 @@ func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req
 		Context: contextJSON,
 	}
 
-	_, err := u.queries.CreateResult(ctx, params)
+	_, err := u.resultRepo.CreateResult(ctx, params)
 	if err != nil {
 		return fmt.Errorf("failed to create result: %w", err)
 	}
@@ -106,20 +56,20 @@ func (u *resultUseCase) CreateResult(ctx context.Context, groupID uuid.UUID, req
 
 func (u *resultUseCase) GetResults(ctx context.Context, groupID uuid.UUID) (*dto.ResultResponseDto, error) {
 	// Get the latest result for the group
-	result, err := u.queries.GetLatestResultByGroup(ctx, groupID)
+	result, err := u.resultRepo.GetLatestResultByGroup(ctx, groupID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get latest result: %w", err)
 	}
 
 	// Get the rank of the result
 	var rank int64 = 1
-	rankResult, err := u.queries.GetResultRank(ctx, result.ID)
+	rankResult, err := u.resultRepo.GetResultRank(ctx, result.ID)
 	if err == nil {
 		rank = rankResult
 	}
 
 	// Get top 5 results
-	topResults, err := u.queries.GetTopResults(ctx, db.GetTopResultsParams{
+	topResults, err := u.resultRepo.GetTopResults(ctx, db.GetTopResultsParams{
 		Limit:  5,
 		Offset: 0,
 	})
@@ -176,8 +126,8 @@ func (u *resultUseCase) GetResults(ctx context.Context, groupID uuid.UUID) (*dto
 }
 
 func (u *resultUseCase) GetRanking(ctx context.Context, offset, limit int32) (*dto.RankingResponseDto, error) {
-	// Get top results with ranking
-	topResults, err := u.queries.GetTopResults(ctx, db.GetTopResultsParams{
+	// Get top results with ranking from repository
+	topResults, err := u.resultRepo.GetTopResults(ctx, db.GetTopResultsParams{
 		Limit:  limit,
 		Offset: offset,
 	})
@@ -205,4 +155,55 @@ func (u *resultUseCase) GetRanking(ctx context.Context, offset, limit int32) (*d
 	}
 
 	return response, nil
+}
+
+// calculateDeviationFromRank calculates deviation score and percentile using existing rank and top results
+func (u *resultUseCase) calculateDeviationFromRank(score int32, rank int64, topResults []db.GetTopResultsRow) (float64, float64) {
+	// Calculate percentile based on score (simple score/45 * 100)
+	percentile := (float64(score) / 45.0) * 100
+	if percentile > 100 {
+		percentile = 100
+	}
+	if percentile < 0 {
+		percentile = 0
+	}
+
+	// Estimate mean and standard deviation from score distribution
+	// Assume quiz scores follow normal distribution with mean around 60% of max score
+	maxScore := float64(45)           // From frontend: /45 units
+	estimatedMean := maxScore * 0.6   // Assume average is 60% of max
+	estimatedStdDev := maxScore * 0.2 // Assume std dev is 20% of max score
+
+	// If we have top results, use them to refine estimates
+	if len(topResults) >= 3 {
+		highScores := make([]float64, 0, len(topResults))
+		for _, tr := range topResults {
+			highScores = append(highScores, float64(tr.Score))
+		}
+
+		// Adjust mean estimate based on top scores
+		topAvg := 0.0
+		for _, s := range highScores {
+			topAvg += s
+		}
+		topAvg /= float64(len(highScores))
+
+		// If top average is much higher than our estimate, adjust
+		if topAvg > estimatedMean*1.2 {
+			estimatedMean = (estimatedMean + topAvg*0.8) / 1.8
+		}
+	}
+
+	// Calculate deviation score (mean=50, stddev=10)
+	deviation := 50 + 10*(float64(score)-estimatedMean)/estimatedStdDev
+
+	// Clamp deviation to reasonable range
+	if deviation < 20 {
+		deviation = 20
+	}
+	if deviation > 80 {
+		deviation = 80
+	}
+
+	return deviation, percentile
 }

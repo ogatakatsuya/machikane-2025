@@ -19,8 +19,8 @@ type QuestionState struct {
 // SerializedQuizContext represents the quiz context data from frontend
 // This matches the TypeScript SerializedQuizContext type
 type SerializedQuizContext struct {
-	GroupID          string          `json:"groupId"`
-	StartedAt        string          `json:"startedAt"`        // ISO 8601 string
-	TotalQuestions   int             `json:"totalQuestions"`
-	QuestionStates   []QuestionState `json:"questionStates"`
+	GroupID        string          `json:"groupId"`
+	StartedAt      string          `json:"startedAt"` // ISO 8601 string
+	TotalQuestions int             `json:"totalQuestions"`
+	QuestionStates []QuestionState `json:"questionStates"`
 }

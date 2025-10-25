@@ -2,20 +2,21 @@ package usecase
 
 import (
 	"backend/dto"
+	"backend/repository"
 	"context"
-	"fmt"
 
 	db "backend/db/generated"
+
 	"github.com/google/uuid"
 )
 
 type groupUseCase struct {
-	queries *db.Queries
+	groupRepo repository.GroupRepository
 }
 
-func NewGroupUseCase(queries *db.Queries) GroupUseCase {
+func NewGroupUseCase(groupRepo repository.GroupRepository) GroupUseCase {
 	return &groupUseCase{
-		queries: queries,
+		groupRepo: groupRepo,
 	}
 }
 
@@ -28,9 +29,9 @@ func (u *groupUseCase) CreateGroup(ctx context.Context, req dto.CreateGroupDto) 
 		GroupSize: req.GroupSize,
 	}
 
-	group, err := u.queries.CreateGroup(ctx, params)
+	group, err := u.groupRepo.CreateGroup(ctx, params)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create group: %w", err)
+		return nil, err
 	}
 
 	response := &dto.GroupResponseDto{

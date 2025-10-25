@@ -56,5 +56,9 @@ func (r *RedisClient) Close() error {
 }
 
 func (r *RedisClient) GenerateRankingKey(limit, offset int32) string {
-	return fmt.Sprintf("ranking:%d:%d", limit, offset)
+	env := os.Getenv("ENV")
+	if env == "" {
+		env = "dev"
+	}
+	return fmt.Sprintf("%s:ranking:%d:%d", env, limit, offset)
 }

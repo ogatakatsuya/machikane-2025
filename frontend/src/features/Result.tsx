@@ -240,7 +240,7 @@ const Result = () => {
               <p>これは、参加者の中で...</p>
               <p className="font-bold text-blue-600 text-lg my-1">
                 上位<span className="text-xl mx-px">
-                  {results?.percentile ? Math.round(results.percentile) : "???"}
+                  {results?.percentile ? Math.round(100 - results.percentile) : "???"}
                 </span>%
               </p>
               <p>に位置しています</p>

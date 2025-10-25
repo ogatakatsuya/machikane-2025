@@ -60,7 +60,7 @@ func (r *resultRepository) GetResultRank(ctx context.Context, resultID uuid.UUID
 func (r *resultRepository) GetTopResults(ctx context.Context, params db.GetTopResultsParams) ([]db.GetTopResultsRow, error) {
 	// Generate cache key
 	cacheKey := r.redisClient.GenerateRankingKey(params.Limit, params.Offset)
-	
+
 	// Try to get from cache first
 	if cachedData, err := r.redisClient.Get(ctx, cacheKey); err == nil {
 		var cachedResults []db.GetTopResultsRow
@@ -80,7 +80,7 @@ func (r *resultRepository) GetTopResults(ctx context.Context, params db.GetTopRe
 
 	// Cache the results for 60 seconds
 	if resultsJSON, err := json.Marshal(results); err == nil {
-		if err := r.redisClient.Set(ctx, cacheKey, resultsJSON, 60*time.Second); err != nil {
+		if err := r.redisClient.Set(ctx, cacheKey, resultsJSON, 10*time.Minute); err != nil {
 			// Log cache error but don't fail the request
 			fmt.Printf("Failed to cache top results: %v\n", err)
 		}
@@ -106,12 +106,12 @@ func (r *resultRepository) invalidateRankingCache(ctx context.Context) {
 		{50, 0}, {50, 50}, {50, 100},
 		{100, 0}, {100, 100}, {100, 200},
 	}
-	
+
 	keys := make([]string, 0, len(commonCombinations))
 	for _, combo := range commonCombinations {
 		keys = append(keys, r.redisClient.GenerateRankingKey(combo.limit, combo.offset))
 	}
-	
+
 	if err := r.redisClient.Del(ctx, keys...); err != nil {
 		fmt.Printf("Failed to invalidate ranking cache: %v\n", err)
 	}

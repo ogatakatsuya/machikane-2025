@@ -91,7 +91,7 @@ export const IMPORTANT_NOTICE = [
 
 export const snsData = {
   title: "マチカネ謎解き2025",
-  text: "あなたも単位を修得しよう！A101で出店中🎓✨",
+  text: "あなたも単位を修得しよう！A101で出店中🎓✨\n",
   hashtags: ["まちかね祭", "imaker"],
 };
 

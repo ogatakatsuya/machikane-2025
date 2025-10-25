@@ -67,9 +67,6 @@ const InstagramShareModal = ({
       <div className="p-6 space-y-4">
         {!imageData && !isGenerating && (
           <div className="text-center space-y-4">
-            <div className="flex justify-center">
-              <InstagramLogo className="w-16 h-16 text-pink-500" />
-            </div>
             <h3 className="text-lg font-semibold">結果画像を生成します</h3>
             <p className="text-gray-600 text-sm">
               Instagramストーリー用の画像を生成します

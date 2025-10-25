@@ -82,8 +82,8 @@ const ShareInstagramContent = () => {
               <Image
                 src="/pmb.webp"
                 alt="謎解きアイコン"
-                width={200}
-                height={200}
+                width={300}
+                height={300}
                 className="object-contain"
               />
             </div>
@@ -99,7 +99,7 @@ const ShareInstagramContent = () => {
             </div>
             <h1 className="text-[64px] font-bold leading-tight tracking-wide">
               <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(253,224,71,0.5)]">
-                マチカネ謎解き
+                まちかね謎解き
               </span>
             </h1>
             <div className="text-cyan-200 text-[22px] font-bold">
@@ -125,17 +125,17 @@ const ShareInstagramContent = () => {
               </div>
 
               <div className="p-12 space-y-10">
-                <div className="border-l-4 border-amber-500 pl-6 bg-gradient-to-r from-amber-50 to-transparent py-4">
-                  <p className="text-[24px] text-gray-600 mb-2 font-light">
+                <div className="py-8 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border-2 border-amber-300">
+                  <p className="text-[24px] text-gray-900 mb-2 font-light ml-6">
                     チーム名
                   </p>
-                  <p className="text-[48px] font-bold text-gray-900 leading-tight ml-4">
+                  <p className="text-[48px] font-bold text-center text-gray-900 leading-tight">
                     {results?.group_name || "不明"}
                   </p>
                 </div>
 
-                <div className="text-center py-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
-                  <p className="text-[28px] text-gray-600 mb-3 font-light tracking-wider">
+                <div className="py-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
+                  <p className="text-[28px] text-gray-900 mb-3 font-light tracking-wider ml-6">
                     修得単位数
                   </p>
                   <div className="flex items-end justify-center gap-3">
@@ -146,16 +146,13 @@ const ShareInstagramContent = () => {
                       単位
                     </span>
                   </div>
-                  <div className="text-[25px] text-gray-500 mt-2">
+                  <div className="text-[25px] text-gray-900 mt-2 text-center">
                     / 45 単位
                   </div>
                 </div>
 
                 <div className="relative bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 pb-3 border-2 border-orange-300">
-                  <div className="absolute top-4 right-4 w-16 h-16 text-[40px]">
-                    🏆
-                  </div>
-                  <p className="text-[28px] text-gray-600 mb-3 font-light">
+                  <p className="text-[28px] text-gray-900 mb-3 font-light">
                     ランキング
                   </p>
                   <div className="flex items-end justify-center gap-2">
@@ -169,7 +166,7 @@ const ShareInstagramContent = () => {
                       位
                     </span>
                   </div>
-                  <p className="text-right text-[18px] text-gray-500 mt-4 font-light italic">
+                  <p className="text-right text-[18px] text-gray-900 mt-4 font-light italic">
                     {currentTime && `※${currentTime}時点での順位`}
                   </p>
                 </div>
@@ -185,11 +182,10 @@ const ShareInstagramContent = () => {
         </div>
 
         {/* フッターエリア */}
-        <div className="relative z-10 flex flex-col items-center pb-8">
-          <div className="bg-blue-950/80 rounded-xl px-6 py-4 inline-flex gap-4 border-2 border-cyan-400/40 text-cyan-200 text-[20px] shadow-lg">
-            <span>#マチカネ謎解き2025</span>
-            <span className="text-cyan-400">•</span>
-            <span>#imaker</span>
+        <div className="relative z-10 flex flex-col items-center pt-12">
+          <div className="bg-blue-950/80 rounded-2xl px-12 py-4 inline-flex gap-6 border-4 border-cyan-400/40 text-cyan-200 text-[32px] shadow-2xl">
+            <span># マチカネ謎解き2025 </span>
+            <span># imaker</span>
           </div>
         </div>
       </div>

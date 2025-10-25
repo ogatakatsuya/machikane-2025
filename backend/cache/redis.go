@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"os"
 	"time"
@@ -14,16 +15,21 @@ type RedisClient struct {
 }
 
 func NewRedisClient() (*RedisClient, error) {
-	token := os.Getenv("REDIS_TOKEN")
-	if token == "" {
-		return nil, fmt.Errorf("REDIS_TOKEN environment variable is required")
+	redisURL := os.Getenv("REDIS_URL")
+	if redisURL == "" {
+		return nil, fmt.Errorf("REDIS_URL environment variable is required")
 	}
 
-	url := fmt.Sprintf("rediss://default:%s@nice-earwig-18408.upstash.io:6379", token)
-
-	opt, err := redis.ParseURL(url)
+	opt, err := redis.ParseURL(redisURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse Redis URL: %w", err)
+	}
+
+	// Force TLS encryption
+	if opt.TLSConfig == nil {
+		opt.TLSConfig = &tls.Config{
+			ServerName: opt.Addr,
+		}
 	}
 
 	client := redis.NewClient(opt)

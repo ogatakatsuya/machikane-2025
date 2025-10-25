@@ -78,7 +78,7 @@ const Result = () => {
 
   return (
     <div className="bg-[#eeeecc] w-full min-h-screen">
-      <div className="pt-1">
+      <div className="pt-1 pb-4">
         <Image
           src="/imaker_logo.webp"
           alt="謎解きアイコン"
@@ -151,8 +151,8 @@ const Result = () => {
           </div>
           <div className="px-2">
             <table className="w-full text-xs">
-              <thead className="bg-[#34495e] h-9 text-white font-bold">
-                <tr>
+              <thead className="bg-[#34495e] text-white font-bold">
+                <tr className="h-9">
                   <th className="border w-[10%]" />
                   <th className="border">科目</th>
                   <th className="border w-[15%]">合否</th>
@@ -177,12 +177,16 @@ const Result = () => {
                 ))}
               </tbody>
             </table>
-            <div className="bg-[#34495e] h-8 text-xs text-white font-bold flex items-center justify-center">
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="w-full bg-[#34495e] h-8 text-xs text-white font-bold flex items-center justify-center hover:cursor-pointer"
+            >
               TOPへ
               <div className="w-3 h-3 bg-white rounded-full flex items-center justify-center mx-2">
                 <ArrowUpIcon className="w-3 text-[#34495e]" />
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </div>

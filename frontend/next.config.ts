@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
       poll: 300,
       aggregateTimeout: 300,
     };
+    
+    // Externalize playwright-aws-lambda to prevent webpack bundling issues
+    config.externals = config.externals || [];
+    config.externals.push('playwright-aws-lambda');
+    
     return config;
   },
 };

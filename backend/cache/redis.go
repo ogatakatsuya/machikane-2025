@@ -25,8 +25,9 @@ func NewRedisClient() (*RedisClient, error) {
 		return nil, fmt.Errorf("failed to parse Redis URL: %w", err)
 	}
 
-	// Force TLS encryption
-	if opt.TLSConfig == nil {
+	// Force TLS encryption only for production environments
+	env := os.Getenv("ENV")
+	if env != "dev" && opt.TLSConfig == nil {
 		opt.TLSConfig = &tls.Config{
 			ServerName: opt.Addr,
 		}

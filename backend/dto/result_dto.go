@@ -17,15 +17,17 @@ type RankingItemDto struct {
 }
 
 type ResultResponseDto struct {
-	ID        uuid.UUID              `json:"id"`
-	GroupID   uuid.UUID              `json:"group_id"`
-	GroupName string                 `json:"group_name"`
-	Score     int32                  `json:"score"`
-	Context   *SerializedQuizContext `json:"context,omitempty"`
-	Rank      int64                  `json:"rank"`
-	CreatedAt string                 `json:"created_at"`
-	UpdatedAt string                 `json:"updated_at"`
-	TopFive   []RankingItemDto       `json:"top_five"`
+	ID         uuid.UUID              `json:"id"`
+	GroupID    uuid.UUID              `json:"group_id"`
+	GroupName  string                 `json:"group_name"`
+	Score      int32                  `json:"score"`
+	Context    *SerializedQuizContext `json:"context,omitempty"`
+	Rank       int64                  `json:"rank"`
+	Deviation  float64                `json:"deviation"`
+	Percentile float64                `json:"percentile"`
+	CreatedAt  string                 `json:"created_at"`
+	UpdatedAt  string                 `json:"updated_at"`
+	TopFive    []RankingItemDto       `json:"top_five"`
 }
 
 type RankingResponseDto struct {

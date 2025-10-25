@@ -60,6 +60,8 @@ export interface QuizResultResponse<TDate = string> {
     questionStates: Array<QuestionState>;
   };
   rank: number;
+  deviation: number;
+  percentile: number;
   created_at: TDate;
   updated_at: TDate;
   top_five: Array<{

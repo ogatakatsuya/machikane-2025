@@ -12,6 +12,7 @@ import (
 	dbGenerated "backend/db/generated"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -25,6 +26,11 @@ func (cv *CustomValidator) Validate(i any) error {
 }
 
 func main() {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Warning: .env file not found or could not be loaded: %v", err)
+	}
+
 	// Try to run migrations first (will create database if needed)
 	if err := db.Migrate(nil); err != nil {
 		log.Fatal("Failed to run migrations:", err)

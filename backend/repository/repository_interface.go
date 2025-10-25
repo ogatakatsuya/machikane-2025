@@ -1,18 +1,21 @@
 package repository
 
 import (
-	"backend/dto"
 	"context"
+
+	db "backend/db/generated"
 
 	"github.com/google/uuid"
 )
 
 type ResultRepository interface {
-	GetRanking(ctx context.Context, offset, limit int32) (*dto.RankingResponseDto, error)
-	CreateResult(ctx context.Context, groupID uuid.UUID, req dto.CreateResultDto) error
-	GetResults(ctx context.Context, groupID uuid.UUID) (*dto.ResultResponseDto, error)
+	CreateResult(ctx context.Context, params db.CreateResultParams) (*db.CreateResultRow, error)
+	GetLatestResultByGroup(ctx context.Context, groupID uuid.UUID) (*db.GetLatestResultByGroupRow, error)
+	GetResultRank(ctx context.Context, resultID uuid.UUID) (int64, error)
+	GetTopResults(ctx context.Context, params db.GetTopResultsParams) ([]db.GetTopResultsRow, error)
+	GetGroupWithResults(ctx context.Context, groupID uuid.UUID) ([]db.GetGroupWithResultsRow, error)
 }
 
 type GroupRepository interface {
-	CreateGroup(ctx context.Context, req dto.CreateGroupDto) (*dto.GroupResponseDto, error)
+	CreateGroup(ctx context.Context, params db.CreateGroupParams) (*db.Group, error)
 }

@@ -32,18 +32,25 @@ export async function GET(
       // bodyの存在のみ確認（表示状態は問わない）
       await page.waitForSelector("body");
       
-      // CSSが原因でbodyが非表示になっている場合の対処
+      // CSSが原因でbodyが非表示になっている場合の対処とフォント修正
       await page.addStyleTag({
         content: `
+          @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap');
+          
           body { 
             visibility: visible !important; 
             display: block !important; 
             opacity: 1 !important; 
           }
+          
+          * {
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', YuGothic, Meiryo, sans-serif !important;
+          }
         `,
       });
       
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // フォントとコンテンツの読み込み完了を待つ
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       
       const image = await page.screenshot({
         encoding: "base64",
@@ -75,18 +82,25 @@ export async function GET(
       // bodyの存在のみ確認（表示状態は問わない）
       await page.waitForSelector("body");
       
-      // CSSが原因でbodyが非表示になっている場合の対処
+      // CSSが原因でbodyが非表示になっている場合の対処とフォント修正
       await page.addStyleTag({
         content: `
+          @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap');
+          
           body { 
             visibility: visible !important; 
             display: block !important; 
             opacity: 1 !important; 
           }
+          
+          * {
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', YuGothic, Meiryo, sans-serif !important;
+          }
         `,
       });
       
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // フォントとコンテンツの読み込み完了を待つ
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       const image = await page.screenshot({
         encoding: "base64",

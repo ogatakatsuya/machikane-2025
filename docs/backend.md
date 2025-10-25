@@ -148,6 +148,8 @@ Save quiz result for a specific group. Returns the result with its ranking posit
     ]
   },
   "rank": "number",
+  "deviation": "number",
+  "percentile": "number",
   "created_at": "ISO 8601 timestamp",
   "updated_at": "ISO 8601 timestamp",
   "top_five": [
@@ -162,6 +164,10 @@ Save quiz result for a specific group. Returns the result with its ranking posit
   ]
 }
 ```
+
+**Response Fields (New)**
+- `deviation`: 偏差値（20-80の範囲、平均50、標準偏差10）
+- `percentile`: 正答率（0-100の範囲、score/45*100で計算）
 
 **Error Responses**
 - `400 Bad Request`: Invalid group_id format, request body, or validation failed
@@ -308,8 +314,38 @@ type entityController struct {
 }
 ```
 
+## Statistical Calculations
+
+### Deviation Score (偏差値)
+
+The system calculates deviation scores in real-time without requiring additional database queries for optimal performance.
+
+#### Calculation Method
+```
+偏差値 = 50 + 10 × (個人のスコア - 推定平均) / 推定標準偏差
+```
+
+#### Assumptions
+- **Estimated Mean**: 60% of max score (27 out of 45 points)
+- **Estimated Standard Deviation**: 20% of max score (9 points)
+- **Range**: Clamped to 20-80 for realistic results
+- **Adjustment**: If top 5 average is significantly higher, the mean is adjusted upward
+
+#### Performance Features
+- **No Additional Queries**: Uses existing rank and top results data
+- **Real-time Calculation**: Computed during API response generation
+- **Lightweight**: Statistical estimation provides sufficient accuracy
+
+### Percentile (正答率)
+
+Simple percentage calculation based on score ratio:
+```
+正答率 = (スコア / 45) × 100
+```
+
 ## CI/CD
 
 Automated build and test with GitHub Actions
 - Workflow: `.github/workflows/ci-backend.yml`
+- Workflow: `.github/workflows/update-image.yml` (Docker image build on backend changes)
 - Trigger: Changes to `backend/` directory

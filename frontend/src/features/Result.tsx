@@ -239,9 +239,13 @@ const Result = () => {
             <div className="bg-blue-100 p-3 rounded text-center font-semibold">
               <p>これは、参加者の中で...</p>
               <p className="font-bold text-blue-600 text-lg my-1">
-                上位<span className="text-xl mx-px">
-                  {results?.percentile ? Math.round(100 - results.percentile) : "???"}
-                </span>%
+                上位
+                <span className="text-xl mx-px">
+                  {results?.percentile
+                    ? Math.round(100 - results.percentile)
+                    : "???"}
+                </span>
+                %
               </p>
               <p>に位置しています</p>
             </div>
@@ -357,7 +361,9 @@ const Result = () => {
                   <div className="bg-green-50 rounded-lg p-3 border border-green-100">
                     <p className="text-[10px] text-gray-600 mb-1">偏差値</p>
                     <p className="text-xl font-bold text-green-600">
-                      {results?.deviation ? Math.round(results.deviation) : "??"}
+                      {results?.deviation
+                        ? Math.round(results.deviation)
+                        : "??"}
                     </p>
                   </div>
                 </div>

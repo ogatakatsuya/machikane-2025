@@ -1,8 +1,7 @@
 import type { QuestionType } from "./quiz-types";
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "http://localhost:8080";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
 export const RANGE = { min: 1, max: 4 } as const;
 export const QUIZ_TIME_LIMIT = 10 * 60;

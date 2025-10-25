@@ -12,26 +12,27 @@ export async function GET(
 
   try {
     const isLocal = process.env.NODE_ENV === "development";
-    
+
     if (isLocal) {
       // ローカル開発環境 - Chromeのパスを指定
       const puppeteer = await import("puppeteer-core");
       const browser = await puppeteer.default.launch({
-        executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        executablePath:
+          "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
         headless: true,
       });
-      
+
       const page = await browser.newPage();
       await page.setViewport({ width: 1080, height: 1920 });
-      
+
       const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL;
       await page.goto(`${baseUrl}/share_instagram?groupId=${groupId}`, {
         waitUntil: "domcontentloaded",
       });
-      
+
       // bodyの存在のみ確認（表示状態は問わない）
       await page.waitForSelector("body");
-      
+
       // CSSが原因でbodyが非表示になっている場合の対処とフォント修正
       await page.addStyleTag({
         content: `
@@ -48,13 +49,13 @@ export async function GET(
           }
         `,
       });
-      
+
       const image = await page.screenshot({
         encoding: "base64",
         fullPage: false,
         clip: { x: 0, y: 0, width: 1080, height: 1920 },
       });
-      
+
       await browser.close();
       return NextResponse.json({ status: "OK", image }, { status: 200 });
     } else {
@@ -78,7 +79,7 @@ export async function GET(
 
       // bodyの存在のみ確認（表示状態は問わない）
       await page.waitForSelector("body");
-      
+
       // CSSが原因でbodyが非表示になっている場合の対処とフォント修正
       await page.addStyleTag({
         content: `

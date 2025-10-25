@@ -319,7 +319,11 @@ const RankingPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-end">
               {top3Rankings.map((item, index) => {
                 const badge = getRankBadge(item.rank);
-                const podiumHeights = ["h-32 md:h-48", "h-28 md:h-40", "h-24 md:h-36"];
+                const podiumHeights = [
+                  "h-32 md:h-48",
+                  "h-28 md:h-40",
+                  "h-24 md:h-36",
+                ];
                 const podiumColors = [
                   "bg-gradient-to-t from-yellow-600 via-yellow-500 to-yellow-400 border-yellow-300",
                   "bg-gradient-to-t from-gray-500 via-gray-400 to-gray-300 border-gray-300",
@@ -413,8 +417,12 @@ const RankingPage = () => {
         <div className="mt-4 text-center">
           <div className="bg-blue-950/80 rounded-lg md:rounded-xl px-3 md:px-6 py-3 md:py-4 inline-flex flex-col sm:flex-row sm:divide-x-2 border-2 border-cyan-400/40 text-cyan-300/90 text-xs md:text-sm shadow-lg mx-2 gap-2 sm:gap-0">
             <span className="px-2 md:px-4">マチカネ謎解き@A101</span>
-            <span className="px-2 md:px-4">🌊 大阪湾に沈んだ単位を取り戻せ！</span>
-            <span className="px-2 md:px-4">👥 {rankings.length} チーム参加中</span>
+            <span className="px-2 md:px-4">
+              🌊 大阪湾に沈んだ単位を取り戻せ！
+            </span>
+            <span className="px-2 md:px-4">
+              👥 {rankings.length} チーム参加中
+            </span>
           </div>
         </div>
       </div>

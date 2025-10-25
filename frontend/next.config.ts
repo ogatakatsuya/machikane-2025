@@ -12,11 +12,11 @@ const nextConfig: NextConfig = {
       poll: 300,
       aggregateTimeout: 300,
     };
-    
+
     // Externalize @sparticuz/chromium to prevent webpack bundling issues
     config.externals = config.externals || [];
-    config.externals.push('@sparticuz/chromium');
-    
+    config.externals.push("@sparticuz/chromium");
+
     return config;
   },
 };

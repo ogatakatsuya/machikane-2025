@@ -116,16 +116,16 @@ const ShareInstagramContent = () => {
             </div>
 
             <div className="bg-white/95 rounded-2xl border-4 border-amber-500/30 overflow-hidden shadow-2xl">
-              <div className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 p-6">
-                <h2 className="text-[42px] font-bold text-center text-white tracking-wide drop-shadow-lg flex items-center justify-center gap-3">
-                  <span className="text-[48px]">🎓</span>
+              <div className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 p-4">
+                <h2 className="text-[36px] font-bold text-center text-white tracking-wide drop-shadow-lg flex items-center justify-center gap-2">
+                  <span className="text-[40px]">🎓</span>
                   履修成績証明書
-                  <span className="text-[48px]">🎓</span>
+                  <span className="text-[40px]">🎓</span>
                 </h2>
               </div>
 
-              <div className="p-12 space-y-10">
-                <div className="py-8 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border-2 border-amber-300">
+              <div className="p-8 space-y-6">
+                <div className="py-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border-2 border-amber-300">
                   <p className="text-[24px] text-gray-900 mb-2 font-light ml-6">
                     チーム名
                   </p>
@@ -134,7 +134,7 @@ const ShareInstagramContent = () => {
                   </p>
                 </div>
 
-                <div className="py-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
+                <div className="py-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
                   <p className="text-[28px] text-gray-900 mb-3 font-light tracking-wider ml-6">
                     修得単位数
                   </p>
@@ -151,7 +151,7 @@ const ShareInstagramContent = () => {
                   </div>
                 </div>
 
-                <div className="relative bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-8 pb-3 border-2 border-orange-300">
+                <div className="relative bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-4 pb-2 border-2 border-orange-300">
                   <p className="text-[28px] text-gray-900 mb-3 font-light">
                     ランキング
                   </p>
@@ -172,8 +172,8 @@ const ShareInstagramContent = () => {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-gray-100 to-gray-200 p-4 border-t-2 border-gray-300">
-                <p className="text-[18px] text-gray-600 text-center font-light">
+              <div className="bg-gradient-to-r from-gray-100 to-gray-200 p-3 border-t-2 border-gray-300">
+                <p className="text-[16px] text-gray-600 text-center font-light">
                   Issued by i.maker
                 </p>
               </div>

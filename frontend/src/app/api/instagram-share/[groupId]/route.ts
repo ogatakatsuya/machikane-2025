@@ -49,9 +49,6 @@ export async function GET(
         `,
       });
       
-      // フォントとコンテンツの読み込み完了を待つ
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-      
       const image = await page.screenshot({
         encoding: "base64",
         fullPage: false,
@@ -98,9 +95,6 @@ export async function GET(
           }
         `,
       });
-      
-      // フォントとコンテンツの読み込み完了を待つ
-      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       const image = await page.screenshot({
         encoding: "base64",

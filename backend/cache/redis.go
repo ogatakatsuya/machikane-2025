@@ -15,9 +15,9 @@ type RedisClient struct {
 }
 
 func NewRedisClient() (*RedisClient, error) {
-	redisURL := os.Getenv("REDIS_URL")
+	redisURL := os.Getenv("REDIS_HOST")
 	if redisURL == "" {
-		return nil, fmt.Errorf("REDIS_URL environment variable is required")
+		return nil, fmt.Errorf("REDIS_HOST environment variable is required")
 	}
 
 	opt, err := redis.ParseURL(redisURL)

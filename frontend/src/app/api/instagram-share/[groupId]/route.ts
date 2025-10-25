@@ -18,9 +18,7 @@ export async function GET(
     if (isProduction) {
       // AWS Lambda環境でのPlaywright設定
       const playwrightAWSLambda = await import("playwright-aws-lambda");
-      browser = await playwrightAWSLambda.launchChromium({
-        headless: true,
-      });
+      browser = await playwrightAWSLambda.launchChromium();
     } else {
       // 開発環境でのPlaywright設定
       const { chromium } = await import("playwright-core");

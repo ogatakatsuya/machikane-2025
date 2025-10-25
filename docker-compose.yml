@@ -29,7 +29,7 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=password
       - DB_NAME=machikane
-      - REDIS_HOST=redis://redis:6379
+      - REDIS_HOST=redis:6379
     depends_on:
       postgres:
         condition: service_healthy

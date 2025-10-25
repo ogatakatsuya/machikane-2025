@@ -15,9 +15,18 @@ type RedisClient struct {
 }
 
 func NewRedisClient() (*RedisClient, error) {
-	redisURL := os.Getenv("REDIS_HOST")
-	if redisURL == "" {
+	redisHost := os.Getenv("REDIS_HOST")
+	if redisHost == "" {
 		return nil, fmt.Errorf("REDIS_HOST environment variable is required")
+	}
+
+	// Build Redis URL based on environment
+	env := os.Getenv("ENV")
+	var redisURL string
+	if env == "dev" {
+		redisURL = fmt.Sprintf("redis://%s", redisHost)
+	} else {
+		redisURL = fmt.Sprintf("rediss://%s", redisHost)
 	}
 
 	opt, err := redis.ParseURL(redisURL)
@@ -26,7 +35,6 @@ func NewRedisClient() (*RedisClient, error) {
 	}
 
 	// Force TLS encryption only for production environments
-	env := os.Getenv("ENV")
 	if env != "dev" && opt.TLSConfig == nil {
 		opt.TLSConfig = &tls.Config{
 			ServerName: opt.Addr,

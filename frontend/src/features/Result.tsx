@@ -362,6 +362,14 @@ const Result = () => {
             </div>
           </div>
           <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => setIsInstagramModalOpen(true)}
+              className="w-full p-2 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-md text-white hover:opacity-90 transition-opacity"
+            >
+              <InstagramLogo className="w-6" />
+              <p>Instagramストーリーで共有</p>
+            </button>
             <a
               href={encodeURI(
                 `http://twitter.com/share?text=【${snsData.title}】\n${results?.score || 0}単位修得！第${results?.rank || "?"}位でした🎓\n${snsData.text}&hashtags=${snsData.hashtags.join(",")}`,
@@ -373,32 +381,6 @@ const Result = () => {
               <XLogo className="w-4" />
               <p>Xでポスト</p>
             </a>
-            <a
-              href={
-                isMobile
-                  ? encodeURI(
-                      `https://line.me/R/share?text=${`【${snsData.title}】\n${results?.score || 0}単位修得！第${results?.rank || "?"}位でした🎓\n${snsData.text}`}`,
-                    )
-                  : encodeURI(
-                      `https://social-plugins.line.me/lineit/share?text=${`【${snsData.title}】\n${results?.score || 0}単位修得！第${results?.rank || "?"}位でした🎓\n${snsData.text}`}`,
-                    )
-              }
-              target="_blank"
-              rel="nofollow noopener noreferrer"
-              className="w-full p-1 flex items-center justify-center gap-2 bg-[#06c755] rounded-md text-white"
-            >
-              {/** biome-ignore lint/performance/noImgElement: need */}
-              <img className="w-7" src="/line.webp" alt="line_logo" />
-              <p>LINEで共有</p>
-            </a>
-            <button
-              type="button"
-              onClick={() => setIsInstagramModalOpen(true)}
-              className="w-full p-2 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-md text-white hover:opacity-90 transition-opacity"
-            >
-              <InstagramLogo className="w-6" />
-              <p>Instagramストーリーで共有</p>
-            </button>
           </div>
         </div>
       </Modal>

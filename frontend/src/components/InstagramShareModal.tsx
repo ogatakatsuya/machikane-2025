@@ -72,9 +72,7 @@ const InstagramShareModal = ({
             </div>
             <h3 className="text-lg font-semibold">結果画像を生成します</h3>
             <p className="text-gray-600 text-sm">
-              Instagramストーリー用の画像を生成し、
-              <br />
-              ダウンロードできるようにします。
+              Instagramストーリー用の画像を生成します
             </p>
             <button
               type="button"
@@ -122,22 +120,14 @@ const InstagramShareModal = ({
                 className="w-full max-w-sm mx-auto"
               />
             </div>
-            <h3 className="text-lg font-semibold text-green-600">
-              画像が生成されました！
-            </h3>
             <div className="space-y-2">
               <button
                 type="button"
                 onClick={downloadImage}
                 className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
               >
-                📱 画像をダウンロード
+                画像をダウンロード
               </button>
-              <p className="text-xs text-gray-500">
-                画像をダウンロードして、Instagramアプリで
-                <br />
-                ストーリーにアップロードしてください
-              </p>
             </div>
           </div>
         )}

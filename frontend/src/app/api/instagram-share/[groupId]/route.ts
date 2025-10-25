@@ -11,44 +11,63 @@ export async function GET(
   }
 
   try {
-    const chromium = await import("@sparticuz/chromium");
-    const puppeteer = await import("puppeteer-core");
+    const isProduction = process.env.NODE_ENV === "production";
+    
+    let browser;
+    
+    if (isProduction) {
+      // AWS Lambda環境でのPlaywright設定
+      const playwrightAWSLambda = await import("playwright-aws-lambda");
+      browser = await playwrightAWSLambda.launchChromium({
+        headless: true,
+      });
+    } else {
+      // 開発環境でのPlaywright設定
+      const { chromium } = await import("playwright-core");
+      browser = await chromium.launch({
+        headless: true,
+      });
+    }
 
-    // ブラウザを起動
-    const browser = await puppeteer.default.launch({
-      args: [
-        ...chromium.default.args,
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-      ],
-      defaultViewport: chromium.default.defaultViewport,
-      executablePath: await chromium.default.executablePath(),
-      headless: chromium.default.headless,
-      ignoreHTTPSErrors: true,
-    });
-
-    // ブラウザのタブを開く
+    // 新しいページを開く
     const page = await browser.newPage();
+    
+    // ビューポートを設定
+    await page.setViewportSize({ width: 1080, height: 1920 });
 
     // スクショ対象のページにアクセス
     const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL;
-    await page.goto(`${baseUrl}/share_instagram?groupId=${groupId}`);
+    await page.goto(`${baseUrl}/share_instagram?groupId=${groupId}`, {
+      waitUntil: "domcontentloaded",
+    });
 
-    // ページの表示が完了するまで待つ
-    await page.waitForSelector("body", { visible: true });
+    // bodyの存在のみ確認（表示状態は問わない）
+    await page.waitForSelector("body", { state: "attached" });
+
+    // CSSが原因でbodyが非表示になっている場合の対処
+    await page.addStyleTag({
+      content: `
+        body { 
+          visibility: visible !important; 
+          display: block !important; 
+          opacity: 1 !important; 
+        }
+      `
+    });
 
     // 画像やフォントの読み込みを待つ
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // サイズを指定してスクショを撮ってbase64方式の画像データを取得
-    const image = await page.screenshot({
-      encoding: "base64",
-      fullPage: false,
+    // スクリーンショットを撮影
+    const screenshot = await page.screenshot({
       clip: { x: 0, y: 0, width: 1080, height: 1920 },
     });
 
     // ブラウザを閉じる
     await browser.close();
+
+    // Base64エンコード
+    const image = screenshot.toString("base64");
 
     // 取得した画像データをクライアントに返す
     return NextResponse.json({ status: "OK", image }, { status: 200 });

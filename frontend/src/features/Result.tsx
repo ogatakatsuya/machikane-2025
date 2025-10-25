@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { isMobile } from "react-device-detect";
 import InstagramShareModal from "@/components/InstagramShareModal";
 import LoadingPage from "@/components/LoadingPage";
 import Modal from "@/components/Modal";

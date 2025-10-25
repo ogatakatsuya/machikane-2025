@@ -12,9 +12,9 @@ export async function GET(
 
   try {
     const isProduction = process.env.NODE_ENV === "production";
-    
-    let browser;
-    
+
+    let browser: any;
+
     if (isProduction) {
       // AWS Lambda環境でのPlaywright設定
       const playwrightAWSLambda = await import("playwright-aws-lambda");
@@ -31,7 +31,7 @@ export async function GET(
 
     // 新しいページを開く
     const page = await browser.newPage();
-    
+
     // ビューポートを設定
     await page.setViewportSize({ width: 1080, height: 1920 });
 
@@ -52,7 +52,7 @@ export async function GET(
           display: block !important; 
           opacity: 1 !important; 
         }
-      `
+      `,
     });
 
     // 画像やフォントの読み込みを待つ

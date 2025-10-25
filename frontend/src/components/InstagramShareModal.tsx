@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import InstagramLogo from "/public/instagram.svg";
 import Modal from "./Modal";
 
 interface InstagramShareModalProps {

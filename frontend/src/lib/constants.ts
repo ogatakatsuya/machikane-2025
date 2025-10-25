@@ -1,7 +1,8 @@
 import type { QuestionType } from "./quiz-types";
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.machikane-2025.i-maker.org";
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://api.machikane-2025.i-maker.org";
 
 export const RANGE = { min: 1, max: 4 } as const;
 export const QUIZ_TIME_LIMIT = 10 * 60;

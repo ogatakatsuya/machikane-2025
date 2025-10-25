@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@sparticuz/chromium": "^132.0.0",
     "next": "15.5.4",
-    "playwright-aws-lambda": "^0.11.0",
-    "playwright-core": "^1.56.1",
+    "puppeteer-core": "^24.26.1",
     "react": "19.1.0",
     "react-device-detect": "^2.2.3",
     "react-dom": "19.1.0",

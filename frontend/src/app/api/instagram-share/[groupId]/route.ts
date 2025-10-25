@@ -11,64 +11,92 @@ export async function GET(
   }
 
   try {
-    const isProduction = process.env.NODE_ENV === "production";
-
-    let browser: any;
-
-    if (isProduction) {
-      // AWS Lambda環境でのPlaywright設定
-      const playwrightAWSLambda = await import("playwright-aws-lambda");
-      browser = await playwrightAWSLambda.launchChromium();
-    } else {
-      // 開発環境でのPlaywright設定
-      const { chromium } = await import("playwright-core");
-      browser = await chromium.launch({
+    const isLocal = process.env.NODE_ENV === "development";
+    
+    if (isLocal) {
+      // ローカル開発環境 - Chromeのパスを指定
+      const puppeteer = await import("puppeteer-core");
+      const browser = await puppeteer.default.launch({
+        executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
         headless: true,
       });
+      
+      const page = await browser.newPage();
+      await page.setViewport({ width: 1080, height: 1920 });
+      
+      const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL;
+      await page.goto(`${baseUrl}/share_instagram?groupId=${groupId}`, {
+        waitUntil: "domcontentloaded",
+      });
+      
+      // bodyの存在のみ確認（表示状態は問わない）
+      await page.waitForSelector("body");
+      
+      // CSSが原因でbodyが非表示になっている場合の対処
+      await page.addStyleTag({
+        content: `
+          body { 
+            visibility: visible !important; 
+            display: block !important; 
+            opacity: 1 !important; 
+          }
+        `,
+      });
+      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      
+      const image = await page.screenshot({
+        encoding: "base64",
+        fullPage: false,
+        clip: { x: 0, y: 0, width: 1080, height: 1920 },
+      });
+      
+      await browser.close();
+      return NextResponse.json({ status: "OK", image }, { status: 200 });
+    } else {
+      // AWS Lambda環境 - @sparticuz/chromiumを使用
+      const chromium = await import("@sparticuz/chromium");
+      const puppeteer = await import("puppeteer-core");
+
+      const browser = await puppeteer.default.launch({
+        args: chromium.default.args,
+        defaultViewport: chromium.default.defaultViewport,
+        executablePath: await chromium.default.executablePath(),
+        headless: true,
+      });
+
+      const page = await browser.newPage();
+
+      const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL;
+      await page.goto(`${baseUrl}/share_instagram?groupId=${groupId}`, {
+        waitUntil: "domcontentloaded",
+      });
+
+      // bodyの存在のみ確認（表示状態は問わない）
+      await page.waitForSelector("body");
+      
+      // CSSが原因でbodyが非表示になっている場合の対処
+      await page.addStyleTag({
+        content: `
+          body { 
+            visibility: visible !important; 
+            display: block !important; 
+            opacity: 1 !important; 
+          }
+        `,
+      });
+      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const image = await page.screenshot({
+        encoding: "base64",
+        fullPage: false,
+        clip: { x: 0, y: 0, width: 1080, height: 1920 },
+      });
+
+      await browser.close();
+      return NextResponse.json({ status: "OK", image }, { status: 200 });
     }
-
-    // 新しいページを開く
-    const page = await browser.newPage();
-
-    // ビューポートを設定
-    await page.setViewportSize({ width: 1080, height: 1920 });
-
-    // スクショ対象のページにアクセス
-    const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL;
-    await page.goto(`${baseUrl}/share_instagram?groupId=${groupId}`, {
-      waitUntil: "domcontentloaded",
-    });
-
-    // bodyの存在のみ確認（表示状態は問わない）
-    await page.waitForSelector("body", { state: "attached" });
-
-    // CSSが原因でbodyが非表示になっている場合の対処
-    await page.addStyleTag({
-      content: `
-        body { 
-          visibility: visible !important; 
-          display: block !important; 
-          opacity: 1 !important; 
-        }
-      `,
-    });
-
-    // 画像やフォントの読み込みを待つ
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // スクリーンショットを撮影
-    const screenshot = await page.screenshot({
-      clip: { x: 0, y: 0, width: 1080, height: 1920 },
-    });
-
-    // ブラウザを閉じる
-    await browser.close();
-
-    // Base64エンコード
-    const image = screenshot.toString("base64");
-
-    // 取得した画像データをクライアントに返す
-    return NextResponse.json({ status: "OK", image }, { status: 200 });
   } catch (error) {
     console.error("Screenshot generation failed:", error);
     return NextResponse.json(

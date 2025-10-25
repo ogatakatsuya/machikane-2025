@@ -13,9 +13,9 @@ const nextConfig: NextConfig = {
       aggregateTimeout: 300,
     };
     
-    // Externalize playwright-aws-lambda to prevent webpack bundling issues
+    // Externalize @sparticuz/chromium to prevent webpack bundling issues
     config.externals = config.externals || [];
-    config.externals.push('playwright-aws-lambda');
+    config.externals.push('@sparticuz/chromium');
     
     return config;
   },

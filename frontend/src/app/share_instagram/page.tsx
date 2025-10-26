@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { mplusRounded } from "@/fonts/mplus-rounded";
 import { getQuizResults } from "@/lib/api";
 import type { QuizResult } from "@/lib/quiz-types";
-import { mplusRounded } from "@/fonts/mplus-rounded";
 
 const ShareInstagramContent = () => {
   const [results, setResults] = useState<QuizResult | null>(null);
@@ -47,7 +47,9 @@ const ShareInstagramContent = () => {
 
   return (
     <div className="fixed left-0 top-0">
-      <div className={`w-[1080px] h-[1920px] bg-gradient-to-b from-blue-950 via-blue-900 to-cyan-900 flex flex-col items-center justify-between p-20 text-white relative overflow-hidden ${mplusRounded.className}`}>
+      <div
+        className={`w-[1080px] h-[1920px] bg-gradient-to-b from-blue-950 via-blue-900 to-cyan-900 flex flex-col items-center justify-between p-20 text-white relative overflow-hidden ${mplusRounded.className}`}
+      >
         {/* 背景 */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 right-20 w-96 h-96 border-4 border-cyan-400 rounded-full" />

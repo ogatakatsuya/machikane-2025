@@ -150,10 +150,10 @@ const InstagramShareModal = ({
                 onClick={saveImage}
                 className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
               >
-                インスタグラムに共有
+                共有
               </button>
               <p className="text-xs text-gray-500 text-center">
-                Instagram {">"} story からストーリーに投稿できます
+                Instagram {">"} story から投稿できます
               </p>
             </div>
           </div>

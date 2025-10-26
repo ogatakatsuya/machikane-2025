@@ -42,7 +42,9 @@ const ShareInstagramContent = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    setCurrentTime(new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }));
+    setCurrentTime(
+      new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }),
+    );
   }, []);
 
   return (

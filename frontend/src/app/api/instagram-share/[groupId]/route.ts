@@ -27,7 +27,8 @@ export async function GET(
 
       const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL;
       await page.goto(`${baseUrl}/share_instagram?groupId=${groupId}`, {
-        waitUntil: "load", timeout: 3000
+        waitUntil: "load",
+        timeout: 3000,
       });
 
       // bodyの存在のみ確認（表示状態は問わない）

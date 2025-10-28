@@ -7,7 +7,7 @@ export const RANGE = { min: 1, max: 4 } as const;
 export const QUIZ_TIME_LIMIT = 10 * 60;
 
 export const QUESTIONS: QuestionType[] = [
-  { id: 1, title: "回路設計", answer: ["単位", "たんい"], score: 3 },
+  { id: 1, title: "回路設計I", answer: ["単位", "たんい"], score: 3 },
   { id: 2, title: "近現代史", answer: ["たいへいよう", "太平洋"], score: 1 },
   {
     id: 3,
@@ -40,7 +40,7 @@ export const QUESTIONS: QuestionType[] = [
   { id: 11, title: "動物生態学", answer: ["B大阪湾", "B、大阪湾"], score: 2 },
   {
     id: 12,
-    title: "総合英語",
+    title: "実践英語",
     answer: ["HANDAISEI", "阪大生", "はんだいせい"],
     score: 1,
   },
@@ -92,7 +92,7 @@ export const IMPORTANT_NOTICE = [
 export const snsData = {
   title: "マチカネ謎解き2025",
   text: "あなたも単位を修得しよう！A101で出店中🎓✨\n",
-  hashtags: ["まちかね祭", "imaker"],
+  hashtags: ["まちかね祭", "i.maker"],
 };
 
 export const UPDATE_RANKING_INTERVAL = 10 * 60; // seconds

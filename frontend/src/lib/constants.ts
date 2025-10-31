@@ -64,7 +64,7 @@ export const QUESTIONS: QuestionType[] = [
   },
   { id: 21, title: "言語学I", answer: ["鯉", "こい", "コイ"], score: 1 },
   { id: 22, title: "世界地理学", answer: ["中国", "ちゅうごく"], score: 2 },
-  { id: 23, title: "地史学I", answer: ["4"], score: 1 },
+  { id: 23, title: "地誌学I", answer: ["4"], score: 1 },
   { id: 24, title: "環境論I", answer: ["院進", "いんしん"], score: 2 },
   {
     id: 25,

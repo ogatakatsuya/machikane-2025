@@ -172,7 +172,7 @@ func (u *resultUseCase) calculateDeviationFromRank(score int32, rank int64, topR
 	// Assume quiz scores follow normal distribution with mean around 7 points
 	maxScore := float64(45)           // From frontend: /45 units
 	estimatedMean := 7.0              // Target average at 7 points (偏差値50)
-	estimatedStdDev := maxScore * 0.15 // Assume std dev is 15% of max score
+	estimatedStdDev := 8.0 // Fixed standard deviation for more predictable results
 
 	// If we have top results, use them to refine estimates
 	if len(topResults) >= 3 {

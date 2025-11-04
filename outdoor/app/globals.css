@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    overscroll-behavior: none;
+  }
+  body.modal-open {
+    overflow: hidden;
+  }
+  body.modal-open #app-container {
+    pointer-events: none;
+  }
+}
+
+@layer components {
+  .min-h-screen-ios {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+  
+  .fade-out {
+    animation: fadeOut 0.3s ease-in forwards;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  
+  .question-unlock {
+    animation: unlock 0.5s ease-out forwards;
+  }
+  
+  @keyframes unlock {
+    0% { 
+      opacity: 0.6; 
+      transform: translateY(10px); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+  
+  .screen {
+    display: none;
+  }
+  
+  .modal {
+    transform: translate(-50%, -50%);
+    overscroll-behavior: contain;
+  }
+  
+  .question-block.locked {
+    opacity: 0.7;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .question-block.active {
+    animation: unlock 0.5s ease-out forwards;
+  }
+  
+  .question-block.cleared {
+    @apply bg-green-50 border-green-200;
+  }
+  
+  @media (hover: none) {
+    .hover\\:bg-blue-700:hover {
+      @apply bg-blue-600;
+    }
+    .hover\\:bg-gray-700:hover {
+      @apply bg-gray-600;
+    }
+    .hover\\:bg-green-600:hover {
+      @apply bg-green-600;
+    }
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .question-block .lock-overlay {
+    backdrop-filter: blur(2px);
+  }
+  
+  .safe-area-inset {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .focus\\:ring-blue-500:focus {
+    @apply ring-2 ring-blue-500 ring-opacity-50;
+  }
+  
+  .btn-primary {
+    @apply bg-blue-600 text-white font-bold py-4 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition-all;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-700 transition-all;
+  }
+  
+  .btn-success {
+    @apply bg-green-600 text-white font-bold py-4 px-6 rounded-lg shadow-md hover:bg-green-600 transition-all;
+  }
+  
+  .input-field {
+    @apply w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-lg;
+  }
+  
+  .modal-overlay {
+    backdrop-filter: blur(4px);
+  }
+  
+  .modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .text-responsive {
+    @apply text-base md:text-lg;
+  }
+  
+  .puzzle-image {
+    @apply w-full h-auto object-cover rounded-lg;
+    image-rendering: optimizeQuality;
+  }
+  
+  .loading {
+    @apply opacity-50 pointer-events-none;
+  }
+  
+  .error-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+}
+
+@layer utilities {
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  }
+  
+  .bg-gradient-success {
+    background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+  }
+  
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  .select-none-important {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+  }
+}

@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'backend/**'
+      - 'indoor/backend/**'
 
 jobs:
     upload:
@@ -35,7 +35,7 @@ jobs:
                 REPOSITORY_NAME: "machikane-2025"
                 IMAGE_TAG: "${{ github.sha }}"
               run: |
-                cd backend
+                cd indoor/backend
                 docker build --platform linux/x86_64 -t $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG .
                 docker push $ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_TAG
                 

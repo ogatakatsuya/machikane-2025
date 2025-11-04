@@ -4,19 +4,19 @@ on:
     branches:
       - main
     paths:
-      - 'frontend/**'
+      - 'indoor/frontend/**'
   pull_request:
     branches:
       - main
     paths:
-      - 'frontend/**'
+      - 'indoor/frontend/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend
+        working-directory: ./indoor/frontend
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
-          cache-dependency-path: frontend/pnpm-lock.yaml
+          cache-dependency-path: indoor/frontend/pnpm-lock.yaml
 
       - name: install-dependencies
         run: pnpm install --no-frozen-lockfile

@@ -7,8 +7,24 @@ st.set_page_config(page_title="まちかね祭来客者分析", layout="wide")
 
 @st.cache_data
 def load_data():
-    results_df = pd.read_csv("csv/machikane.public.results.csv")
-    groups_df = pd.read_csv("csv/machikane.public.groups.csv")
+    import os
+    
+    # CSVファイルのパスを確認
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    results_path = os.path.join(base_dir, "csv", "machikane.public.results.csv")
+    groups_path = os.path.join(base_dir, "csv", "machikane.public.groups.csv")
+    
+    # ファイルの存在確認とエラーハンドリング
+    if not os.path.exists(results_path):
+        st.error(f"Results file not found: {results_path}")
+        st.stop()
+    
+    if not os.path.exists(groups_path):
+        st.error(f"Groups file not found: {groups_path}")
+        st.stop()
+    
+    results_df = pd.read_csv(results_path)
+    groups_df = pd.read_csv(groups_path)
     
     results_df['created_at'] = pd.to_datetime(results_df['created_at']).dt.tz_convert('Asia/Tokyo')
     results_df['hour'] = results_df['created_at'].dt.floor('H')

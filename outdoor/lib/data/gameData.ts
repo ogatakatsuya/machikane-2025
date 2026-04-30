@@ -109,7 +109,7 @@ export class ChapterManager {
         title: "第5問",
         text: "ステージ宙の近くには様々な看板が見えるはずだ。隠された文字をアルファベットで入力しよう！",
         answer: ["IKUYUKAI", "ikuyukai"],
-        image: "https://r2.machikane-2025.i-maker.org/outdoor/5.webp"
+        image: "https://r2.machikane-2025.i-maker.org/outdoor/5-2026.webp"
       },
       {
         id: "2-2",

@@ -109,7 +109,7 @@ export class ChapterManager {
         title: "第5問",
         text: "ステージ宙の近くには様々な看板が見えるはずだ。隠された文字をアルファベットで入力しよう！",
         answer: ["IKUYUKAI", "ikuyukai"],
-        image: "https://r2.machikane-2025.i-maker.org/outdoor/5.webp"
+        image: "https://r2.machikane-2025.i-maker.org/outdoor/5-2026.webp"
       },
       {
         id: "2-2",
@@ -151,13 +151,6 @@ export class ChapterManager {
         answer: ["ちけい", "地形"],
         image: "https://r2.machikane-2025.i-maker.org/outdoor/9.webp"
       },
-      {
-        id: "3-3",
-        title: "第10問",
-        text: "さらにメインストリートの方へ進むとまた別のアート作品が現れる。この作品名は①②③④⑤③⑥4というらしい。そういえば、今回の第66回まちかね祭のテーマは①⑦⑧③④⑤③⑥だったよね。では①⑦⑧②①④④は何になる？",
-        answer: ["EXPRESS"],
-        image: "https://r2.machikane-2025.i-maker.org/outdoor/10.webp"
-      }
     ]);
 
     this.chapters.set(3, {
@@ -172,14 +165,14 @@ export class ChapterManager {
     const chapter4Questions = new QuestionManager([
       {
         id: "4-1",
-        title: "第11問",
+        title: "第10問",
         text: "メインストリートに出ると左ななめ前に公衆電話が見えてくるはずだ。電話ボックスの中をヒントに次の謎を解こう。これらの隠された3桁の数字のうち共通棟Ａ棟に実際にある教室の部屋番号はどれ？3桁の数字で答えよ。",
         answer: ["104", "１０４"],
         image: "https://r2.machikane-2025.i-maker.org/outdoor/11.webp"
       },
       {
         id: "4-2",
-        title: "第12問",
+        title: "第11問",
         text: "いよいよ最終問題だ。共通棟Ａ101の近くに行き、次の謎を解こう。",
         answer: ["LAST", "ラスト"],
         image: "https://r2.machikane-2025.i-maker.org/outdoor/12.webp"

@@ -165,14 +165,14 @@ export class ChapterManager {
     const chapter4Questions = new QuestionManager([
       {
         id: "4-1",
-        title: "第11問",
+        title: "第10問",
         text: "メインストリートに出ると左ななめ前に公衆電話が見えてくるはずだ。電話ボックスの中をヒントに次の謎を解こう。これらの隠された3桁の数字のうち共通棟Ａ棟に実際にある教室の部屋番号はどれ？3桁の数字で答えよ。",
         answer: ["104", "１０４"],
         image: "https://r2.machikane-2025.i-maker.org/outdoor/11.webp"
       },
       {
         id: "4-2",
-        title: "第12問",
+        title: "第11問",
         text: "いよいよ最終問題だ。共通棟Ａ101の近くに行き、次の謎を解こう。",
         answer: ["LAST", "ラスト"],
         image: "https://r2.machikane-2025.i-maker.org/outdoor/12.webp"

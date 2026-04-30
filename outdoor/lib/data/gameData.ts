@@ -151,13 +151,6 @@ export class ChapterManager {
         answer: ["ちけい", "地形"],
         image: "https://r2.machikane-2025.i-maker.org/outdoor/9.webp"
       },
-      {
-        id: "3-3",
-        title: "第10問",
-        text: "さらにメインストリートの方へ進むとまた別のアート作品が現れる。この作品名は①②③④⑤③⑥4というらしい。そういえば、今回の第66回まちかね祭のテーマは①⑦⑧③④⑤③⑥だったよね。では①⑦⑧②①④④は何になる？",
-        answer: ["EXPRESS"],
-        image: "https://r2.machikane-2025.i-maker.org/outdoor/10.webp"
-      }
     ]);
 
     this.chapters.set(3, {
